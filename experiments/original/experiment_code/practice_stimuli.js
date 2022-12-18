@@ -1,0 +1,62 @@
+var practicestimuli = [
+  {
+    "index": 99,
+    "sentence": "You drop a bowling ball on a teacup",
+    "imagefolder": "PICTURES/",
+    "pic": "cupB",
+    "imagepath": "PICTURES/cupB.jpg",
+    "correct": "S",
+    "trialcondition": "practice_s",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a teacup</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "You drop a balloon on a cigarette",
+    "imagefolder": "PICTURES/",
+    "pic": "cigaretteB",
+    "imagepath": "PICTURES/cigaretteB.jpg",
+    "correct": "S",
+    "trialcondition": "practice_s",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a cigarette</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "You drop a knife on a hammer",
+    "imagefolder": "PICTURES/",
+    "pic": "hammerB",
+    "imagepath": "PICTURES/hammerB.jpg",
+    "correct": "S",
+    "trialcondition": "practice_s",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>You drop a knife on a hammer</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "You drop a fork on a stool",
+    "imagefolder": "PICTURES/",
+    "pic": "tableB",
+    "imagepath": "PICTURES/tableB.jpg",
+    "correct": "N",
+    "trialcondition": "practice_n",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>You drop a fork on a stool</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  }
+]
