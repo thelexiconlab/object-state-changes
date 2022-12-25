@@ -1,5 +1,5 @@
 ---
-title: "typicality experiment"
+title: "descriptive/contradiction experiment"
 output: html_notebook
 ---
 
@@ -14,23 +14,11 @@ library(emmeans)
 library(dplyr)
 ```
 
-# import & bind data
+# import data
 ```{r}
-## compile data for each sona/prolific subject into 2 files
-P_subjects = list.files(path ='./data/prolific', recursive = TRUE, pattern = '.csv', full.names = TRUE)
-prolific_data <- read_csv(P_subjects) %>% rbind()
+data <-read_csv('data/combined.csv')
 
-S_subjects = list.files(path ='./data/sona', recursive = TRUE, pattern = '.csv', full.names = TRUE)
-sona_data <- read_csv(S_subjects) %>% rbind()
-
-## merge sona and prolific data
-ncol(prolific_data)
-ncol(sona_data)
-
-colnames(prolific_data)
-colnames(sona_data)
-
-data <- rbind(prolific_data, sona_data)
+colnames(data)
 ```
 
 # basic descriptives
@@ -41,27 +29,28 @@ data %>% pull(subject) %>% unique()
 ## number of trials per subject
 data %>% group_by(subject) %>% count()
 
-### caution: subject 'NA'
+### caution: subject 'NA' and 'subject'
 ```
+
 # filtering and accuracy exclusion
 ```{r}
 ##exclude filler, practice, and non-picture trials
-data <- data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "Practice")))
+data <- data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("Filler", "practice_s", "practice_n")))
 
 ##calculate subject accuracy
-data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
+data <- data %>% mutate(accuracy=ifelse(correct=="true",1,0))
 
 subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
 
 ##exclude incorrect responses
-data <- data %>% filter(accuracy==1)
+data = data %>% filter(accuracy==1)
 
-##exclude subjects with accuracy < 60% 
+##exclude subjects with accuracy < 60%
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 
-data2 <- data %>% filter(!subject %in% InaccurateSubjects$subject)
+data2 <- data %>% filter(!subject %in% InaccurateSubjects$subject) 
 
-##total participants after exclusion: N=70
+##total participants after exclusion: N=
 data2 %>% pull(subject) %>% unique()
 ```
 
@@ -83,3 +72,4 @@ subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_
 ```{r}
 outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
 ```
+
