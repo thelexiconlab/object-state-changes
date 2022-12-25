@@ -1,0 +1,63 @@
+---
+title: "typicality experiment"
+output: html_notebook
+---
+
+# load packages
+```{r}
+library(tidyverse)
+library(ggplot2)
+library (ggthemes)
+library(rstatix)
+library(ggpubr)
+library(emmeans)
+library(dplyr)
+```
+
+# import & bind data
+```{r}
+## compile data for each sona/prolific subject into 2 files
+P_subjects = list.files(path ='./data/prolific', recursive = TRUE, pattern = '.csv', full.names = TRUE)
+prolific_data <- read_csv(P_subjects) %>% rbind()
+
+S_subjects = list.files(path ='./data/sona', recursive = TRUE, pattern = '.csv', full.names = TRUE)
+sona_data <- read_csv(S_subjects) %>% rbind()
+
+## merge sona and prolific data
+ncol(prolific_data)
+ncol(sona_data)
+
+colnames(prolific_data)
+colnames(sona_data)
+
+data <- rbind(prolific_data, sona_data)
+```
+
+# basic descriptives
+```{r}
+## N(initial)
+data %>% pull(subject) %>% unique()
+
+## number of trials per subject
+data %>% group_by(subject) %>% count()
+
+### caution: subject 'NA'
+```
+# filtering and accuracy exclusion
+```{r}
+##exclude filler, practice, and non-picture trials
+data <- data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "Practice")))
+
+##calculate subject accuracy
+data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
+
+subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
+
+##exclude subjects with accuracy < 60% & incorrect responses
+InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
+
+data <- data %>% filter(!subject %in% InaccurateSubjects) %>% filter(accuracy==1)
+
+##total participants after exclusion: 70
+data %>% pull(subject) %>% unique()
+```
