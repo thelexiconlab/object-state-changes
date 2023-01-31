@@ -54,12 +54,12 @@ data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
 subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
 
 ##exclude incorrect responses
-data <- data %>% filter(accuracy==1)
+data1 <- data %>% filter(accuracy==1)
 
 ##exclude subjects with accuracy < 60% 
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 
-data2 <- data %>% filter(!subject %in% InaccurateSubjects$subject)
+data2 <- data1 %>% filter(!subject %in% InaccurateSubjects$subject)
 
 ##total participants after exclusion: N=70
 data2 %>% pull(subject) %>% unique()
@@ -76,10 +76,80 @@ data2 %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) 
 
 # subject means
 ```{r}
-subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt))
+subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt))
 ```
 
 # outliers
 ```{r}
-outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
+outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(subj_meanLog)
+
+outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
+
+subject_means <- subject_means %>% filter(!subject %in% outlier_exclusion)
 ```
+
+# condition means, SEM calculation
+```{r}
+condition_meansRT <- subject_means %>% group_by(trialcondition) %>% summarise(mean=mean(subj_meanRT), sd=sd(subj_meanRT)) 
+
+n= subject_means %>% group_by(subject) %>% n_groups() 
+
+condition_meansRT <- condition_meansRT %>% mutate(SEM=sd/sqrt(n))
+```
+
+# graph
+```{r}
+condition_meansRT %>% separate(trialcondition, into = c("typicality","state"), sep="_") %>% ggplot(aes(x=state, y=mean, fill=typicality)) + geom_col(position = "dodge") +  labs(x="object state", y="RT (ms)", title = "RT interaction of object typicality and state in picture verification task ") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+
+ggsave("typicality_graph.jpeg")
+```
+
+```{r}
+subject_means_split <- subject_means %>% separate(trialcondition, into=c("typicality","state"), sep="_")
+
+subject_means_split <- subject_means_split %>% ungroup() 
+
+RManova <- anova_test(data = subject_means_split, dv=subj_meanLog, wid = subject, within = c(typicality, state), effect.size = "pes")
+get_anova_table(RManova)
+```
+
+```{r}
+data1a <- data %>% mutate(rt = as.numeric(rt)) %>% mutate(log10_rt=log(rt, 10))
+
+subject_accuracy_condition <- data1a %>% group_by(subject, trialcondition) %>% summarise(accuracy=mean(accuracy), subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt))
+
+Acc_outliers <- subject_accuracy_condition %>% group_by(trialcondition) %>% identify_outliers(accuracy)
+
+Acc_outlier_exclusion <- Acc_outliers %>% filter(is.extreme=="TRUE")
+
+subject_accuracy_condition <- subject_accuracy_condition %>% filter(!subject %in% Acc_outlier_exclusion)
+```
+
+# condition means, SEM calculation
+```{r}
+condition_meansAcc <- subject_accuracy_condition %>% group_by(trialcondition) %>% summarise(mean=mean(accuracy), sd=sd(accuracy)) 
+
+n= subject_accuracy_condition %>% group_by(subject) %>% n_groups() 
+
+condition_meansAcc <- condition_meansAcc %>% mutate(SEM=sd/sqrt(n))
+```
+
+# graph
+```{r}
+condition_meansAcc %>% separate(trialcondition, into = c("typicality","state"), sep="_") %>% ggplot(aes(x=state, y=mean, fill=typicality)) + geom_col(position = "dodge") +  labs(x="object state", y="accuracy (ms)", title = "Interaction effect of object typicality and state in picture verification task accuracy") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+
+ggsave("typicality_accuracy_graph.jpeg")
+```
+```{r}
+Accsubject_means_split <- subject_accuracy_condition %>% separate(trialcondition, into=c("typicality","state"), sep="_")
+
+Accsubject_means_split <- Accsubject_means_split %>% ungroup() 
+
+RManova <- anova_test(data = Accsubject_means_split, dv=accuracy, wid = subject, within = c(typicality, state), effect.size = "pes")
+get_anova_table(RManova)
+```
+
+```{r}
+Accsubject_means_split %>% group_by(state) %>% anova_test(dv=accuracy, wid = subject, within = typicality, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni")
+```
+

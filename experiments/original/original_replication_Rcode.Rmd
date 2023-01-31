@@ -1,5 +1,5 @@
 ---
-title: "descriptive/contradiction experiment"
+title: "original_replication"
 output: html_notebook
 ---
 
@@ -16,45 +16,44 @@ library(dplyr)
 
 # import data
 ```{r}
-data <-read_csv('data/combined.csv')
+## read data
+data <- read_csv('data/replication_data.csv')
 
+ncol(data)
 colnames(data)
 ```
 
 # basic descriptives
 ```{r}
-## N(initial)
+## N(initial) = 80
 data %>% pull(subject) %>% unique()
 
-## number of trials per subject
+## number of trials per subject = 338
 data %>% group_by(subject) %>% count()
-
-### caution: subject 'NA' and 'subject'
 ```
 
 # filtering and accuracy exclusion
 ```{r}
 ##exclude filler, practice, and non-picture trials
-data <- data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("Filler", "practice_s", "practice_n")))
+data <- data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice", "practice_n", "practice_s")))
 
 ##calculate subject accuracy
-data <- data %>% mutate(accuracy=ifelse(correct=="true",1,0))
-
-subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
+subject_accuracy <- data %>% group_by(subject) %>%
+      summarise(TaskAccuracy=mean(correct))
 
 ##exclude incorrect responses
-data = data %>% filter(accuracy==1)
+data = data %>% filter(correct==1)
 
-##exclude subjects with accuracy < 60%
+##exclude subjects with accuracy < 60% & incorrect responses
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 
-data2 <- data %>% filter(!subject %in% InaccurateSubjects$subject) 
+data2 = data %>% filter(!subject %in% InaccurateSubjects$subject) 
 
-##total participants after exclusion: N=
+##total participants after exclusion: N=55
 data2 %>% pull(subject) %>% unique()
 ```
 
-# log10 transformation and histograms
+# log10 transformation & histograms
 ```{r}
 data2 <- data2 %>% mutate(rt = as.numeric(rt)) %>% mutate(log10_rt=log(rt, 10))
 
@@ -65,12 +64,7 @@ data2 %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) 
 
 # subject means
 ```{r}
-####WARNING: THE SEPARRATORS IN TYPEOFTRIAL ARE INCONSISTENT in the original data THE FIRST TWO LINES of this chunk FIX THIS
-
-data2_split <- data2 %>% separate(trialcondition, into = c("weight", "causal_result"))
-data2 <- data2_split %>% unite(col="trialcondition", c(weight, causal_result), sep = "_")
-
-subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt))
+subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt)) 
 ```
 
 # outliers
@@ -93,14 +87,16 @@ condition_meansRT <- condition_meansRT %>% mutate(SEM=sd/sqrt(n))
 
 # graph
 ```{r}
-condition_meansRT %>% separate(trialcondition, into = c("weight","causal_result"), sep="_") %>% ggplot(aes(x=causal_result, y=mean, fill=weight)) + geom_col(position = "dodge") +  labs(x="expectedness of picture shape", y="RT (ms)", title = "the effect of contradictory situation descriptors on picture verification time") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+condition_meansRT %>% separate(trialcondition, into = c("weight","state"), sep="_") %>% ggplot(aes(x=state, y=mean, fill=weight)) + geom_col(position = "dodge") +  labs(x="picture state", y="RT (ms)", title = "Weight, Object State interaction x RT") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
 
-ggsave("contradictions_graph.jpeg")
-```
+ggsave("original_replication_graph.jpeg")
 ```
 
 ```{r}
+subject_means_split <- subject_means %>% separate(trialcondition, into=c("weight","state"), sep="_")
 
+subject_means_split <- subject_means_split %>% ungroup() 
+
+RManova <- anova_test(data = subject_means_split, dv=subj_meanLog, wid = subject, within = c(weight, state), effect.size = "pes")
+get_anova_table(RManova)
 ```
-
-

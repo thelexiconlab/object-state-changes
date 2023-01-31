@@ -79,12 +79,48 @@ data2 %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) 
 
 # subject means
 ```{r}
-subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt))
+subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt)) 
 ```
 
 
 # outliers
 ```{r}
-outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
+outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(subj_meanLog)
+
+outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
+
+subject_means <- subject_means %>% filter(!subject %in% outlier_exclusion)
+
+```
+
+# condition means, SEM calculation
+```{r}
+condition_meansRT <- subject_means %>% group_by(trialcondition) %>% summarise(mean=mean(subj_meanRT), sd=sd(subj_meanRT)) 
+
+n= subject_means %>% group_by(subject) %>% n_groups() 
+
+condition_meansRT <- condition_meansRT %>% mutate(SEM=sd/sqrt(n))
+```
+
+# graph
+```{r}
+condition_meansRT %>% separate(trialcondition, into = c("sentence_type","picture_type"), sep="-") %>% ggplot(aes(x=picture_type, y=mean, fill=sentence_type)) + geom_col(position = "dodge") +  labs(x="picture type", y="RT (ms)", title = "RT interaction of picture and sentence type") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+
+ggsave("slicing_graph.jpeg")
+```
+
+```{r}
+subject_means_split <- subject_means %>% separate(trialcondition, into=c("sentence","picture"), sep="-")
+
+subject_means_split <- subject_means_split %>% ungroup() 
+
+RManova <- anova_test(data = subject_means_split, dv=subj_meanLog, wid = subject, within = c(sentence, picture), effect.size = "pes")
+get_anova_table(RManova)
+```
+# conduct post-hoc tests (if needed)
+```{r}
+##decomposing significant interaction
+
+subject_means_split %>% group_by(picture) %>% anova_test(dv=subj_meanLog, wid = subject, within = sentence, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni")
 ```
 
