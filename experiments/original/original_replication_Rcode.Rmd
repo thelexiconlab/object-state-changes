@@ -12,6 +12,7 @@ library(rstatix)
 library(ggpubr)
 library(emmeans)
 library(dplyr)
+library(stats)
 ```
 
 # import data
@@ -47,7 +48,7 @@ data = data %>% filter(correct==1)
 ##exclude subjects with accuracy < 60% & incorrect responses
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 
-data2 = data %>% filter(!subject %in% InaccurateSubjects$subject) 
+data2 = data  %>% filter(!subject %in% InaccurateSubjects$subject) 
 
 ##total participants after exclusion: N=55
 data2 %>% pull(subject) %>% unique()
@@ -65,6 +66,7 @@ data2 %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) 
 # subject means
 ```{r}
 subject_means <- data2 %>% group_by(subject, trialcondition) %>% summarise(subj_meanLog=mean(log10_rt), subj_meanRT=mean(rt)) 
+subject_means %>% group_by(trialcondition) %>% shapiro_test(subj_meanLog)
 ```
 
 # outliers
@@ -99,4 +101,7 @@ subject_means_split <- subject_means_split %>% ungroup()
 
 RManova <- anova_test(data = subject_means_split, dv=subj_meanLog, wid = subject, within = c(weight, state), effect.size = "pes")
 get_anova_table(RManova)
+
+
+friedman.test(y = subject_means_split$subj_meanLog, groups = subject_means_split$weight, blocks = subject_means_split$state)
 ```
