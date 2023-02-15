@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.2"></script>
     <!--Style sheet import-->
     <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
 
@@ -70,7 +71,7 @@
             choices: ['Begin Experiment'],
             data: {
                 typeoftrial: 'instructions',
-                subject_id: subject_id
+                subject: subject_id
             }
         };
 
@@ -179,6 +180,97 @@
                 } else { data.correct = false; }
             }
         }
+
+        var likert_scale = [
+            "not at all squashable", 
+            "slightly squashable ", 
+            "moderately squashable", 
+            "very squashable", 
+            "extremely squashable"
+        ];
+
+        var surveyinstructions1 = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: `
+            <p style="font-size:20px;"> You have completed Part 1! </p> <br>
+            <p style="font-size:20px;"> Next, you will complete a short survey (3-4 minutes). </p>
+  `         ,
+            choices: ['Continue to Instructions'],
+            data: {
+                typeoftrial: 'instructions',
+                subject: subject_id
+            }
+        };
+
+        var surveyinstructions2 = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: ` <p><h1> Instructions (read carefully): </p></h1>
+            <p style="text-align:left;"> Your task is to decide how "squashable" different objects are by rating them as: </p>
+            <p style="margin-left: 25px;"> 
+               <u> extremely squashable <br>
+                very squashable <br>
+                moderately squashable <br>
+                slightly squashable <br>
+                not at all squashable </u> </p> <br>
+            <p style="text-align:left;">
+                <strong>**Important**</strong> : <u>"Squashable"</u> refers to how likely it is that a given object would shatter, fall apart, crack, splatter, etc. if a heavy object (such as a bowling ball) were dropped on it. In other words, would you expect the object to become permanently deformed, dismembered, etc. in such a way that it is considered broken, squashed, smashed, etc. after dropping a heavy object onto it? A squashable object is in some way "breakable" and permanently deforms with heavy force. <br> <br>
+
+                It is important that you make your judgements <u> <strong> as quickly as possible </u> </strong>, without significantly overthinking your answer. If you do not know what the object is, make your best guess (do not Google it). <br> <br>
+
+                The survey should take <strong> no more than 4 minutes <strong> (there are 32 objects).
+            </p>         
+            ` ,
+            choices: ['begin survey'],
+            data: {
+                typeoftrial: 'instructions',
+                subject: subject_id
+            }
+        };
+
+
+var survey = {
+  type: jsPsychSurveyLikert,
+  questions: [
+     {prompt: "book", name: 's_1', labels: likert_scale, required: "TRUE"},
+     {prompt: "playing cards", name: 's_2', labels: likert_scale, required: "TRUE"},
+     {prompt: "newspaper", name: 's_3', labels: likert_scale, required: "TRUE"},
+     {prompt: "towel", name: 's_4', labels: likert_scale, required: "TRUE"},
+     {prompt: "pillow", name: 's_5', labels: likert_scale, required: "TRUE"},
+     {prompt: "penny", name: 's_6', labels: likert_scale, required: "TRUE"},
+     {prompt: "sock", name: 's_7', labels: likert_scale, required: "TRUE"},
+     {prompt: "plastic bag", name: 's_8', labels: likert_scale, required: "TRUE"},
+     {prompt: "sponge", name: 's_9', labels: likert_scale, required: "TRUE"},
+     {prompt: "rope", name: 's_10', labels: likert_scale, required: "TRUE"},
+     {prompt: "rubber gloves", name: 's_11', labels: likert_scale, required: "TRUE"},
+     {prompt: "eraser", name: 's_12', labels: likert_scale, required: "TRUE"},
+     {prompt: "light bulb", name: 'u_13', labels: likert_scale, required: "TRUE"},
+     {prompt: "mirror", name: 'u_14', labels: likert_scale, required: "TRUE"},
+     {prompt: "iPhone", name: 'u_15', labels: likert_scale, required: "TRUE"},
+     {prompt: "wine glass", name: 'u_16', labels: likert_scale, required: "TRUE"},
+     {prompt: "egg", name: 'u_17', labels: likert_scale, required: "TRUE"},
+     {prompt: "eye glasses", name: 'u_18', labels: likert_scale, required: "TRUE"},
+     {prompt: "strawberry", name: 'u_19', labels: likert_scale, required: "TRUE"},
+     {prompt: "porcelain figure", name: 'u_20', labels: likert_scale, required: "TRUE"},
+     {prompt: "piece of sushi", name: 'u_21', labels: likert_scale, required: "TRUE"},
+     {prompt: "paper cup", name: 'u_22', labels: likert_scale, required: "TRUE"},
+     {prompt: "crackers", name: 'u_23', labels: likert_scale, required: "TRUE"},
+     {prompt: "tomato", name: 'u_24', labels: likert_scale, required: "TRUE"},
+     {prompt: "loaf of bread", name: 'f_25', labels: likert_scale, required: "TRUE"},
+     {prompt: "car", name: 'f_26', labels: likert_scale, required: "TRUE"},
+     {prompt: "plastic chair", name: 'f_27', labels: likert_scale, required: "TRUE"},
+     {prompt: "peanut butter jar", name: 'f_28', labels: likert_scale, required: "TRUE"},
+     {prompt: "plastic tupperware", name: 'f_29', labels: likert_scale, required: "TRUE"},
+     {prompt: "wooden log", name: 'f_30', labels: likert_scale, required: "TRUE"},
+     {prompt: "toaster", name: 'f_31', labels: likert_scale, required: "TRUE"},
+     {prompt: "skateboard", name: 'f_32', labels: likert_scale, required: "TRUE"}
+    ],
+  randomize_question_order: true,
+  data: {
+         typeoftrial: 'survey',
+         trialcondition: name,
+         subject: subject_id
+        }
+};
 
         var demoinstructions = {
             type: jsPsychHtmlButtonResponse,
@@ -315,7 +407,7 @@
           }
 
       var demo_procedure = {
-          timeline: [demo_1, demo_2,demo_3, english, not_english_loop, demo_5]
+          timeline: [demoinstructions, demo_1, demo_2,demo_3, english, not_english_loop, demo_5]
         }
 
         // FEEDBACK for practice runs
@@ -371,7 +463,9 @@
             randomize_order: true // rando order shown to participants
         };
 
-        jsPsych.run([preload, ID, welcome_screen, instructions2, practice_procedure, movetoexp, experiment_procedure, demo_procedure, end_experiment]);
+       
+
+        jsPsych.run([preload, ID, welcome_screen, instructions2, practice_procedure, movetoexp, experiment_procedure, surveyinstructions1, surveyinstructions2, survey, demo_procedure, end_experiment]);
 
     </script>
 </body>
