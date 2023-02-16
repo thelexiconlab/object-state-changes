@@ -103,5 +103,128 @@ RManova <- anova_test(data = subject_means_split, dv=subj_meanLog, wid = subject
 get_anova_table(RManova)
 
 
-friedman.test(y = subject_means_split$subj_meanLog, groups = subject_means_split$weight, blocks = subject_means_split$state)
 ```
+
+
+```{r}
+
+```
+# #########################################################################  accuracy tests
+
+
+# filtering and accuracy exclusion
+```{r}
+
+##exclude subjects with accuracy < 60% & incorrect responses
+xInaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
+
+xdata2 = data  %>% filter(!subject %in% xInaccurateSubjects$subject) 
+
+```
+
+# log10 transformation & histograms
+```{r}
+xdata2 <- xdata2 %>% mutate(rt = as.numeric(rt)) %>% mutate(log10_rt=log(rt, 10))
+```
+
+# subject means
+```{r}
+xsubject_means <- xdata2 %>% group_by(subject, trialcondition) %>% summarise(xsubj_meanLog=mean(log10_rt), xsubj_meanRT=mean(rt)) 
+
+xsubject_means %>% group_by(trialcondition) %>% shapiro_test(xsubj_meanLog)
+```
+
+# outliers
+```{r}
+xoutliers <- xsubject_means %>% group_by(trialcondition) %>% identify_outliers(xsubj_meanLog)
+
+xoutlier_exclusion <- xoutliers %>% filter(is.extreme=="TRUE")
+
+ xsubject_means <- xsubject_means %>% filter(!subject %in% xoutliers)
+```
+
+# condition means, SEM calculation
+```{r}
+xcondition_meansRT <- xsubject_means %>% group_by(trialcondition) %>% summarise(mean=mean(xsubj_meanRT), sd=sd(xsubj_meanRT)) 
+
+n= xsubject_means %>% group_by(subject) %>% n_groups() 
+
+xcondition_meansRT <- xcondition_meansRT %>% mutate(SEM=sd/sqrt(n))
+```
+
+# graph
+```{r}
+xcondition_meansRT %>% separate(trialcondition, into = c("weight","state"), sep="_") %>% ggplot(aes(x=state, y=mean, fill=weight)) + geom_col(position = "dodge") +  labs(x="picture state", y="RT (ms)", title = "Weight, Object State interaction x RT") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+
+```
+
+```{r}
+xsubject_means_split <- xsubject_means %>% separate(trialcondition, into=c("weight","state"), sep="_")
+
+xsubject_means_split <- xsubject_means_split %>% ungroup() 
+
+xRManova <- anova_test(data = xsubject_means_split, dv=xsubj_meanLog, wid = subject, within = c(weight, state), effect.size = "pes")
+get_anova_table(RManova)
+
+```
+
+
+## Accuracy comparisons
+
+```{r}
+Adata <- read_csv('data/replication_data.csv')
+Adata <- Adata %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice", "practice_n", "practice_s")))
+Adata <- Adata %>% select(c(7,12,14,15,19))
+
+Adata2 <- Adata %>% select(c(4,5))
+
+Adata2$accuracy <- ifelse(Adatas2$correct == 1,"correct", "incorrect")
+
+table <- table(Adata2$trialcondition, Adata2$accuracy)
+table
+ggplot(Adata2) + aes(x = trialcondition, fill = accuracy) + geom_bar()
+
+## Chi-Square Goodness of fit test
+
+
+test <- chisq.test(table(Adata2$trialcondition, Adata2$accuracy))
+test
+
+library(vcd)
+
+mosaic(~ trialcondition + accuracy,
+  direction = c("v", "h"),
+  data = Adata2,
+  shade = TRUE)
+
+library(rcompanion)
+
+Input =("
+  trialcondtion    correct incorrect
+  Heavy_Normal      325       155
+  Heavy_Smashed     374       106
+  Light_Normal      359       121
+  Light_Smashed     338       142
+")
+
+Matriz = as.matrix(read.table(textConnection(Input),
+                   header=TRUE,
+                   row.names=1))
+
+Matriz
+
+chisq.test(Matriz)
+
+pairwiseNominalIndependence(Matriz,
+                            fisher = FALSE,
+                            gtest  = FALSE,
+                            chisq  = TRUE,
+                            method = "fdr")
+
+
+Adata3 <- Adata2 %>% group_by(trialcondition, accuracy) %>% count()
+ 
+Adata3 %>% ggplot(aes(x=trialcondition, y=n, fill=accuracy)) + geom_col(position = "dodge") +  labs(x="trial condition", y="# of trials", title = "Correct/Incorrect Trials per condition") + theme_economist_white() + scale_fill_economist()
+
+```
+
