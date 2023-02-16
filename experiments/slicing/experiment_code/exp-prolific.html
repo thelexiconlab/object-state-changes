@@ -39,433 +39,410 @@
 <body>
     <script>
 
-        var jsPsych = initJsPsych({
+var jsPsych = initJsPsych({
 
-        });
+});
 
-        //Generate a random user ID
-        var subject_id = Math.floor(Math.random() * 100000);
+//Generate a random user ID
+var subject_id = Math.floor(Math.random() * 100000);
 
-        // prolific ID
-        var ID = {
-            type: jsPsychSurveyText,
-            questions: [
-                { prompt: 'Enter your Prolific ID below:', required: true, name: 'ID' },
-            ],
-            button_label: 'Continue',
-            data: {
-                typeoftrial: 'ID',
-                Experiment: jsPsych.timelineVariable('Experiment'),
-                subject: subject_id
-            },
-            on_finish: function (data) {
-                subject_id = data.response.ID
-            }
-        };
+// prolific ID
+var ID = {
+    type: jsPsychSurveyText,
+    questions: [
+        { prompt: 'Enter your Prolific ID below:', required: true, name: 'ID' },
+    ],
+    button_label: 'Continue',
+    data: {
+        typeoftrial: 'ID',
+        Experiment: jsPsych.timelineVariable('Experiment'),
+        subject: subject_id
+    },
+    on_finish: function (data) {
+        subject_id = data.response.ID
+    }
+};
 
-        // WELCOME SCREEN
-        var welcome_screen = {
-            type: jsPsychHtmlButtonResponse,
-            stimulus: "<p> Welcome to the experiment! </p> <p> In this experiment, you will be asked to make judgments about the content of different sentences. On each trial, you will read a sentence, and will be shown a picture immediately following the sentence. Your task is to decide whether the object displayed in the picture was mentioned in the sentence or not and respond as quickly as possible by pressing <strong>A</strong> for yes or <strong>L</strong> for no. </p> <p>You will now do a practice session with feedback and instructions. Click the button below to continue.</p>",
-            choices: ['Continue'],
-            choices: ['Begin Experiment'],
-            data: {
-                typeoftrial: 'instructions',
-                subject: subject_id
-            }
-        };
+// WELCOME SCREEN
+var welcome_screen = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: "<p> Welcome to the experiment! </p> <p> In this experiment, you will be asked to make judgments about the content of different sentences. On each trial, you will read a sentence, and will be shown a picture immediately following the sentence. Your task is to decide whether the object displayed in the picture was mentioned in the sentence or not and respond as quickly as possible by pressing <strong>A</strong> for yes or <strong>L</strong> for no. </p> <p>You will now do a practice session with feedback and instructions. Click the button below to continue.</p>",
+    choices: ['Continue'],
+    choices: ['Begin Experiment'],
+    data: {
+        typeoftrial: 'instructions',
+        subject: subject_id
+    }
+};
 
-        var instructions2 = {
-            type: jsPsychHtmlButtonResponse,
-            stimulus: `
-            <p style="font-size:20px;"> You are about to begin the practice test. </p>
-            <p style="font-size:20px;"> On each trial, a sentence will appear on the screen. You should press SPACEBAR when you have read and understood the sentence.</p>
-            <p style="font-size:20px;"> After you press SPACEBAR, a picture will appear on the screen. </p>
-            <p style="font-size:20px;"> You need to indicate whether or not the pictured object was mentioned in the sentence. </p>
-            <p style="font-size:20px;"> If the object WAS mentioned in the preceding sentence, you should press <strong>A</strong> </p>
-            <p style="font-size:20px;"> If the object was NOT mentioned in the preceding sentence, you should press <strong>L</strong>. </p>
-            <p style="font-size:20px;"> Click the button below to continue to the practice session.</p>
-            `,
-            choices: ['Continue'],
-                data: {
-                  typeoftrial: 'instructions',
-                  subject: subject_id
-              }
-          };
+var instructions2 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <p style="font-size:20px;"> You are about to begin the practice test. </p>
+    <p style="font-size:20px;"> On each trial, a sentence will appear on the screen. You should press SPACEBAR when you have read and understood the sentence.</p>
+    <p style="font-size:20px;"> After you press SPACEBAR, a picture will appear on the screen. </p>
+    <p style="font-size:20px;"> You need to indicate whether or not the pictured object was mentioned in the sentence. </p>
+    <p style="font-size:20px;"> If the object WAS mentioned in the preceding sentence, you should press <strong>A</strong> </p>
+    <p style="font-size:20px;"> If the object was NOT mentioned in the preceding sentence, you should press <strong>L</strong>. </p>
+    <p style="font-size:20px;"> Click the button below to continue to the practice session.</p>
+    `,
+    choices: ['Continue'],
+        data: {
+          typeoftrial: 'instructions',
+          subject: subject_id
+      }
+  };
 
 
-          var movetoexp = {
-              type: jsPsychHtmlButtonResponse,
-              stimulus: `<p style="font-size:20px;">You have now completed the practice session! </p>
-              <p style="font-size:20px;">You will now move on to the main experiment, where you will not be provided any feedback. </p>
-              <p style="font-size:20px;">Remember, you should press <strong>A</strong> if the pictured object was mentioned in the preceding sentence<br> and <strong>L</strong> if the pictured object was not mentioned in the preceding sentence.</p>
-              <p style="font-size:20px;">For these questions, make sure you are answering A/L based on the content mentioned in the sentence.</p>
-              <p style="font-size:20px;">Please click the button below to continue to the main experiment. </p>`,
-              choices: ['Continue'],
-              data: {
-                typeoftrial: 'movetoexp',
-                subject: subject_id
-              }
-          };
+  var movetoexp = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<p style="font-size:20px;">You have now completed the practice session! </p>
+      <p style="font-size:20px;">You will now move on to the main experiment, where you will not be provided any feedback. </p>
+      <p style="font-size:20px;">Remember, you should press <strong>A</strong> if the pictured object was mentioned in the preceding sentence<br> and <strong>L</strong> if the pictured object was not mentioned in the preceding sentence.</p>
+      <p style="font-size:20px;">For these questions, make sure you are answering A/L based on the content mentioned in the sentence.</p>
+      <p style="font-size:20px;">Please click the button below to continue to the main experiment. </p>`,
+      choices: ['Continue'],
+      data: {
+        typeoftrial: 'movetoexp',
+        subject: subject_id
+      }
+  };
 
-        // PRELOAD IMAGES
-        var preload = {
-            type: jsPsychPreload,
-            images: imagelist, // ** NOT INITIALIZED ** 
-            show_progress_bar: true,
-            data: {
-                typeoftrial: 'preload',
-                subject: subject_id
-            }
-        };
+// PRELOAD IMAGES
+var preload = {
+    type: jsPsychPreload,
+    images: imagelist, // ** NOT INITIALIZED ** 
+    show_progress_bar: true,
+    data: {
+        typeoftrial: 'preload',
+        subject: subject_id
+    }
+};
 
-        // FIXATION CROSS 1
-        var fixation1 = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: '<p style="font-size : 48px">+</p>',
-            choices: "NO_KEYS",
-            trial_duration: 1000,
-            data: {
-                typeoftrial: 'fixation',
-                // list_number: jsPsych.timelineVariable('List'),
-                trialcondition: jsPsych.timelineVariable('condition'),
-                subject: subject_id
-            }
-        }
+// FIXATION CROSS 1
+var fixation1 = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="font-size : 48px">+</p>',
+    choices: "NO_KEYS",
+    trial_duration: 1000,
+    data: {
+        typeoftrial: 'fixation',
+        // list_number: jsPsych.timelineVariable('List'),
+        trialcondition: jsPsych.timelineVariable('condition'),
+        subject: subject_id
+    }
+}
 
-        // SENTENCE
-        var sentence = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: jsPsych.timelineVariable('sentence'),
-            // press spacebar to continue
-            choices: " ",
-            data: {
-                typeoftrial: 'sentence',
-                // list_number: jsPsych.timelineVariable('List'),
-                trialcondition: jsPsych.timelineVariable('condition'),
-                subject: subject_id
-            }
-        }
+// SENTENCE
+var sentence = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('sentence'),
+    // press spacebar to continue
+    choices: " ",
+    data: {
+        typeoftrial: 'sentence',
+        // list_number: jsPsych.timelineVariable('List'),
+        trialcondition: jsPsych.timelineVariable('condition'),
+        subject: subject_id
+    }
+}
 
-        // FIXATION CROSS 2
-        var fixation2 = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: '<p style="font-size : 48px">+</p>',
-            choices: "NO_KEYS",
-            trial_duration: 500,
-            data: {
-                typeoftrial: 'fixation',
-                list_number: jsPsych.timelineVariable('List'),
-                trialcondition: jsPsych.timelineVariable('condition'),
-                subject: subject_id
-            }
-        }
+// FIXATION CROSS 2
+var fixation2 = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="font-size : 48px">+</p>',
+    choices: "NO_KEYS",
+    trial_duration: 500,
+    data: {
+        typeoftrial: 'fixation',
+        list_number: jsPsych.timelineVariable('List'),
+        trialcondition: jsPsych.timelineVariable('condition'),
+        subject: subject_id
+    }
+}
 
-        // IMAGE
-        var picture = {
-            type: jsPsychImageKeyboardResponse,
-            stimulus: jsPsych.timelineVariable('image_path'),
-            stimulus_width: 300,
-            choices: ['A', 'L', 'a', 'l'],
-            data: {
-                typeoftrial: 'picture',
-                list_number: jsPsych.timelineVariable('List'),
-                trialcondition: jsPsych.timelineVariable('condition'),
-                subject: subject_id,
-            },
-            // Store whether participant response was correct or not.
-            on_finish: function (data) {
-                if (jsPsych.pluginAPI.compareKeys(data.response, jsPsych.timelineVariable('correct_response'))) {
-                    data.correct = true;
-                } else { data.correct = false; }
-            }
-        }
+// IMAGE
+var picture = {
+    type: jsPsychImageKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('image_path'),
+    stimulus_width: 300,
+    choices: ['A', 'L', 'a', 'l'],
+    data: {
+        typeoftrial: 'picture',
+        list_number: jsPsych.timelineVariable('List'),
+        trialcondition: jsPsych.timelineVariable('condition'),
+        subject: subject_id,
+    },
+    // Store whether participant response was correct or not.
+    on_finish: function (data) {
+        if (jsPsych.pluginAPI.compareKeys(data.response, jsPsych.timelineVariable('correct_response'))) {
+            data.correct = true;
+        } else { data.correct = false; }
+    }
+}
 
-        var likert_scale = [
-            "not at all squashable", 
-            "slightly squashable ", 
-            "moderately squashable", 
-            "very squashable", 
-            "extremely squashable"
-        ];
+var likert_scale = [
+    "not at all squashable", 
+    "slightly squashable ", 
+    "moderately squashable", 
+    "very squashable", 
+    "extremely squashable"
+];
 
-        var surveyinstructions1 = {
-            type: jsPsychHtmlButtonResponse,
-            stimulus: `
-            <p style="font-size:20px;"> You have completed Part 1! </p> <br>
-            <p style="font-size:20px;"> Next, you will complete a short survey (3-4 minutes). </p>
-  `         ,
-            choices: ['Continue to Instructions'],
-            data: {
-                typeoftrial: 'instructions',
-                subject: subject_id
-            }
-        };
+var surveyinstructions1 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <p style="font-size:20px;"> You have completed Part 1! </p> <br>
+    <p style="font-size:20px;"> Next, you will complete a short survey (3-4 minutes). </p>
+`         ,
+    choices: ['Continue to Instructions'],
+    data: {
+        typeoftrial: 'instructions',
+        subject: subject_id
+    }
+};
 
-        var surveyinstructions2 = {
-            type: jsPsychHtmlButtonResponse,
-            stimulus: ` <p><h1> Instructions (read carefully): </p></h1>
-            <p style="text-align:left;"> Your task is to decide how "squashable" different objects are by rating them as: </p>
-            <p style="margin-left: 25px;"> 
-               <u> extremely squashable <br>
-                very squashable <br>
-                moderately squashable <br>
-                slightly squashable <br>
-                not at all squashable </u> </p> <br>
-            <p style="text-align:left;">
-                <strong>**Important**</strong> : <u>"Squashable"</u> refers to how likely it is that a given object would shatter, fall apart, crack, splatter, etc. if a heavy object (such as a bowling ball) were dropped on it. In other words, would you expect the object to become permanently deformed, dismembered, etc. in such a way that it is considered broken, squashed, smashed, etc. after dropping a heavy object onto it? A squashable object is in some way "breakable" and permanently deforms with heavy force. <br> <br>
+var surveyinstructions2 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: ` <p><h1> Instructions (read carefully): </p></h1>
+    <p style="text-align:left;"> Your task is to decide how "squashable" different objects are by rating them as: </p>
+    <p style="margin-left: 25px;"> 
+       <u> extremely squashable <br>
+        very squashable <br>
+        moderately squashable <br>
+        slightly squashable <br>
+        not at all squashable </u> </p> <br>
+    <p style="text-align:left;">
+        <strong>**Important**</strong> : <u>"Squashable"</u> refers to how likely it is that a given object would shatter, fall apart, crack, splatter, etc. if a heavy object (such as a bowling ball) were dropped on it. In other words, would you expect the object to become permanently deformed, dismembered, etc. in such a way that it is considered broken, squashed, smashed, etc. after dropping a heavy object onto it? A squashable object is in some way "breakable" and permanently deforms with heavy force. <br> <br>
 
-                It is important that you make your judgements <u> <strong> as quickly as possible </u> </strong>, without significantly overthinking your answer. If you do not know what the object is, make your best guess (do not Google it). <br> <br>
+        It is important that you make your judgements <u> <strong> as quickly as possible </u> </strong>, without significantly overthinking your answer. If you do not know what the object is, make your best guess (do not Google it). <br> <br>
 
-                The survey should take <strong> no more than 4 minutes <strong> (there are 32 objects).
-            </p>         
-            ` ,
-            choices: ['begin survey'],
-            data: {
-                typeoftrial: 'instructions',
-                subject: subject_id
-            }
-        };
+        The survey should take <strong> no more than 4 minutes <strong> (there are 32 objects).
+    </p>         
+    ` ,
+    choices: ['begin survey'],
+    data: {
+        typeoftrial: 'instructions',
+        subject: subject_id
+    }
+};
 
 
 var survey = {
-  type: jsPsychSurveyLikert,
-  questions: [
-     {prompt: "book", name: 's_1', labels: likert_scale, required: "TRUE"},
-     {prompt: "playing cards", name: 's_2', labels: likert_scale, required: "TRUE"},
-     {prompt: "newspaper", name: 's_3', labels: likert_scale, required: "TRUE"},
-     {prompt: "towel", name: 's_4', labels: likert_scale, required: "TRUE"},
-     {prompt: "pillow", name: 's_5', labels: likert_scale, required: "TRUE"},
-     {prompt: "penny", name: 's_6', labels: likert_scale, required: "TRUE"},
-     {prompt: "sock", name: 's_7', labels: likert_scale, required: "TRUE"},
-     {prompt: "plastic bag", name: 's_8', labels: likert_scale, required: "TRUE"},
-     {prompt: "sponge", name: 's_9', labels: likert_scale, required: "TRUE"},
-     {prompt: "rope", name: 's_10', labels: likert_scale, required: "TRUE"},
-     {prompt: "rubber gloves", name: 's_11', labels: likert_scale, required: "TRUE"},
-     {prompt: "eraser", name: 's_12', labels: likert_scale, required: "TRUE"},
-     {prompt: "light bulb", name: 'u_13', labels: likert_scale, required: "TRUE"},
-     {prompt: "mirror", name: 'u_14', labels: likert_scale, required: "TRUE"},
-     {prompt: "iPhone", name: 'u_15', labels: likert_scale, required: "TRUE"},
-     {prompt: "wine glass", name: 'u_16', labels: likert_scale, required: "TRUE"},
-     {prompt: "egg", name: 'u_17', labels: likert_scale, required: "TRUE"},
-     {prompt: "eye glasses", name: 'u_18', labels: likert_scale, required: "TRUE"},
-     {prompt: "strawberry", name: 'u_19', labels: likert_scale, required: "TRUE"},
-     {prompt: "porcelain figure", name: 'u_20', labels: likert_scale, required: "TRUE"},
-     {prompt: "piece of sushi", name: 'u_21', labels: likert_scale, required: "TRUE"},
-     {prompt: "paper cup", name: 'u_22', labels: likert_scale, required: "TRUE"},
-     {prompt: "crackers", name: 'u_23', labels: likert_scale, required: "TRUE"},
-     {prompt: "tomato", name: 'u_24', labels: likert_scale, required: "TRUE"},
-     {prompt: "loaf of bread", name: 'f_25', labels: likert_scale, required: "TRUE"},
-     {prompt: "car", name: 'f_26', labels: likert_scale, required: "TRUE"},
-     {prompt: "plastic chair", name: 'f_27', labels: likert_scale, required: "TRUE"},
-     {prompt: "peanut butter jar", name: 'f_28', labels: likert_scale, required: "TRUE"},
-     {prompt: "plastic tupperware", name: 'f_29', labels: likert_scale, required: "TRUE"},
-     {prompt: "wooden log", name: 'f_30', labels: likert_scale, required: "TRUE"},
-     {prompt: "toaster", name: 'f_31', labels: likert_scale, required: "TRUE"},
-     {prompt: "skateboard", name: 'f_32', labels: likert_scale, required: "TRUE"}
-    ],
-  randomize_question_order: true,
-  data: {
-         typeoftrial: 'survey',
-         trialcondition: name,
-         subject: subject_id
-        }
+type: jsPsychSurveyLikert,
+questions: [{prompt: jsPsych.timelineVariable('prompt'), name: jsPsych.timelineVariable('name'), labels: likert_scale, required: "TRUE"}],
+randomize_question_order: true,
+data: {
+ typeoftrial: 'survey',
+ trialcondition: jsPsych.timelineVariable('name'),
+ subject: subject_id
+}
 };
 
-        var demoinstructions = {
-            type: jsPsychHtmlButtonResponse,
-            stimulus: `
-            <p style="font-size:20px;"> You have completed the experiment portion! </p>
-            <p style="font-size:20px;"> Before you are done, we would like you to answer some basic demographic questions. </p>
-            <p style="font-size:20px;"> Note that your answers to these questions will not affect your compensation/credit. </p>
-            <p style="font-size:20px;"> While some questions are required (*) to obtain some basic information about our recruitment sample <p>
-            <p style="font-size:20px;"> you can choose to skip other questions that you do not feel comfortable answering. </p>
-            <p style="font-size:20px;"> Click the button below to continue.</p>
-  `         ,
-            choices: ['Continue'],
-            data: {
-                typeoftrial: 'demo',
-                subject: subject_id
-            }
-        };
+var demoinstructions = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <p style="font-size:20px;"> You have completed the experiment portion! </p>
+    <p style="font-size:20px;"> Before you are done, we would like you to answer some basic demographic questions. </p>
+    <p style="font-size:20px;"> Note that your answers to these questions will not affect your compensation/credit. </p>
+    <p style="font-size:20px;"> While some questions are required (*) to obtain some basic information about our recruitment sample <p>
+    <p style="font-size:20px;"> you can choose to skip other questions that you do not feel comfortable answering. </p>
+    <p style="font-size:20px;"> Click the button below to continue.</p>
+`         ,
+    choices: ['Continue'],
+    data: {
+        typeoftrial: 'demo',
+        subject: subject_id
+    }
+};
 
-        var demo_1 = {
-            type: jsPsychSurveyText,
-            questions: [
-              {prompt: 'What is your age?', required: true, name: 'Age'},
-              {prompt: 'What is your gender?', required: true, name: 'Gender'},
-              {prompt: 'How many years of formal education have you had? (consider graduating high school to be 12 years)', 
-              required: true, name: 'Education'}
-            ],
-            button_label: 'Next',
-            data: {
-              typeoftrial: 'demo',
-              Experiment: jsPsych.timelineVariable('Experiment'),
-              subject: subject_id
-            }
-        };
+var demo_1 = {
+    type: jsPsychSurveyText,
+    questions: [
+      {prompt: 'What is your age?', required: true, name: 'Age'},
+      {prompt: 'What is your gender?', required: true, name: 'Gender'},
+      {prompt: 'How many years of formal education have you had? (consider graduating high school to be 12 years)', 
+      required: true, name: 'Education'}
+    ],
+    button_label: 'Next',
+    data: {
+      typeoftrial: 'demo',
+      Experiment: jsPsych.timelineVariable('Experiment'),
+      subject: subject_id
+    }
+};
 
-        var demo_2 = {
-            type: jsPsychSurveyMultiSelect,
-            questions: [
-              {
-                prompt: "Please select all the racial categories that apply to you:", 
-                options: ["American Indian/Alaskan Native","Asian", "Black/African American", 
-                "Native Hawaiian or Other Pacific Islander" , 
-                  "White/Caucasian", "More than once race", "Other"], 
-                horizontal: false,
-                required: false,
-                name: 'Race'
-              }
-            ],
-            data: {
-                    typeoftrial: 'demo',
-                    Experiment: jsPsych.timelineVariable('Experiment'),
-                    subject: subject_id
-                  }
-            };
-
-        var demo_3 = {
-            type: jsPsychSurveyMultiChoice,
-            questions: [
-            {
-                prompt: "Are you of Hispanic, Latino/a/x or of Spanish origin?", 
-                name: 'Latino', 
-                options: ['Yes', 'No', 'Prefer not to respond'], 
-                required: false
-              }, 
-              {
-                prompt: "What is your dominant hand?", 
-                name: 'DominantHand', 
-                options: ['Left', 'Right', 'Ambidexterous'], 
-                required: false
-              }, 
-              {
-                prompt: "Please indicate what time of the day you feel most alert:", 
-                name: 'Alert', 
-                options: ['Morning', 'Afternoon', 'Evening', 'No Differences'], 
-                required: false
-              },
-            ],
-              data: {
-                typeoftrial: 'demo',
-                Experiment: jsPsych.timelineVariable('Experiment'),
-                subject: subject_id
-              }
-          };
-
-        var english = {
-            type: jsPsychSurveyMultiChoice,
-            questions: [
-              {
-                prompt: "Is English your first language?", 
-                name: 'English', 
-                options: ['Yes', 'No'], 
-                required: true
-              },
-            ],
-              data: {
-                typeoftrial: 'english',
-                Experiment: jsPsych.timelineVariable('Experiment'),
-                subject: subject_id
-              }
-          };
-
-
-        var not_english = {
-            type: jsPsychSurveyText,
-            preamble: "<p> You indicated that English is not your first language in the previous question. Please answer the following questions:</p> ",
-            questions: [ {prompt: "What is your first language?"},
-            {prompt: "At what age did you learn English?"} ],
-            data: {
-                    typeoftrial: 'notenglish',
-                    Experiment: jsPsych.timelineVariable('Experiment'),
-                    subject: subject_id
-                  }
-            }
-
-        var not_english_loop = {
-            timeline: [not_english],
-            conditional_function: function() {
-            var dat = jsPsych.data.getLastTrialData().values()[0];
-            var answer = JSON.stringify(dat.response.English);
-            answer = answer.replace(/\W/g, '')
-            if(answer.localeCompare("No") == 0) {return true;} 
-            else {return false;}
-            }
-            }
-
-      var demo_5 = {
-          type: jsPsychSurveyText,
-          questions: [ {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)"},
-          ],
-          data: {
-                  typeoftrial: 'demo',
-                  Experiment: jsPsych.timelineVariable('Experiment'),
-                  subject: subject_id
-                }
+var demo_2 = {
+    type: jsPsychSurveyMultiSelect,
+    questions: [
+      {
+        prompt: "Please select all the racial categories that apply to you:", 
+        options: ["American Indian/Alaskan Native","Asian", "Black/African American", 
+        "Native Hawaiian or Other Pacific Islander" , 
+          "White/Caucasian", "More than once race", "Other"], 
+        horizontal: false,
+        required: false,
+        name: 'Race'
+      }
+    ],
+    data: {
+            typeoftrial: 'demo',
+            Experiment: jsPsych.timelineVariable('Experiment'),
+            subject: subject_id
           }
+    };
 
-      var demo_procedure = {
-          timeline: [demoinstructions, demo_1, demo_2,demo_3, english, not_english_loop, demo_5]
+var demo_3 = {
+    type: jsPsychSurveyMultiChoice,
+    questions: [
+    {
+        prompt: "Are you of Hispanic, Latino/a/x or of Spanish origin?", 
+        name: 'Latino', 
+        options: ['Yes', 'No', 'Prefer not to respond'], 
+        required: false
+      }, 
+      {
+        prompt: "What is your dominant hand?", 
+        name: 'DominantHand', 
+        options: ['Left', 'Right', 'Ambidexterous'], 
+        required: false
+      }, 
+      {
+        prompt: "Please indicate what time of the day you feel most alert:", 
+        name: 'Alert', 
+        options: ['Morning', 'Afternoon', 'Evening', 'No Differences'], 
+        required: false
+      },
+    ],
+      data: {
+        typeoftrial: 'demo',
+        Experiment: jsPsych.timelineVariable('Experiment'),
+        subject: subject_id
+      }
+  };
+
+var english = {
+    type: jsPsychSurveyMultiChoice,
+    questions: [
+      {
+        prompt: "Is English your first language?", 
+        name: 'English', 
+        options: ['Yes', 'No'], 
+        required: true
+      },
+    ],
+      data: {
+        typeoftrial: 'english',
+        Experiment: jsPsych.timelineVariable('Experiment'),
+        subject: subject_id
+      }
+  };
+
+
+var not_english = {
+    type: jsPsychSurveyText,
+    preamble: "<p> You indicated that English is not your first language in the previous question. Please answer the following questions:</p> ",
+    questions: [ {prompt: "What is your first language?"},
+    {prompt: "At what age did you learn English?"} ],
+    data: {
+            typeoftrial: 'notenglish',
+            Experiment: jsPsych.timelineVariable('Experiment'),
+            subject: subject_id
+          }
+    }
+
+var not_english_loop = {
+    timeline: [not_english],
+    conditional_function: function() {
+    var dat = jsPsych.data.getLastTrialData().values()[0];
+    var answer = JSON.stringify(dat.response.English);
+    answer = answer.replace(/\W/g, '')
+    if(answer.localeCompare("No") == 0) {return true;} 
+    else {return false;}
+    }
+    }
+
+var demo_5 = {
+  type: jsPsychSurveyText,
+  questions: [ {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)"},
+  ],
+  data: {
+          typeoftrial: 'demo',
+          Experiment: jsPsych.timelineVariable('Experiment'),
+          subject: subject_id
         }
+  }
 
-        // FEEDBACK for practice runs
-              var feedback = {
-                      type: jsPsychHtmlKeyboardResponse,
-                      stimulus: function () {
-                          // obtaining the value previously stored for the most recent trial 
-                          var last_trial_correct = jsPsych.pluginAPI.compareKeys(jsPsych.data.get().last(1).values()[0].response,
-                           jsPsych.timelineVariable('correct_response')); 
-                          if (last_trial_correct) { return "Correct!"; }
-                          else {
-                              return "Wrong!";
-                          }
-                      },
-                      choices: "NO_KEYS",
-                      trial_duration: 2000
-              }
+var demo_procedure = {
+  timeline: [demoinstructions, demo_1, demo_2,demo_3, english, not_english_loop, demo_5]
+}
 
-        // PRACTICE PROCEDURE
-        var practice_procedure = {
-                 timeline: [fixation1, sentence, fixation2, picture, feedback],
-                 timeline_variables: practicestimuli,
-                 randomize_order: true
-             };
+// FEEDBACK for practice runs
+      var feedback = {
+              type: jsPsychHtmlKeyboardResponse,
+              stimulus: function () {
+                  // obtaining the value previously stored for the most recent trial 
+                  var last_trial_correct = jsPsych.pluginAPI.compareKeys(jsPsych.data.get().last(1).values()[0].response,
+                   jsPsych.timelineVariable('correct_response')); 
+                  if (last_trial_correct) { return "Correct!"; }
+                  else {
+                      return "Wrong!";
+                  }
+              },
+              choices: "NO_KEYS",
+              trial_duration: 2000
+      }
 
-        // END SCREEN
-        var end_experiment = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: "Thank you for participating! <br> This is your completion code: C17TTYD2. Please take note of this to receive credit. <br> Click any key to end the experiment."
-        }
+// PRACTICE PROCEDURE
+var practice_procedure = {
+         timeline: [fixation1, sentence, fixation2, picture, feedback],
+         timeline_variables: practicestimuli,
+         randomize_order: true
+     };
 
-        // ASSIGN A LIST 
-        var list = [1, 2, 3, 4];
-        // We do it randomly on local. You can comment this out and cognition.run automatically creates even dist of conditions
-        var CONDITION = list[Math.floor(Math.random() * list.length)]; // rando selects a number from 1-4 
-        // Selects the list off of the random number
-        var teststimuli = []
-        if (CONDITION == 1) { teststimuli = list1 }
-        else if (CONDITION == 2) { teststimuli = list2 }
-        else if (CONDITION == 3) { teststimuli = list3 }
-        else { teststimuli = list4 }
+var debrief = {
+   type: jsPsychHtmlButtonResponse,
+   stimulus: "<h3> Object-state changes during language processing </h3>  <h2>Debriefing Form</h2> <p align = 'left';> <strong>What are we trying to learn in this research?</strong> <br>The goal of this research is to understand how different features of concepts are activated during sentence processing, and whether attention to these features changes as the object is modified during the reading of the sentence.  <br> <br> <strong>Why is this important to scientists or the general public?</strong> <br> This experiment has both theoretical and practical implications. Theoretically, it will help scientists better understand the ways in which humans represent events and the objects within those events and prioritize different features of objects during sentence processing. Practically, it will help us understand how to build better event-centric models of language that would benefit AI-centric settings. <br> <br> <strong>Where can I learn more?</strong> <br> Horchak, O. V., & Garrido, M. V. (2020). Dropping bowling balls on tomatoes: Representations of object state-changes during sentence processing. Journal of Experimental Psychology: Learning, Memory, and Cognition. <br> <br> <strong>What if I have questions?</strong> <br>If you have any questions about the research study, please contact Abhilasha Kumar at: a.kumar@bowdoin.edu <br><br> Thank you for participating! </p>",
+   choices: ['click here to receive completion code'],
+    };
 
-        // Test checks. Prints list, condition, and test stimuli to the html console. 
-        // console.log("list=", list)
-        // console.log("CONDITION=", CONDITION)
-        // console.log("teststimuli=", teststimuli)
-        // console.log("picture=", picture)
+// END SCREEN
+var end_experiment = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: "Thank you for participating! <br><br> <strong> <u> This is your completion code:</strong> </u> C17TTYD2. <br> Please take note of this to receive credit.<br> <br> <strong> Click any key </strong> to end the experiment."
+}
 
-        // PLUGIN CALLS. Pass in the array of plugins to run. Remember to pass in all the plugins.
-        var experiment_procedure = {
-            timeline: [fixation1, sentence, fixation2, picture], // The events we defined
-            timeline_variables: teststimuli, // Now the random list 
-            randomize_order: true // rando order shown to participants
-        };
+// ASSIGN A LIST 
+var list = [1, 2, 3, 4];
+// We do it randomly on local. You can comment this out and cognition.run automatically creates even dist of conditions
+var CONDITION = list[Math.floor(Math.random() * list.length)]; // rando selects a number from 1-4 
+// Selects the list off of the random number
+var teststimuli = []
+if (CONDITION == 1) { teststimuli = list1 }
+else if (CONDITION == 2) { teststimuli = list2 }
+else if (CONDITION == 3) { teststimuli = list3 }
+else { teststimuli = list4 }
 
-       
+// Test checks. Prints list, condition, and test stimuli to the html console. 
+// console.log("list=", list)
+// console.log("CONDITION=", CONDITION)
+// console.log("teststimuli=", teststimuli)
+// console.log("picture=", picture)
 
-        jsPsych.run([preload, ID, welcome_screen, instructions2, practice_procedure, movetoexp, experiment_procedure, surveyinstructions1, surveyinstructions2, survey, demo_procedure, end_experiment]);
+// PLUGIN CALLS. Pass in the array of plugins to run. Remember to pass in all the plugins.
+var experiment_procedure = {
+    timeline: [fixation1, sentence, fixation2, picture], // The events we defined
+    timeline_variables: teststimuli, // Now the random list 
+    randomize_order: true // rando order shown to participants
+};
+
+var survey_procedure = {
+    timeline: [survey],
+    timeline_variables: surveytimeline,
+    randomize_order: true
+}
+
+jsPsych.run([preload, ID, welcome_screen, instructions2, practice_procedure, movetoexp, experiment_procedure, surveyinstructions1, surveyinstructions2, survey_procedure, demo_procedure, debrief, end_experiment]);
 
     </script>
 </body>
