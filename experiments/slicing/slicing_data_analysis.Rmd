@@ -20,18 +20,23 @@ library(dplyr)
 
 prolific_data <- read_csv('data/prolific_data.csv')
 sona_data <- read_csv('data/sona_data.csv') 
+prolific_data_2 <- read_csv('data/slicing_data2.csv')
 
 ncol(prolific_data)
 ncol(sona_data)
+ncol(prolific_data_2)
 
 colnames(prolific_data)
 colnames(sona_data)
+colnames(prolific_data_2)
 
-## remove extra col.
-sona_data <- sona_data %>% select(!c(sona_id))
+## remove extra col.s and problematic col.
+sona_data <- sona_data %>% select(!c(sona_id, subject_id, recorded_at))
+prolific_data <- prolific_data %>% select(!c(subject_id, recorded_at))
+prolific_data_2 <- prolific_data_2 %>% select(!c(recorded_at))
 
 ##bind prolific & sona data
-data <- rbind(prolific_data, sona_data)
+data <- rbind(prolific_data, sona_data, prolific_data_2)
 ```
 
 # basic descriptives
@@ -39,7 +44,7 @@ data <- rbind(prolific_data, sona_data)
 ## N(initial)
 data %>% pull(subject) %>% unique()
 
-## number of trials per subject
+## number of trials per subject: N(initial) = 106
 data %>% group_by(subject) %>% count()
 
 ### caution: subject 'NA'
@@ -64,7 +69,7 @@ InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 
 data2 = data %>% filter(!subject %in% InaccurateSubjects$subject) 
 
-##total participants after exclusion: N=48
+##total participants after exclusion: N = 98
 data2 %>% pull(subject) %>% unique()
 ```
 
@@ -90,7 +95,9 @@ outliers <- subject_means %>% group_by(trialcondition) %>% identify_outliers(sub
 outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
 
 subject_means <- subject_means %>% filter(!subject %in% outlier_exclusion)
+## 1 extreme outlier removed > N = 97
 
+## subject_means <- subject_means %>% filter(!subject %in% outliers)
 ```
 
 # condition means, SEM calculation
@@ -106,7 +113,7 @@ condition_meansRT <- condition_meansRT %>% mutate(SEM=sd/sqrt(n))
 ```{r}
 condition_meansRT %>% separate(trialcondition, into = c("sentence_type","picture_type"), sep="-") %>% ggplot(aes(x=picture_type, y=mean, fill=sentence_type)) + geom_col(position = "dodge") +  labs(x="picture type", y="RT (ms)", title = "RT interaction of picture and sentence type") + geom_errorbar(aes(ymin= (mean - SEM), ymax= (mean + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
 
-ggsave("slicing_graph.jpeg")
+ggsave("slicing_graph1.jpeg")
 ```
 
 ```{r}
