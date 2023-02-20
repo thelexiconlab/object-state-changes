@@ -1,0 +1,224 @@
+---
+title: "object-state-changes-and squashability"
+output:
+  html_document:
+    df_print: paged
+---
+
+# import packages
+```{r}
+library(tidyverse)
+library(ggplot2)
+library (ggthemes)
+library(rstatix)
+library(ggpubr)
+library(emmeans)
+library(dplyr)
+```
+
+# import data
+```{r}
+##read prolific and sona data
+prolific1 = read_csv("data/prolific_1.csv")
+prolific2 = read_csv("data/prolific_2.csv")
+sona_data = read_csv("data/sentence-content-judgement-sona.csv")
+
+#compare number of columns: 30 vs 31
+ncol(prolific1)
+ncol(prolific2)
+ncol(sona_data)
+
+colnames(prolific1)
+colnames(prolific2)
+colnames(sona_data)
+
+#delete extra column in sona
+sona_data <- sona_data %>% select(-c(sona_id))
+```
+
+# bind Prolific + Sona
+```{r}
+final_data = rbind(prolific1, prolific2, sona_data)
+```
+
+# basic descriptives
+```{r}
+final_data %>% pull(subject) %>% unique()
+## N(initial) = 105
+## note: R counts 'NA' as a participant 
+
+final_data %>% group_by(subject) %>% count()
+
+sona_data %>% pull(subject) %>% unique()
+
+```
+
+# exclusions
+```{r}
+##exclude filler, practice, and non-picture trials
+data <- final_data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice")))
+
+##calculate subject accuracy
+data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
+subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
+
+##exclude incorrect responses
+data <- data %>% filter(accuracy==1) 
+
+##exclude subjects with accuracy > 60%
+InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
+data <- data %>% filter(!subject %in% InaccurateSubjects$subject)
+
+##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
+data %>% pull(subject) %>% unique()
+```
+
+# transforming RT
+```{r}
+##make rt numeric
+data <- data %>% mutate(rt = as.numeric(rt))
+
+## rt histogram ----does NOT look normally distributed (positive skew)
+data %>% filter(rt <10000) %>% ggplot(aes(x=rt)) + geom_histogram(binwidth =20, fill="pink" ) + theme_economist() + labs(x="RT (ms)", y="frequency", title= "RT histogram")
+
+##rt log (base 10) transformation
+data <- data %>% mutate(log10_rt=log(rt, 10))
+
+##log10(rt) histogram
+data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) + theme_economist() + labs(x="log10(rt)", y="frequency", title= "RT histogram")
+
+##looks fairly normal now
+```
+
+# compute mean RTs
+```{r}
+##Here are each subjects' means for all 4 conditions, and then the overall means for each condition...
+
+subjectMeans<- data %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt)) 
+
+conditionMeans <- data %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt))
+```
+
+# check assumptions
+## identify and remove outliers
+```{r}
+outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
+outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
+
+#filter extreme outliers
+subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
+
+##filtering all outliers
+subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
+
+subjectMeans1 %>% pull(subject) %>% unique()
+subjectMeans2 %>% pull(subject) %>% unique()
+
+## 14 outliers, 3 extreme outliers, 3 exclusions
+```
+## check normality
+```{r}
+##shapiro test
+subjectMeans1 %>% group_by(trialcondition) %>% shapiro_test(subj_mean)
+##all have p>0.05, but squash-Smashed condition is close at p=0.052. Data satisfies normality condition?
+
+##qqplot....plots look fine, not perfect 
+subjectMeans1_split <- subjectMeans1 %>% separate(trialcondition, into=c("squashability","state"), sep="_")
+ggqqplot(subjectMeans1_split, "subj_mean", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both")
+```
+
+# conduct repeated-measures anova
+```{r}
+subjectMeans1_split <- subjectMeans1_split %>% ungroup() 
+
+RManova <- anova_test(data = subjectMeans1_split, dv=subj_mean, wid = subject, within = c(squashability, state), effect.size = "pes")
+get_anova_table(RManova)
+
+##no significant main effect for squashability
+##significant main effect for state, significant interaction
+##no sphericity violation
+```
+
+# conduct post-hoc tests (if needed)
+```{r}
+##decomposing significant interaction
+subjectMeans1_split %>% group_by(squashability) %>% anova_test(dv=subj_mean, wid = subject, within = state, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni")
+
+#### squashable: p.adj = 1.000
+#### unsquashable: p.adj = .00000155 *, partial eta-squared=0.207 (large effect)
+
+
+#### The RT for the unsquashable objects was significantly different depending on the state of the target object (smashed vs normal), but there was no significant difference found for squashable objects when comparing thee reaction times for normal vs smashed targets. This pattern in the the graph below shows that RTs for unsquashable objects were significantly slower when the target object was smashed compared to when they were normal. This suggests that the participants activated the normal but not the smashed state for the target object when primed by the sentence, despite the fact that a bowling ball was being dropped on it, causing a slower RT than when the normal object was shown. For the squashable objects, the data interpreted in line with the Horachak & Garrido study suggests that both the smashed and unsmashed sates were activated when primed by the bowling ball sentences, resulting in no difference between reaction times when a smashed vs normal image of thw squashable object was shown.
+```
+
+# visualize log and raw RT pattern
+```{r}
+
+conditionMeans <- subjectMeans1 %>% group_by(trialcondition) %>% summarise(rawRTmean=mean(subj_meanRaw), sd_r=sd(subj_meanRaw), LogRTmean=mean(subj_mean), sd_L=sd(subj_mean))
+
+## SEM calculations
+
+n= subjectMeans1 %>% group_by(subject) %>% n_groups() 
+
+conditionMeans <- conditionMeans %>% mutate(SEM_r=sd_r/sqrt(n), SEM_L=sd_L/sqrt(n))
+
+##graphs
+
+conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_") %>% ggplot(aes(x=squashability, y=rawRTmean, fill=state)) + geom_col(position = "dodge") +  labs(x="object squashability", y="RT (ms)", title = "RT interaction of object state and squashability") + geom_errorbar(aes(ymin= (rawRTmean - SEM_r), ymax= (rawRTmean + SEM_r)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
+   
+
+conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_")  %>% ggplot(aes(x=squashability, y=LogRTmean, fill=state)) + geom_col(position = "dodge") + labs(x="object squashability", y="log10(RT)", title = "log10(RT) interaction of object state and squashability") + geom_errorbar(aes(ymin= (LogRTmean - SEM_L), ymax=(LogRTmean + SEM_L)), width=.25, position=position_dodge(width=0.9))  + theme_economist_white() + scale_fill_economist()
+   
+
+
+```
+## Demographic Info
+```{r}
+d = final_data
+demo = d %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
+  separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
+
+
+age = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo2) %>%
+  mutate(age = as.numeric(gsub("[^[:digit:] ]", "", demo2)))
+
+age %>% summarise(mean_age = mean(age))
+
+race = demo %>% filter(demo1 == "{\"Race\"") %>% select(demo2)
+
+race %>% group_by(demo2) %>% count()
+
+gender_education = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo3) %>%
+  separate(demo3, into = c("gender", "education"), sep = ",")  %>%
+  mutate(gender = tolower(gender),
+         gender = gsub("[[:space:]]", "", gender))
+
+gender_education %>% group_by(gender) %>%
+  count()
+
+gender_education %>% group_by(education) %>%
+  count()
+
+first_lang = demo %>% filter(demo1 == "{\"English\"") %>% select(demo2)
+first_lang %>% group_by(demo2) %>% count()
+```
+
+```{r}
+
+"18-19" =(age %>% filter(c(age) <= 19 & c(age) >= 18) %>% count())
+"20-29" = (age %>% filter(c(age) <= 29 & c(age) >= 20) %>% count())
+"30-39" = (age %>% filter(c(age) <= 39 & c(age) >= 30) %>% count())
+"40-49" = age %>% filter(c(age) <= 49 & c(age) >= 40) %>% count()
+"50-59" = (age %>% filter(c(age) <= 59 & c(age) >= 50) %>% count())
+"60+" = (age %>% filter(c(age) >= 60) %>% count())
+```
+
+```{r}
+age_data %>% ggplot(aes(x=age, y=n)) + geom_col()
+```
+
+```{r}
+subjectMeansRawRT2 %>% separate(trialcondition, into=c("squashability","state"), sep="_") %>% group_by(state) %>% summarise(rawRTmean=mean(subj_meanRaw), sd=sd(subj_meanRaw))
+```
+
+
