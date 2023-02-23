@@ -1788,22 +1788,10 @@ library(dplyr)</code></pre>
 <h1>import data and organize</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSByZWFkX2NzdihcInN1cnZleV9kYXRhLmNzdlwiKVxuYGBgIn0= -->
-<pre class="r"><code>data &lt;- read_csv(&quot;survey_data.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTkxNjggQ29sdW1uczogMzBcbuKUgOKUgCBDb2x1bW4gc3BlY2lmaWNhdGlvbiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIBcbkRlbGltaXRlcjogXCIsXCJcbmNociAoMTkpOiBmYWlsZWRfaW1hZ2VzLCBmYWlsZWRfYXVkaW8sIGZhaWxlZF92aWRlbywgdHlwZW9mdHJpYWwsIHRyaWFsX3R5cGUsIGludGVybmFsX25vZGVfaWQsIHJlY29yZGVkX2F0LCBzb3VyY2VfY29kZV92ZXJzaW9uLCB1c2VyX2FnZW50LCBkZS4uLlxuZGJsICAoNSk6IHN1YmplY3QsIHRyaWFsX2luZGV4LCB0aW1lX2VsYXBzZWQsIHJ1bl9pZCwgY29uZGl0aW9uXG5sZ2wgICg2KTogc3VjY2VzcywgdGltZW91dCwgaXAsIEV4cGVyaW1lbnQsIGxpc3RfbnVtYmVyLCBjb3JyZWN0XG5cbuKEuSBVc2UgYHNwZWMoKWAgdG8gcmV0cmlldmUgdGhlIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb24gZm9yIHRoaXMgZGF0YS5cbuKEuSBTcGVjaWZ5IHRoZSBjb2x1bW4gdHlwZXMgb3Igc2V0IGBzaG93X2NvbF90eXBlcyA9IEZBTFNFYCB0byBxdWlldCB0aGlzIG1lc3NhZ2UuXG4ifQ== -->
-<pre><code>Rows: 19168 Columns: 30
-── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr (19): failed_images, failed_audio, failed_video, typeoftrial, trial_type, internal_node_id, recorded_at, source_code_version, user_agent, de...
-dbl  (5): subject, trial_index, time_elapsed, run_id, condition
-lgl  (6): success, timeout, ip, Experiment, list_number, correct
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSByZWFkX2NzdihcInN1cnZleV9kYXRhLmNzdlwiKVxuXG5kYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih0eXBlb2Z0cmlhbCA9PSBcInN1cnZleVwiKVxuXG5kYXRhIDwtIGRhdGEgJT4lIHNlbGVjdCg2LCA3LCAyMywgMjQsIDI3KVxuXG5kYXRhIDwtIGRhdGEgJT4lIHNlcGFyYXRlKHRyaWFsY29uZGl0aW9uLCBpbnRvID1jKFwiY29uZGl0aW9uXCIsIFwiaXRlbVwiKSwgc2VwPVwiX1wiKVxuXG5kYXRhIDwtIGRhdGEgJT4lIHNlcGFyYXRlKHJlc3BvbnNlLCBpbnRvID0gYyhcImxhYmVsXCIsIFwicmVzcG9uc2VcIiksIHNlcCA9IFwiOlwiKVxuXG5kYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShyZXNwb25zZT1wYXJzZV9udW1iZXIocmVzcG9uc2UpKVxuXG5kYXRhIDwtIGRhdGEgJT4lIHNlbGVjdCghYygxLDQpKVxuXG5kYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShydCA9IGFzLm51bWVyaWMocnQpKVxuXG5kYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShcImxvZ1JUXCIgPSBsb2cxMChydCkpXG5cbmRhdGEgPC0gZGF0YSAlPiUgbXV0YXRlKGl0ZW0gPSBhcy5jaGFyYWN0ZXIoaXRlbSkpXG5cbmBgYCJ9 -->
+<pre class="r"><code>data &lt;- read_csv(&quot;survey_data.csv&quot;)
 
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSBkYXRhICU+JSBmaWx0ZXIodHlwZW9mdHJpYWwgPT0gXCJzdXJ2ZXlcIilcblxuZGF0YSA8LSBkYXRhICU+JSBzZWxlY3QoNiwgNywgMjMsIDI0LCAyNylcblxuZGF0YSA8LSBkYXRhICU+JSBzZXBhcmF0ZSh0cmlhbGNvbmRpdGlvbiwgaW50byA9YyhcImNvbmRpdGlvblwiLCBcIml0ZW1cIiksIHNlcD1cIl9cIilcblxuZGF0YSA8LSBkYXRhICU+JSBzZXBhcmF0ZShyZXNwb25zZSwgaW50byA9IGMoXCJsYWJlbFwiLCBcInJlc3BvbnNlXCIpLCBzZXAgPSBcIjpcIilcblxuZGF0YSA8LSBkYXRhICU+JSBtdXRhdGUocmVzcG9uc2U9cGFyc2VfbnVtYmVyKHJlc3BvbnNlKSlcblxuZGF0YSA8LSBkYXRhICU+JSBzZWxlY3QoIWMoMSw0KSlcblxuZGF0YSA8LSBkYXRhICU+JSBtdXRhdGUocnQgPSBhcy5udW1lcmljKHJ0KSlcblxuZGF0YSA8LSBkYXRhICU+JSBtdXRhdGUoXCJsb2dSVFwiID0gbG9nMTAocnQpKVxuXG5kYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShpdGVtID0gYXMuY2hhcmFjdGVyKGl0ZW0pKVxuYGBgIn0= -->
-<pre class="r"><code>data &lt;- data %&gt;% filter(typeoftrial == &quot;survey&quot;)
+data &lt;- data %&gt;% filter(typeoftrial == &quot;survey&quot;)
 
 data &lt;- data %&gt;% select(6, 7, 23, 24, 27)
 
@@ -1819,93 +1807,7 @@ data &lt;- data %&gt;% mutate(rt = as.numeric(rt))
 
 data &lt;- data %&gt;% mutate(&quot;logRT&quot; = log10(rt))
 
-data &lt;- data %&gt;% mutate(item = as.character(item))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSAlPiUgcHVsbChzdWJqZWN0KSAlPiUgdW5pcXVlKClcbmBgYCJ9 -->
-<pre class="r"><code>data %&gt;% pull(subject) %&gt;% unique()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSA4ODQ3NCA4OTc3NiA5NTk3NCA0NjU3OSA5MDkxOSAyNTM4MiA4NDYzOCA0NDU2NCA5NDUxOCA1NjIyOSAgNjM2MSAzNjE0NiA4NDU0OSA2OTY0NiA1ODM1NiA2ODU2NyA1MTY1MyAzMjgyMCA3NjkxMCA0NzE4NyA0MDgyNiA2NDM2NCAyNzEzMCA1NjEwNFxuWzI1XSAzMTkzMCAzNzgyMCA4NzI0MiAgMTM2MCA5ODA3OCA0NzYzMyAzMTgxMCAyMDQ3MyA3NjM2MCA2OTg3NiAxOTI0NiAgMzE1MyAyODc2OSA3MTI2MSA3NTQ3MyA1Nzg1NiA4NDkyOSA4ODU0OCAzNTE2OCA0NTcxMSAxMTM0OCA3NDUzMyA3MzkzMCA1Nzc2MVxuWzQ5XSA1MTk0MCAyMDYzOCAzMjg2NSA2MTg0MSA4MTY1OCA0OTk4NFxuIn0= -->
-<pre><code> [1] 88474 89776 95974 46579 90919 25382 84638 44564 94518 56229  6361 36146 84549 69646 58356 68567 51653 32820 76910 47187 40826 64364 27130 56104
-[25] 31930 37820 87242  1360 98078 47633 31810 20473 76360 69876 19246  3153 28769 71261 75473 57856 84929 88548 35168 45711 11348 74533 73930 57761
-[49] 51940 20638 32865 61841 81658 49984</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgTiA9IDU0XG5cbmRhdGEgPC0gZGF0YSAlPiUgdW5ncm91cCgpXG5zdWJqX21lYW5zIDwtIGRhdGEgJT4lIGdyb3VwX2J5KHN1YmplY3QsIGNvbmRpdGlvbikgJT4lIHN1bW1hcmlzZShtZWFuID0gbWVhbihyZXNwb25zZSkpXG5gYGAifQ== -->
-<pre class="r"><code>## N = 54
-
-data &lt;- data %&gt;% ungroup()
-subj_means &lt;- data %&gt;% group_by(subject, condition) %&gt;% summarise(mean = mean(response))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3N1YmplY3QnLiBZb3UgY2FuIG92ZXJyaWRlIHVzaW5nIHRoZSBgLmdyb3Vwc2AgYXJndW1lbnQuXG4ifQ== -->
-<pre><code>`summarise()` has grouped output by &#39;subject&#39;. You can override using the `.groups` argument.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="group-differences" class="section level1">
-<h1>Group Differences</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YV9sb25nIDwtIGRhdGFfbG9uZyAlPiUgbXV0YXRlKHZhbHVlID0gYXMubnVtZXJpYyh2YWx1ZSkpXG5cbiMjc3ViamVjdCBhbmQgY29uZGl0aW9uIG1lYW5zLCBzZCwgc2VtXG5zdWJqZWN0X21lYW5zIDwtIGRhdGFfbG9uZyAlPiUgZ3JvdXBfYnkoUmVzcG9uc2VJZCwgY29uZGl0aW9uKSAlPiUgc3VtbWFyaXNlKHN1YmpfbWVhbiA9IG1lYW4odmFsdWUpKVxuXG5jb25kaXRpb25fZGF0YSA8LSBzdWJqZWN0X21lYW5zICU+JSBncm91cF9ieShjb25kaXRpb24pICU+JSBzdW1tYXJpc2UobWVhbl9yZXNwb25zZSA9IG1lYW4oc3Vial9tZWFuKSwgc2Q9c2Qoc3Vial9tZWFuKSlcbm49IHN1YmplY3RfbWVhbnMgJT4lIGdyb3VwX2J5KFJlc3BvbnNlSWQpICU+JSBuX2dyb3VwcygpIFxuY29uZGl0aW9uX2RhdGEgPC0gY29uZGl0aW9uX2RhdGEgJT4lIG11dGF0ZShTRU0gPSBzZC9zcXJ0KG4pKVxuXG4jIyBQbG90IGFuZCBBTk9WQVxuY29uZGl0aW9uX2RhdGEgJT4lICBnZ3Bsb3QoYWVzKHg9Y29uZGl0aW9uLCB5PW1lYW5fcmVzcG9uc2UpKSArIGdlb21fY29sKHBvc2l0aW9uID0gXCJkb2RnZVwiKSArICBsYWJzKHg9XCJvYmplY3Qgc3F1YXNoYWJpbGl0eVwiLCB5PVwic3F1YXNoYWJsZSByYXRpbmcgKDEtbm90IGF0IGFsbCAtLSA1LWV4dHJlbWVseSlcIiwgdGl0bGUgPSBcIlNxdWFzaGFibGUgcmF0aW5ncyBvZiBleHBlcmltZW50YWwgaXRlbSBjb25kaXRpb25zXCIpICsgZ2VvbV9lcnJvcmJhcihhZXMoeW1pbj0gKG1lYW5fcmVzcG9uc2UgLSBTRU0pLCB5bWF4PSAobWVhbl9yZXNwb25zZSArIFNFTSkpLCB3aWR0aD0uMjUsIHBvc2l0aW9uPXBvc2l0aW9uX2RvZGdlKHdpZHRoPTAuOSkpICsgdGhlbWVfZWNvbm9taXN0X3doaXRlKCkgKyBzY2FsZV9maWxsX2Vjb25vbWlzdCgpXG5cbnN1YmplY3RfbWVhbnMgJT4lIGdyb3VwX2J5KGNvbmRpdGlvbikgJT4lIHNoYXBpcm9fdGVzdChzdWJqX21lYW4pXG5cbnN1YmplY3Rfb3V0bGllcnMgPC0gc3ViamVjdF9tZWFucyAlPiUgZ3JvdXBfYnkoY29uZGl0aW9uKSAlPiUgaWRlbnRpZnlfb3V0bGllcnMoc3Vial9tZWFuKVxuZXh0cmVtZV9zdWJqZWN0X291dGxpZXJzIDwtIHN1YmplY3Rfb3V0bGllcnMgJT4lIGZpbHRlcihpcy5leHRyZW1lPT1cIlRSVUVcIilcbnN1YmplY3RzX3RyaW1tZWQgPC0gc3ViamVjdF9tZWFucyAlPiUgZmlsdGVyKCFSZXNwb25zZUlkICVpbiUgZXh0cmVtZV9vdXRsaWVycylcblxuc3ViamVjdHNfdHJpbW1lZCA8LSBzdWJqZWN0c190cmltbWVkICU+JSB1bmdyb3VwKCkgXG5cblxuZ2V0X2Fub3ZhX3RhYmxlKFJNYW5vdmEpXG5gYGAifQ== -->
-<pre class="r"><code>data_long &lt;- data_long %&gt;% mutate(value = as.numeric(value))
-
-##subject and condition means, sd, sem
-subject_means &lt;- data_long %&gt;% group_by(ResponseId, condition) %&gt;% summarise(subj_mean = mean(value))
-
-condition_data &lt;- subject_means %&gt;% group_by(condition) %&gt;% summarise(mean_response = mean(subj_mean), sd=sd(subj_mean))
-n= subject_means %&gt;% group_by(ResponseId) %&gt;% n_groups() 
-condition_data &lt;- condition_data %&gt;% mutate(SEM = sd/sqrt(n))
-
-## Plot and ANOVA
-condition_data %&gt;%  ggplot(aes(x=condition, y=mean_response)) + geom_col(position = &quot;dodge&quot;) +  labs(x=&quot;object squashability&quot;, y=&quot;squashable rating (1-not at all -- 5-extremely)&quot;, title = &quot;Squashable ratings of experimental item conditions&quot;) + geom_errorbar(aes(ymin= (mean_response - SEM), ymax= (mean_response + SEM)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
-
-subject_means %&gt;% group_by(condition) %&gt;% shapiro_test(subj_mean)
-
-subject_outliers &lt;- subject_means %&gt;% group_by(condition) %&gt;% identify_outliers(subj_mean)
-extreme_subject_outliers &lt;- subject_outliers %&gt;% filter(is.extreme==&quot;TRUE&quot;)
-subjects_trimmed &lt;- subject_means %&gt;% filter(!ResponseId %in% extreme_outliers)
-
-subjects_trimmed &lt;- subjects_trimmed %&gt;% ungroup() 
-
-
-get_anova_table(RManova)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="t-tests" class="section level1">
-<h1>t-tests</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVSA8LSBkYXRhX2xvbmcgJT4lIGZpbHRlcihjb25kaXRpb24gPT0gXCJVXCIpXG5TIDwtIGRhdGFfbG9uZyAlPiUgZmlsdGVyKGNvbmRpdGlvbiA9PSBcIlNcIilcblxuVWl0ZW1fbWVhbiA8LSBVICU+JSBncm91cF9ieShpdGVtKSAlPiUgc3VtbWFyaXplKG1lYW5faXRlbSA9IG1lYW4odmFsdWUpKVxuU2l0ZW1fbWVhbiA8LSBTICU+JSBncm91cF9ieShpdGVtKSAlPiUgc3VtbWFyaXplKG1lYW5faXRlbSA9IG1lYW4odmFsdWUpKVxuXG5zaGFwaXJvLnRlc3QoVWl0ZW1fbWVhbiRtZWFuX2l0ZW0pXG5zaGFwaXJvLnRlc3QoU2l0ZW1fbWVhbiRtZWFuX2l0ZW0pXG5cbmdncXFwbG90KFVpdGVtX21lYW4kbWVhbl9pdGVtLCB5bGFiID0gXCJ2YWx1ZVwiLFxuICAgICAgICAgZ2d0aGVtZSA9IHRoZW1lX21pbmltYWwoKSlcbmdncXFwbG90KFNpdGVtX21lYW4kbWVhbl9pdGVtLCB5bGFiID0gXCJ2YWx1ZVwiLFxuICAgICAgICAgZ2d0aGVtZSA9IHRoZW1lX21pbmltYWwoKSlcblxudXR0ZXN0IDwtIHQudGVzdChVaXRlbV9tZWFuJG1lYW5faXRlbSwgbXUgPSAzLCBhbHRlcm5hdGl2ZSA9IFwibGVzc1wiKVxuc3R0ZXN0IDwtIHQudGVzdChTaXRlbV9tZWFuJG1lYW5faXRlbSwgbXUgPSAzLCBhbHRlcm5hdGl2ZSA9IFwiZ3JlYXRlclwiKVxuXG51dHRlc3RcbnN0dGVzdFxuXG5iZWZvcmUgPC0gVWl0ZW1fbWVhbiRtZWFuX2l0ZW1cbmFmdGVyIDwtIFNpdGVtX21lYW4kbWVhbl9pdGVtXG5cblV4U3R0ZXN0ID0gdC50ZXN0KGJlZm9yZSxhZnRlciwgcGFpcmVkID0gVFJVRSlcblV4U3R0ZXN0XG5cblxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>U &lt;- data_long %&gt;% filter(condition == &quot;U&quot;)
-S &lt;- data_long %&gt;% filter(condition == &quot;S&quot;)
-
-Uitem_mean &lt;- U %&gt;% group_by(item) %&gt;% summarize(mean_item = mean(value))
-Sitem_mean &lt;- S %&gt;% group_by(item) %&gt;% summarize(mean_item = mean(value))
-
-shapiro.test(Uitem_mean$mean_item)
-shapiro.test(Sitem_mean$mean_item)
-
-ggqqplot(Uitem_mean$mean_item, ylab = &quot;value&quot;,
-         ggtheme = theme_minimal())
-ggqqplot(Sitem_mean$mean_item, ylab = &quot;value&quot;,
-         ggtheme = theme_minimal())
-
-uttest &lt;- t.test(Uitem_mean$mean_item, mu = 3, alternative = &quot;less&quot;)
-sttest &lt;- t.test(Sitem_mean$mean_item, mu = 3, alternative = &quot;greater&quot;)
-
-uttest
-sttest
-
-before &lt;- Uitem_mean$mean_item
-after &lt;- Sitem_mean$mean_item
-
-UxSttest = t.test(before,after, paired = TRUE)
-UxSttest
+data &lt;- data %&gt;% mutate(item = as.character(item))
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
@@ -1913,7 +1815,7 @@ UxSttest
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBsb2FkIHBhY2thZ2VzCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5IChnZ3RoZW1lcykKbGlicmFyeShyc3RhdGl4KQpsaWJyYXJ5KGdncHVicikKbGlicmFyeShlbW1lYW5zKQpsaWJyYXJ5KGRwbHlyKQpgYGAKCiMgaW1wb3J0IGRhdGEgYW5kIG9yZ2FuaXplCmBgYHtyfQpkYXRhIDwtIHJlYWRfY3N2KCJzdXJ2ZXlfZGF0YS5jc3YiKQoKZGF0YSA8LSBkYXRhICU+JSBmaWx0ZXIodHlwZW9mdHJpYWwgPT0gInN1cnZleSIpCgpkYXRhIDwtIGRhdGEgJT4lIHNlbGVjdCg2LCA3LCAyMywgMjQsIDI3KQoKZGF0YSA8LSBkYXRhICU+JSBzZXBhcmF0ZSh0cmlhbGNvbmRpdGlvbiwgaW50byA9YygiY29uZGl0aW9uIiwgIml0ZW0iKSwgc2VwPSJfIikKCmRhdGEgPC0gZGF0YSAlPiUgc2VwYXJhdGUocmVzcG9uc2UsIGludG8gPSBjKCJsYWJlbCIsICJyZXNwb25zZSIpLCBzZXAgPSAiOiIpCgpkYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShyZXNwb25zZT1wYXJzZV9udW1iZXIocmVzcG9uc2UpKQoKZGF0YSA8LSBkYXRhICU+JSBzZWxlY3QoIWMoMSw0KSkKCmRhdGEgPC0gZGF0YSAlPiUgbXV0YXRlKHJ0ID0gYXMubnVtZXJpYyhydCkpCgpkYXRhIDwtIGRhdGEgJT4lIG11dGF0ZSgibG9nUlQiID0gbG9nMTAocnQpKQoKZGF0YSA8LSBkYXRhICU+JSBtdXRhdGUoaXRlbSA9IGFzLmNoYXJhY3RlcihpdGVtKSkKYGBgCgpgYGB7cn0KZGF0YSAlPiUgcHVsbChzdWJqZWN0KSAlPiUgdW5pcXVlKCkKCiMjIE4gPSA1NAoKZGF0YSA8LSBkYXRhICU+JSB1bmdyb3VwKCkKc3Vial9tZWFucyA8LSBkYXRhICU+JSBncm91cF9ieShzdWJqZWN0LCBjb25kaXRpb24pICU+JSBzdW1tYXJpc2UobWVhbiA9IG1lYW4ocmVzcG9uc2UpKQpgYGAKCgoKCgoKCgoKCgoKIyBHcm91cCBEaWZmZXJlbmNlcwpgYGB7cn0KZGF0YV9sb25nIDwtIGRhdGFfbG9uZyAlPiUgbXV0YXRlKHZhbHVlID0gYXMubnVtZXJpYyh2YWx1ZSkpCgojI3N1YmplY3QgYW5kIGNvbmRpdGlvbiBtZWFucywgc2QsIHNlbQpzdWJqZWN0X21lYW5zIDwtIGRhdGFfbG9uZyAlPiUgZ3JvdXBfYnkoUmVzcG9uc2VJZCwgY29uZGl0aW9uKSAlPiUgc3VtbWFyaXNlKHN1YmpfbWVhbiA9IG1lYW4odmFsdWUpKQoKY29uZGl0aW9uX2RhdGEgPC0gc3ViamVjdF9tZWFucyAlPiUgZ3JvdXBfYnkoY29uZGl0aW9uKSAlPiUgc3VtbWFyaXNlKG1lYW5fcmVzcG9uc2UgPSBtZWFuKHN1YmpfbWVhbiksIHNkPXNkKHN1YmpfbWVhbikpCm49IHN1YmplY3RfbWVhbnMgJT4lIGdyb3VwX2J5KFJlc3BvbnNlSWQpICU+JSBuX2dyb3VwcygpIApjb25kaXRpb25fZGF0YSA8LSBjb25kaXRpb25fZGF0YSAlPiUgbXV0YXRlKFNFTSA9IHNkL3NxcnQobikpCgojIyBQbG90IGFuZCBBTk9WQQpjb25kaXRpb25fZGF0YSAlPiUgIGdncGxvdChhZXMoeD1jb25kaXRpb24sIHk9bWVhbl9yZXNwb25zZSkpICsgZ2VvbV9jb2wocG9zaXRpb24gPSAiZG9kZ2UiKSArICBsYWJzKHg9Im9iamVjdCBzcXVhc2hhYmlsaXR5IiwgeT0ic3F1YXNoYWJsZSByYXRpbmcgKDEtbm90IGF0IGFsbCAtLSA1LWV4dHJlbWVseSkiLCB0aXRsZSA9ICJTcXVhc2hhYmxlIHJhdGluZ3Mgb2YgZXhwZXJpbWVudGFsIGl0ZW0gY29uZGl0aW9ucyIpICsgZ2VvbV9lcnJvcmJhcihhZXMoeW1pbj0gKG1lYW5fcmVzcG9uc2UgLSBTRU0pLCB5bWF4PSAobWVhbl9yZXNwb25zZSArIFNFTSkpLCB3aWR0aD0uMjUsIHBvc2l0aW9uPXBvc2l0aW9uX2RvZGdlKHdpZHRoPTAuOSkpICsgdGhlbWVfZWNvbm9taXN0X3doaXRlKCkgKyBzY2FsZV9maWxsX2Vjb25vbWlzdCgpCgpzdWJqZWN0X21lYW5zICU+JSBncm91cF9ieShjb25kaXRpb24pICU+JSBzaGFwaXJvX3Rlc3Qoc3Vial9tZWFuKQoKc3ViamVjdF9vdXRsaWVycyA8LSBzdWJqZWN0X21lYW5zICU+JSBncm91cF9ieShjb25kaXRpb24pICU+JSBpZGVudGlmeV9vdXRsaWVycyhzdWJqX21lYW4pCmV4dHJlbWVfc3ViamVjdF9vdXRsaWVycyA8LSBzdWJqZWN0X291dGxpZXJzICU+JSBmaWx0ZXIoaXMuZXh0cmVtZT09IlRSVUUiKQpzdWJqZWN0c190cmltbWVkIDwtIHN1YmplY3RfbWVhbnMgJT4lIGZpbHRlcighUmVzcG9uc2VJZCAlaW4lIGV4dHJlbWVfb3V0bGllcnMpCgpzdWJqZWN0c190cmltbWVkIDwtIHN1YmplY3RzX3RyaW1tZWQgJT4lIHVuZ3JvdXAoKSAKCgpnZXRfYW5vdmFfdGFibGUoUk1hbm92YSkKYGBgCgojIHQtdGVzdHMKYGBge3J9ClUgPC0gZGF0YV9sb25nICU+JSBmaWx0ZXIoY29uZGl0aW9uID09ICJVIikKUyA8LSBkYXRhX2xvbmcgJT4lIGZpbHRlcihjb25kaXRpb24gPT0gIlMiKQoKVWl0ZW1fbWVhbiA8LSBVICU+JSBncm91cF9ieShpdGVtKSAlPiUgc3VtbWFyaXplKG1lYW5faXRlbSA9IG1lYW4odmFsdWUpKQpTaXRlbV9tZWFuIDwtIFMgJT4lIGdyb3VwX2J5KGl0ZW0pICU+JSBzdW1tYXJpemUobWVhbl9pdGVtID0gbWVhbih2YWx1ZSkpCgpzaGFwaXJvLnRlc3QoVWl0ZW1fbWVhbiRtZWFuX2l0ZW0pCnNoYXBpcm8udGVzdChTaXRlbV9tZWFuJG1lYW5faXRlbSkKCmdncXFwbG90KFVpdGVtX21lYW4kbWVhbl9pdGVtLCB5bGFiID0gInZhbHVlIiwKICAgICAgICAgZ2d0aGVtZSA9IHRoZW1lX21pbmltYWwoKSkKZ2dxcXBsb3QoU2l0ZW1fbWVhbiRtZWFuX2l0ZW0sIHlsYWIgPSAidmFsdWUiLAogICAgICAgICBnZ3RoZW1lID0gdGhlbWVfbWluaW1hbCgpKQoKdXR0ZXN0IDwtIHQudGVzdChVaXRlbV9tZWFuJG1lYW5faXRlbSwgbXUgPSAzLCBhbHRlcm5hdGl2ZSA9ICJsZXNzIikKc3R0ZXN0IDwtIHQudGVzdChTaXRlbV9tZWFuJG1lYW5faXRlbSwgbXUgPSAzLCBhbHRlcm5hdGl2ZSA9ICJncmVhdGVyIikKCnV0dGVzdApzdHRlc3QKCmJlZm9yZSA8LSBVaXRlbV9tZWFuJG1lYW5faXRlbQphZnRlciA8LSBTaXRlbV9tZWFuJG1lYW5faXRlbQoKVXhTdHRlc3QgPSB0LnRlc3QoYmVmb3JlLGFmdGVyLCBwYWlyZWQgPSBUUlVFKQpVeFN0dGVzdAoKCgoKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBsb2FkIHBhY2thZ2VzCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5IChnZ3RoZW1lcykKbGlicmFyeShyc3RhdGl4KQpsaWJyYXJ5KGdncHVicikKbGlicmFyeShlbW1lYW5zKQpsaWJyYXJ5KGRwbHlyKQpgYGAKCiMgaW1wb3J0IGRhdGEgYW5kIG9yZ2FuaXplCmBgYHtyfQpkYXRhIDwtIHJlYWRfY3N2KCJzdXJ2ZXlfZGF0YS5jc3YiKQoKZGF0YSA8LSBkYXRhICU+JSBmaWx0ZXIodHlwZW9mdHJpYWwgPT0gInN1cnZleSIpCgpkYXRhIDwtIGRhdGEgJT4lIHNlbGVjdCg2LCA3LCAyMywgMjQsIDI3KQoKZGF0YSA8LSBkYXRhICU+JSBzZXBhcmF0ZSh0cmlhbGNvbmRpdGlvbiwgaW50byA9YygiY29uZGl0aW9uIiwgIml0ZW0iKSwgc2VwPSJfIikKCmRhdGEgPC0gZGF0YSAlPiUgc2VwYXJhdGUocmVzcG9uc2UsIGludG8gPSBjKCJsYWJlbCIsICJyZXNwb25zZSIpLCBzZXAgPSAiOiIpCgpkYXRhIDwtIGRhdGEgJT4lIG11dGF0ZShyZXNwb25zZT1wYXJzZV9udW1iZXIocmVzcG9uc2UpKQoKZGF0YSA8LSBkYXRhICU+JSBzZWxlY3QoIWMoMSw0KSkKCmRhdGEgPC0gZGF0YSAlPiUgbXV0YXRlKHJ0ID0gYXMubnVtZXJpYyhydCkpCgpkYXRhIDwtIGRhdGEgJT4lIG11dGF0ZSgibG9nUlQiID0gbG9nMTAocnQpKQoKZGF0YSA8LSBkYXRhICU+JSBtdXRhdGUoaXRlbSA9IGFzLmNoYXJhY3RlcihpdGVtKSkKCmBgYAoKCg==</div>
 
 
 
