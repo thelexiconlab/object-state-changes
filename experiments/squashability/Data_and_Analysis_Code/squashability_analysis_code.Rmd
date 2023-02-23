@@ -1,8 +1,10 @@
 ---
 title: "object-state-changes-and squashability"
 output:
+  word_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 # import packages
@@ -213,12 +215,7 @@ first_lang %>% group_by(demo2) %>% count()
 "60+" = (age %>% filter(c(age) >= 60) %>% count())
 ```
 
-```{r}
-age_data %>% ggplot(aes(x=age, y=n)) + geom_col()
-```
 
-```{r}
-subjectMeansRawRT2 %>% separate(trialcondition, into=c("squashability","state"), sep="_") %>% group_by(state) %>% summarise(rawRTmean=mean(subj_meanRaw), sd=sd(subj_meanRaw))
-```
+
 
 

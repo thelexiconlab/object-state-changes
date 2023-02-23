@@ -14,41 +14,48 @@ library(emmeans)
 library(dplyr)
 ```
 
-# import data
+# import data and organize
 ```{r}
+data <- read_csv("survey_data.csv")
 
-###change to actual data
-data <- read_csv("Normative_Pilot_Data.csv")
+data <- data %>% filter(typeoftrial == "survey")
+
+data <- data %>% select(6, 7, 23, 24, 27)
+
+data <- data %>% separate(trialcondition, into =c("condition", "item"), sep="_")
+
+data <- data %>% separate(response, into = c("label", "response"), sep = ":")
+
+data <- data %>% mutate(response=parse_number(response))
+
+data <- data %>% select(!c(1,4))
+
+data <- data %>% mutate(rt = as.numeric(rt))
+
+data <- data %>% mutate("logRT" = log10(rt))
+
+data <- data %>% mutate(item = as.character(item))
 ```
 
-# tidy data
 ```{r}
-data <- data %>% filter(Finished==1) %>% select(c(6,7,9,16,18:49))
+data %>% pull(subject) %>% unique()
 
-####change this for the actual data
-data <- data %>% filter(DistributionChannel=="preview")
+## N = 54
 
-data <- data %>% rename(duration = `Duration (in seconds)`)
+data <- data %>% ungroup()
+subj_means <- data %>% group_by(subject, condition) %>% summarise(mean = mean(response))
 ```
 
-# survey duration outliers
-```{r}
-data <- data %>% mutate(duration = as.numeric(duration))
 
-outliers <- data %>% identify_outliers(duration)
-extreme_outliers <- outliers %>% filter(is.extreme=="TRUE")
-data_trimmed <- data %>% filter(!ResponseId %in% extreme_outliers)
-```
 
-# make data long
-```{r}
-data_long <- data_trimmed %>% select(-c(1,2,4)) %>% pivot_longer(names_to = "condition...item", cols = 'U...18':'F...49')
-```
 
-# create condition column
-```{r}
-data_long <- data_long %>% separate(condition...item, into=c("condition","item") )
-```
+
+
+
+
+
+
+
 
 # Group Differences
 ```{r}
