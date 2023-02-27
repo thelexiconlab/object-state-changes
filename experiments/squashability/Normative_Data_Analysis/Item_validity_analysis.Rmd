@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
 output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
 
 # load packages
@@ -16,26 +18,58 @@ library(dplyr)
 
 # import data and organize
 ```{r}
-data <- read_csv("survey_data.csv")
-
-data <- data %>% filter(typeoftrial == "survey")
-
-data <- data %>% select(6, 7, 23, 24, 27)
-
-data <- data %>% separate(trialcondition, into =c("condition", "item"), sep="_")
-
-data <- data %>% separate(response, into = c("label", "response"), sep = ":")
-
-data <- data %>% mutate(response=parse_number(response))
-
-data <- data %>% select(!c(1,4))
-
-data <- data %>% mutate(rt = as.numeric(rt))
-
-data <- data %>% mutate("logRT" = log10(rt))
-
-data <- data %>% mutate(item = as.character(item))
+data <- read_csv("survey_data.csv") %>% filter(typeoftrial == "survey") %>% 
+  separate(trialcondition, into =c("condition", "item"), sep="_") %>%
+  separate(response, into = c("label", "response"), sep = ":") %>%
+  mutate(response=parse_number(response)) %>%
+  mutate(rt = as.numeric(rt))%>%
+  mutate("logRT" = log10(rt)) %>%
+  mutate(item = as.character(item))%>%
+  mutate(condition = fct_recode(condition, squashable = "s", filler = "f", unsquashable="u"),
+         condition = fct_relevel(condition,  "unsquashable","filler", "squashable"))
 
 ```
+
+# basic plot
+
+```{r}
+id_ratings = data %>% group_by(subject, condition) %>%
+  summarise(mean_rating = mean(response))
+
+data %>% 
+  group_by(condition) %>%
+  summarise(ci = list(mean_cl_boot(response) %>% 
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
+  ggplot(aes(x= condition, y = mean)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
+  geom_point(data = id_ratings, aes(x = condition, y = mean_rating),
+             shape = 21, position = position_jitter(width = 0.05),
+             alpha = 0.3)+
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
+                color = "black", position = position_dodge(0.70))+
+  labs(y = "mean ratings", title = "squashability ratings")+
+  theme_clean()+
+  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
+  theme(plot.background = element_rect(
+    color = "white"),
+    strip.text.x = element_text(size =rel(2)),
+        axis.text = element_text(size =rel(1.5)),
+        axis.title = element_text(size =rel(2)),
+        plot.title = element_text(hjust = .5, size = rel(1.5)),
+        legend.position = "none")
+```
+# model
+
+```{r}
+library(ordinal)
+# make response a factor
+data = data %>% mutate(ordinal_response = as.factor(response))
+# set the squashable category as a reference category for the model
+contrasts(data$condition) = contr.treatment(3, base = 2)
+# run an ordinal mixed effects regression
+mod = clmm(ordinal_response~condition+(1|subject), data=data, Hess=T)
+summary(mod)
+```
+
 
 

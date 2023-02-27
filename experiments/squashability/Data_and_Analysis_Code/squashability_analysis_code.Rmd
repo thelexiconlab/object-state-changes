@@ -72,7 +72,7 @@ InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 data <- data %>% filter(!subject %in% InaccurateSubjects$subject)
 
 ##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
-data %>% pull(subject) %>% unique()
+length(data %>% pull(subject) %>% unique())
 ```
 
 # transforming RT
@@ -92,89 +92,63 @@ data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) +
 ##looks fairly normal now
 ```
 
-# compute mean RTs
+# identify and remove outliers
 ```{r}
-##Here are each subjects' means for all 4 conditions, and then the overall means for each condition...
-
 subjectMeans<- data %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt)) 
-
 conditionMeans <- data %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt))
-```
 
-# check assumptions
-## identify and remove outliers
-```{r}
 outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
 outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
 
-#filter extreme outliers
-subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
-
-##filtering all outliers
-subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
-
-subjectMeans1 %>% pull(subject) %>% unique()
-subjectMeans2 %>% pull(subject) %>% unique()
-
 ## 14 outliers, 3 extreme outliers, 3 exclusions
+
+final_outliers = outlier_exclusion$subject
 ```
-## check normality
+
+# plot
+
 ```{r}
-##shapiro test
-subjectMeans1 %>% group_by(trialcondition) %>% shapiro_test(subj_mean)
-##all have p>0.05, but squash-Smashed condition is close at p=0.052. Data satisfies normality condition?
+data = new_rt_z %>% separate(trialcondition, into = c("squashability", "state")) %>%
+  filter(!subject %in% final_outliers)
 
-##qqplot....plots look fine, not perfect 
-subjectMeans1_split <- subjectMeans1 %>% separate(trialcondition, into=c("squashability","state"), sep="_")
-ggqqplot(subjectMeans1_split, "subj_mean", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both")
+data %>%
+  group_by(squashability, state) %>%
+   summarise(ci = list(mean_cl_boot(rt) %>% 
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
+  ggplot(aes(x= squashability, y = mean, group = state, fill = state)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
+                color = "black", position = position_dodge(0.70))+
+  labs(y = "mean ratings", title = "squashability ratings")+
+  theme_clean()+
+  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
+  theme(plot.background = element_rect(
+    color = "white"),
+    strip.text.x = element_text(size =rel(2)),
+        axis.text = element_text(size =rel(1.5)),
+        axis.title = element_text(size =rel(2)),
+        plot.title = element_text(hjust = .5, size = rel(1.5)))
+  
 ```
 
-# conduct repeated-measures anova
+# model
+
 ```{r}
-subjectMeans1_split <- subjectMeans1_split %>% ungroup() 
-
-RManova <- anova_test(data = subjectMeans1_split, dv=subj_mean, wid = subject, within = c(squashability, state), effect.size = "pes")
-get_anova_table(RManova)
-
-##no significant main effect for squashability
-##significant main effect for state, significant interaction
-##no sphericity violation
+library(lmerTest)
+rt_model = lmer(data = data, rt ~ squashability*state + (1|subject) + (1|stimulus))
+summary(rt_model)
+car::Anova(rt_model)
 ```
 
-# conduct post-hoc tests (if needed)
+# assumptions
+
 ```{r}
-##decomposing significant interaction
-subjectMeans1_split %>% group_by(squashability) %>% anova_test(dv=subj_mean, wid = subject, within = state, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni")
-
-#### squashable: p.adj = 1.000
-#### unsquashable: p.adj = .00000155 *, partial eta-squared=0.207 (large effect)
-
-
-#### The RT for the unsquashable objects was significantly different depending on the state of the target object (smashed vs normal), but there was no significant difference found for squashable objects when comparing thee reaction times for normal vs smashed targets. This pattern in the the graph below shows that RTs for unsquashable objects were significantly slower when the target object was smashed compared to when they were normal. This suggests that the participants activated the normal but not the smashed state for the target object when primed by the sentence, despite the fact that a bowling ball was being dropped on it, causing a slower RT than when the normal object was shown. For the squashable objects, the data interpreted in line with the Horachak & Garrido study suggests that both the smashed and unsmashed sates were activated when primed by the bowling ball sentences, resulting in no difference between reaction times when a smashed vs normal image of thw squashable object was shown.
+sjPlot::plot_model(rt_model, type='diag')
+sjPlot::plot_model(rt_model, type='resid')
 ```
 
-# visualize log and raw RT pattern
-```{r}
 
-conditionMeans <- subjectMeans1 %>% group_by(trialcondition) %>% summarise(rawRTmean=mean(subj_meanRaw), sd_r=sd(subj_meanRaw), LogRTmean=mean(subj_mean), sd_L=sd(subj_mean))
-
-## SEM calculations
-
-n= subjectMeans1 %>% group_by(subject) %>% n_groups() 
-
-conditionMeans <- conditionMeans %>% mutate(SEM_r=sd_r/sqrt(n), SEM_L=sd_L/sqrt(n))
-
-##graphs
-
-conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_") %>% ggplot(aes(x=squashability, y=rawRTmean, fill=state)) + geom_col(position = "dodge") +  labs(x="object squashability", y="RT (ms)", title = "RT interaction of object state and squashability") + geom_errorbar(aes(ymin= (rawRTmean - SEM_r), ymax= (rawRTmean + SEM_r)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
-   
-
-conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_")  %>% ggplot(aes(x=squashability, y=LogRTmean, fill=state)) + geom_col(position = "dodge") + labs(x="object squashability", y="log10(RT)", title = "log10(RT) interaction of object state and squashability") + geom_errorbar(aes(ymin= (LogRTmean - SEM_L), ymax=(LogRTmean + SEM_L)), width=.25, position=position_dodge(width=0.9))  + theme_economist_white() + scale_fill_economist()
-   
-
-
-```
-## Demographic Info
+# Demographic Info
 ```{r}
 d = final_data
 demo = d %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
