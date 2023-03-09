@@ -91,30 +91,130 @@ data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) +
 
 ##looks fairly normal now
 ```
+### MAD for individual trials by condition
+```{r}
+##removes 130/2275 trials
+MADtable <- data %>% select(c(7,9,23,28,32))
+
+trial_table <- MADtable %>% unite("trial_id", 1:2) %>% select(!rt)
+
+a = trial_table %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
+b= trial_table %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
+c= trial_table %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
+d= trial_table %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
+
+## Note these are all 3*MAD
+a = a %>% mutate(L= (med - MAD), U=(med + MAD))
+b=b %>% mutate(L= (med - MAD), U=(med + MAD))
+c=c %>% mutate(L= (med - MAD), U=(med + MAD))
+d=d %>% mutate(L= (med - MAD), U=(med + MAD))
+
+data2 <- rbind(a,b,c,d)
+
+outliers <- data2 %>% filter((log10_rt > U) | (log10_rt < L))
+
+dataS <- data
+
+data <- data %>% unite("trial_id", c(7,9), sep="_")
+
+data <- data %>% filter(!trial_id %in% outliers$trial_id)
+
+data <- data %>% separate(trial_id, into = c("subject", "trial_index"), sep="_")
+```
+
+
+
+# plot
+```{r}
+data = data %>% separate(trialcondition, into = c("squashability", "state")) 
+data %>%
+  group_by(squashability, state) %>%
+   summarise(ci = list(mean_cl_boot(rt) %>% 
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
+  ggplot(aes(x= squashability, y = mean, group = state, fill = state)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
+                color = "black", position = position_dodge(0.70))+
+  labs(y = "mean ratings", title = "squashability ratings")+
+  theme_clean()+
+  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
+  theme(plot.background = element_rect(
+    color = "white"),
+    strip.text.x = element_text(size =rel(2)),
+        axis.text = element_text(size =rel(1.5)),
+        axis.title = element_text(size =rel(2)),
+        plot.title = element_text(hjust = .5, size = rel(1.5)))
+```
+
+```{r}
+data %>% group_by(squashability, state) %>% shapiro_test(log10_rt)
+
+##qqplot
+ggqqplot(data, "log10_rt", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both")
+```
+
+
+# model
+```{r}
+library(lmerTest)
+rt_model = lmer(data = data, log10_rt ~ squashability*state + (1|subject) + (1|stimulus))
+summary(rt_model)
+car::Anova(rt_model)
+```
+
+# assumptions
+```{r}
+library(glmmTMB)
+sjPlot::plot_model(rt_model, type='diag')
+sjPlot::plot_model(rt_model, type='resid')
+```
+
+
 
 # compute mean RTs
 ```{r}
 ##Here are each subjects' means for all 4 conditions, and then the overall means for each condition...
 
-subjectMeans<- data %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt)) 
+subjectMeans<- dataS %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt)) 
 
-conditionMeans <- data %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt))
+conditionMeans <- dataS %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt))
+```
+
+### MAD by subjects per condition
+```{r}
+##removes 33 subject trials
+e = subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
+f= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
+g= subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
+h= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
+
+## Note these are all 3*MAD
+e = e %>% mutate(L= (med - MAD), U=(med + MAD))
+f=f %>% mutate(L= (med - MAD), U=(med + MAD))
+g=g %>% mutate(L= (med - MAD), U=(med + MAD))
+h=h %>% mutate(L= (med - MAD), U=(med + MAD))
+
+subj_MADranges<- rbind(e,f,g,h)
+
+outliers1 <- subj_MADranges %>% filter((subj_mean > U) | (subj_mean < L))
+
+subjectMeans1 <- subjectMeans %>% filter(!subject %in% outliers1$subject)
 ```
 
 # check assumptions
 ## identify and remove outliers
 ```{r}
-outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
-outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
+##outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
+##outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
 
 #filter extreme outliers
-subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
+##subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
 
 ##filtering all outliers
-subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
+##subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
 
 subjectMeans1 %>% pull(subject) %>% unique()
-subjectMeans2 %>% pull(subject) %>% unique()
+##subjectMeans2 %>% pull(subject) %>% unique()
 
 ## 14 outliers, 3 extreme outliers, 3 exclusions
 ```
