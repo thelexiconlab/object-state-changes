@@ -1,14 +1,29 @@
 ---
 title: "object-state-changes-and squashability"
 output:
-  word_document: default
-  html_document:
-    df_print: paged
-  pdf_document: default
+  html_document: default
 ---
+# import packages
 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library (ggthemes)
+library(rstatix)
+library(ggpubr)
+library(emmeans)
+library(dplyr)
+library(lmerTest)
+```
 
-#compare number of columns: 30 vs 31
+# import data
+
+```{r}
+# compare number of columns: 30 vs 31
+prolific1 = read_csv("data/prolific_1.csv")
+prolific2 = read_csv("data/prolific_2.csv")
+sona_data = read_csv("data/sentence-content-judgement-sona.csv")
+
 ncol(prolific1)
 ncol(prolific2)
 ncol(sona_data)
@@ -17,79 +32,118 @@ colnames(prolific2)
 colnames(sona_data)
 #delete extra column in sona
 sona_data <- sona_data %>% select(-c(sona_id))
-```
-
 # bind Prolific + Sona
-```{r}
 final_data = rbind(prolific1, prolific2, sona_data)
 ```
 
 # basic descriptives
 ```{r}
-final_data %>% pull(subject) %>% unique()
+length(final_data %>% pull(subject) %>% unique())
 ## N(initial) = 105
 ## note: R counts 'NA' as a participant 
 final_data %>% group_by(subject) %>% count()
 sona_data %>% pull(subject) %>% unique()
 ```
 
-# exclusions
+# data treatment
+
+## exclusions
 ```{r}
 ##exclude filler, practice, and non-picture trials
-data <- final_data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice")))
-##calculate subject accuracy
-data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
-subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
-##exclude incorrect responses
-data <- data %>% filter(accuracy==1) 
-##exclude subjects with accuracy > 60%
-InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
-data <- data %>% filter(!subject %in% InaccurateSubjects$subject)
-##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
-length(data %>% pull(subject) %>% unique())
+exclusions_data <- final_data %>% 
+  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice"))) %>%
+  # calculate accuracy
+  mutate(accuracy=ifelse(correct=="TRUE",1,0))%>%
+  separate(trialcondition, into = c("squashability", "state")) 
 ```
 
-# transforming RT
+
+# accuracy analyses
+
+## accuracy data
+
+```{r}
+# calculate subject accuracy
+subject_accuracy <- exclusions_data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
+InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
+```
+
+## plot
+```{r}
+exclusions_data %>% 
+  group_by(squashability, state) %>%
+   summarise(ci = list(mean_cl_boot(accuracy) %>% 
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
+  ggplot(aes(x= squashability, y = mean, group = state, fill = state)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
+                color = "black", position = position_dodge(0.70))+
+  labs(y = "mean accuracy", title = "squashability ratings")+
+  theme_clean()+
+  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
+  theme(plot.background = element_rect(
+    color = "white"),
+    strip.text.x = element_text(size =rel(2)),
+        axis.text = element_text(size =rel(1.5)),
+        axis.title = element_text(size =rel(2)),
+        plot.title = element_text(hjust = .5, size = rel(1.5)))
+```
+
+## main accuracy model
+
+```{r}
+acc_model = glmer(data = exclusions_data, 
+                  accuracy ~ squashability + state + (1|subject) + (1|stimulus),
+                  family = "binomial")
+summary(acc_model)
+car::Anova(acc_model)
+```
+
+
+
+# RT analyses
+
+## rt data
+
+```{r}
+##exclude incorrect responses
+rt_data <- exclusions_data %>% filter(accuracy==1) %>%
+  ##exclude subjects with accuracy > 60%
+  filter(!subject %in% InaccurateSubjects$subject)
+
+##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
+length(rt_data %>% pull(subject) %>% unique())
+```
+
+
+## transforming RT
 ```{r}
 ##make rt numeric
-data <- data %>% mutate(rt = as.numeric(rt))
+rt_data <- rt_data %>% mutate(rt = as.numeric(rt))
 ## rt histogram ----does NOT look normally distributed (positive skew)
-data %>% filter(rt <10000) %>% ggplot(aes(x=rt)) + geom_histogram(binwidth =20, fill="pink" ) + theme_economist() + labs(x="RT (ms)", y="frequency", title= "RT histogram")
+rt_data %>% filter(rt <10000) %>% ggplot(aes(x=rt)) + geom_histogram(binwidth =20, fill="pink" ) + theme_economist() + labs(x="RT (ms)", y="frequency", title= "RT histogram")
 ##rt log (base 10) transformation
-data <- data %>% mutate(log10_rt=log(rt, 10))
+rt_data <- rt_data %>% mutate(log10_rt=log(rt, 10))
 ##log10(rt) histogram
-data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) + theme_economist() + labs(x="log10(rt)", y="frequency", title= "RT histogram")
+rt_data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) + theme_economist() + labs(x="log10(rt)", y="frequency", title= "RT histogram")
 ##looks fairly normal now
 ```
 
-### MAD for individual trials by condition
+## MAD exclusions
+
 ```{r}
-##removes 130/2275 trials
-MADtable <- data %>% select(c(7,9,23,28,32))
-trial_table <- MADtable %>% unite("trial_id", 1:2) %>% select(!rt)
-a = trial_table %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
-b= trial_table %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
-c= trial_table %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
-d= trial_table %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt))
-## Note these are all 3*MAD
-a = a %>% mutate(L= (med - MAD), U=(med + MAD))
-b=b %>% mutate(L= (med - MAD), U=(med + MAD))
-c=c %>% mutate(L= (med - MAD), U=(med + MAD))
-d=d %>% mutate(L= (med - MAD), U=(med + MAD))
-data2 <- rbind(a,b,c,d)
-outliers <- data2 %>% filter((log10_rt > U) | (log10_rt < L))
-dataS <- data
-data <- data %>% unite("trial_id", c(7,9), sep="_")
-data <- data %>% filter(!trial_id %in% outliers$trial_id)
-data <- data %>% separate(trial_id, into = c("subject", "trial_index"), sep="_")
+mad_data = rt_data %>%
+  group_by(squashability, state) %>%
+  mutate(MAD=3*mad(log10_rt), med=median(log10_rt),
+         L= (med - MAD), U=(med + MAD)) %>%
+  filter(log10_rt < U) %>% filter(log10_rt > L)
+
+(nrow(data)-nrow(mad_data))/nrow(data)
 ```
 
-
-
-# plot
+## plot
 ```{r}
-data = data %>% separate(trialcondition, into = c("squashability", "state")) 
-data %>%
+mad_data %>% 
   group_by(squashability, state) %>%
    summarise(ci = list(mean_cl_boot(rt) %>% 
                         rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
@@ -108,112 +162,48 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
         plot.title = element_text(hjust = .5, size = rel(1.5)))
 ```
 
-```{r}
-data %>% group_by(squashability, state) %>% shapiro_test(log10_rt)
-##qqplot
-ggqqplot(data, "log10_rt", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both")
-```
 
-
-# model
+## main RT model
 ```{r}
-library(lmerTest)
-rt_model = lmer(data = data, log10_rt ~ squashability*state + (1|subject) + (1|stimulus))
+rt_model = lmer(data = mad_data, 
+                log10_rt ~ squashability*state + (squashability |subject) + (1|stimulus))
 summary(rt_model)
 car::Anova(rt_model)
 ```
 
-# assumptions
+### assumptions
 ```{r}
 library(glmmTMB)
 sjPlot::plot_model(rt_model, type='diag')
 sjPlot::plot_model(rt_model, type='resid')
 ```
 
+### posthoc models 
 
-
-# compute mean RTs
 ```{r}
-##Here are each subjects' means for all 4 conditions, and then the overall means for each condition...
-subjectMeans<- dataS %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt)) 
-conditionMeans <- dataS %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt))
+# split into picture type (state)
+intact_data = mad_data %>% filter(state == "Normal")
+squashed_data = mad_data %>% filter(state == "Smashed")
+
+# run separate models on these data
+
+intact_model = lmer(data = intact_data, log10_rt ~ squashability + (squashability | subject) + 
+                      (1 | stimulus))
+summary(intact_model)
+car::Anova(intact_model)
+
+squashed_model = lmer(data = squashed_data, log10_rt ~ squashability + (squashability | subject) + 
+                      (1 | stimulus))
+summary(squashed_model)
+car::Anova(squashed_model)
+
 ```
 
-### MAD by subjects per condition
-```{r}
-##removes 33 subject trials
-e = subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
-f= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
-g= subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
-h= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean))
-## Note these are all 3*MAD
-e = e %>% mutate(L= (med - MAD), U=(med + MAD))
-f=f %>% mutate(L= (med - MAD), U=(med + MAD))
-g=g %>% mutate(L= (med - MAD), U=(med + MAD))
-h=h %>% mutate(L= (med - MAD), U=(med + MAD))
-subj_MADranges<- rbind(e,f,g,h)
-outliers1 <- subj_MADranges %>% filter((subj_mean > U) | (subj_mean < L))
-subjectMeans1 <- subjectMeans %>% filter(!subject %in% outliers1$subject)
-```
 
-# check assumptions
-## identify and remove outliers
-```{r}
-##outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean)
-##outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE")
-#filter extreme outliers
-##subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
-##filtering all outliers
-##subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject)
-subjectMeans1 %>% pull(subject) %>% unique()
-##subjectMeans2 %>% pull(subject) %>% unique()
-## 14 outliers, 3 extreme outliers, 3 exclusions
-```
-## check normality
-```{r}
-##shapiro test
-subjectMeans1 %>% group_by(trialcondition) %>% shapiro_test(subj_mean)
-##all have p>0.05, but squash-Smashed condition is close at p=0.052. Data satisfies normality condition?
-##qqplot....plots look fine, not perfect 
-subjectMeans1_split <- subjectMeans1 %>% separate(trialcondition, into=c("squashability","state"), sep="_")
-ggqqplot(subjectMeans1_split, "subj_mean", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both")
-```
 
-# conduct repeated-measures anova
+# Demographic Info
 ```{r}
-subjectMeans1_split <- subjectMeans1_split %>% ungroup() 
-RManova <- anova_test(data = subjectMeans1_split, dv=subj_mean, wid = subject, within = c(squashability, state), effect.size = "pes")
-get_anova_table(RManova)
-##no significant main effect for squashability
-##significant main effect for state, significant interaction
-##no sphericity violation
-```
-
-# conduct post-hoc tests (if needed)
-```{r}
-##decomposing significant interaction
-subjectMeans1_split %>% group_by(squashability) %>% anova_test(dv=subj_mean, wid = subject, within = state, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni")
-#### squashable: p.adj = 1.000
-#### unsquashable: p.adj = .00000155 *, partial eta-squared=0.207 (large effect)
-#### The RT for the unsquashable objects was significantly different depending on the state of the target object (smashed vs normal), but there was no significant difference found for squashable objects when comparing thee reaction times for normal vs smashed targets. This pattern in the the graph below shows that RTs for unsquashable objects were significantly slower when the target object was smashed compared to when they were normal. This suggests that the participants activated the normal but not the smashed state for the target object when primed by the sentence, despite the fact that a bowling ball was being dropped on it, causing a slower RT than when the normal object was shown. For the squashable objects, the data interpreted in line with the Horachak & Garrido study suggests that both the smashed and unsmashed sates were activated when primed by the bowling ball sentences, resulting in no difference between reaction times when a smashed vs normal image of thw squashable object was shown.
-```
-
-# visualize log and raw RT pattern
-```{r}
-conditionMeans <- subjectMeans1 %>% group_by(trialcondition) %>% summarise(rawRTmean=mean(subj_meanRaw), sd_r=sd(subj_meanRaw), LogRTmean=mean(subj_mean), sd_L=sd(subj_mean))
-## SEM calculations
-n= subjectMeans1 %>% group_by(subject) %>% n_groups() 
-conditionMeans <- conditionMeans %>% mutate(SEM_r=sd_r/sqrt(n), SEM_L=sd_L/sqrt(n))
-##graphs
-conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_") %>% ggplot(aes(x=squashability, y=rawRTmean, fill=state)) + geom_col(position = "dodge") +  labs(x="object squashability", y="RT (ms)", title = "RT interaction of object state and squashability") + geom_errorbar(aes(ymin= (rawRTmean - SEM_r), ymax= (rawRTmean + SEM_r)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist()
-   
-conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_")  %>% ggplot(aes(x=squashability, y=LogRTmean, fill=state)) + geom_col(position = "dodge") + labs(x="object squashability", y="log10(RT)", title = "log10(RT) interaction of object state and squashability") + geom_errorbar(aes(ymin= (LogRTmean - SEM_L), ymax=(LogRTmean + SEM_L)), width=.25, position=position_dodge(width=0.9))  + theme_economist_white() + scale_fill_economist()
-   
-```
-## Demographic Info
-```{r}
-d = final_data
-demo = d %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
+demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
 age = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo2) %>%
   mutate(age = as.numeric(gsub("[^[:digit:] ]", "", demo2)))
@@ -242,4 +232,114 @@ first_lang %>% group_by(demo2) %>% count()
 
 ```
 
+<!-- # ***OLD CODE?*** -->
 
+<!-- ```{r} -->
+<!-- mad_data %>% group_by(squashability, state) %>% shapiro_test(log10_rt) -->
+<!-- ##qqplot -->
+<!-- ggqqplot(mad_data, "log10_rt", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both") -->
+<!-- ``` -->
+
+
+<!-- ## MAD for individual trials by condition -->
+<!-- ```{r} -->
+<!-- ##removes 130/2275 trials -->
+<!-- MADtable <- data %>% select(c(7,9,23,28,32)) -->
+<!-- trial_table <- MADtable %>% unite("trial_id", 1:2) %>% select(!rt) -->
+<!-- a = trial_table %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt)) -->
+<!-- b= trial_table %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt)) -->
+<!-- c= trial_table %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt)) -->
+<!-- d= trial_table %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(log10_rt), med=median(log10_rt)) -->
+<!-- ## Note these are all 3*MAD -->
+<!-- a = a %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- b=b %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- c=c %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- d=d %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- data2 <- rbind(a,b,c,d) -->
+<!-- outliers <- data2 %>% filter((log10_rt > U) | (log10_rt < L)) -->
+<!-- dataS <- data -->
+<!-- data <- data %>% unite("trial_id", c(7,9), sep="_") -->
+<!-- data <- data %>% filter(!trial_id %in% outliers$trial_id) -->
+<!-- data <- data %>% separate(trial_id, into = c("subject", "trial_index"), sep="_") -->
+<!-- ``` -->
+
+
+
+<!-- # compute mean RTs -->
+<!-- ```{r} -->
+<!-- ##Here are each subjects' means for all 4 conditions, and then the overall means for each condition... -->
+<!-- subjectMeans<- dataS %>% group_by(subject, trialcondition) %>% summarise(subj_mean=mean(log10_rt), subj_meanRaw=mean(rt))  -->
+<!-- conditionMeans <- dataS %>% group_by(trialcondition) %>% summarise(conditionMean=mean(log10_rt)) -->
+<!-- ``` -->
+
+<!-- ### MAD by subjects per condition -->
+<!-- ```{r} -->
+<!-- ##removes 33 subject trials -->
+<!-- e = subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean)) -->
+<!-- f= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Normal") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean)) -->
+<!-- g= subjectMeans %>% ungroup() %>% filter(trialcondition =="Squashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean)) -->
+<!-- h= subjectMeans %>% ungroup() %>% filter(trialcondition =="Unsquashable_Smashed") %>% mutate(MAD=3*mad(subj_mean, constant = 1), med=median(subj_mean)) -->
+<!-- ## Note these are all 3*MAD -->
+<!-- e = e %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- f=f %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- g=g %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- h=h %>% mutate(L= (med - MAD), U=(med + MAD)) -->
+<!-- subj_MADranges<- rbind(e,f,g,h) -->
+<!-- outliers1 <- subj_MADranges %>% filter((subj_mean > U) | (subj_mean < L)) -->
+<!-- subjectMeans1 <- subjectMeans %>% filter(!subject %in% outliers1$subject) -->
+<!-- ``` -->
+
+<!-- # check assumptions -->
+<!-- ## identify and remove outliers -->
+<!-- ```{r} -->
+<!-- ##outliers <- subjectMeans %>% group_by(trialcondition) %>% identify_outliers(subj_mean) -->
+<!-- ##outlier_exclusion <- outliers %>% filter(is.extreme=="TRUE") -->
+<!-- #filter extreme outliers -->
+<!-- ##subjectMeans1 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject) -->
+<!-- ##filtering all outliers -->
+<!-- ##subjectMeans2 <- subjectMeans %>% filter(!subject %in% outlier_exclusion$subject) -->
+<!-- subjectMeans1 %>% pull(subject) %>% unique() -->
+<!-- ##subjectMeans2 %>% pull(subject) %>% unique() -->
+<!-- ## 14 outliers, 3 extreme outliers, 3 exclusions -->
+<!-- ``` -->
+<!-- ## check normality -->
+<!-- ```{r} -->
+<!-- ##shapiro test -->
+<!-- subjectMeans1 %>% group_by(trialcondition) %>% shapiro_test(subj_mean) -->
+<!-- ##all have p>0.05, but squash-Smashed condition is close at p=0.052. Data satisfies normality condition? -->
+<!-- ##qqplot....plots look fine, not perfect  -->
+<!-- subjectMeans1_split <- subjectMeans1 %>% separate(trialcondition, into=c("squashability","state"), sep="_") -->
+<!-- ggqqplot(subjectMeans1_split, "subj_mean", ggtheme = theme_bw()) + facet_grid(squashability ~ state, labeller = "label_both") -->
+<!-- ``` -->
+
+<!-- # conduct repeated-measures anova -->
+<!-- ```{r} -->
+<!-- subjectMeans1_split <- subjectMeans1_split %>% ungroup()  -->
+<!-- RManova <- anova_test(data = subjectMeans1_split, dv=subj_mean, wid = subject, within = c(squashability, state), effect.size = "pes") -->
+<!-- get_anova_table(RManova) -->
+<!-- ##no significant main effect for squashability -->
+<!-- ##significant main effect for state, significant interaction -->
+<!-- ##no sphericity violation -->
+<!-- ``` -->
+
+<!-- # conduct post-hoc tests (if needed) -->
+<!-- ```{r} -->
+<!-- ##decomposing significant interaction -->
+<!-- subjectMeans1_split %>% group_by(squashability) %>% anova_test(dv=subj_mean, wid = subject, within = state, effect.size = "pes") %>% get_anova_table() %>% adjust_pvalue(method = "bonferroni") -->
+<!-- #### squashable: p.adj = 1.000 -->
+<!-- #### unsquashable: p.adj = .00000155 *, partial eta-squared=0.207 (large effect) -->
+<!-- #### The RT for the unsquashable objects was significantly different depending on the state of the target object (smashed vs normal), but there was no significant difference found for squashable objects when comparing thee reaction times for normal vs smashed targets. This pattern in the the graph below shows that RTs for unsquashable objects were significantly slower when the target object was smashed compared to when they were normal. This suggests that the participants activated the normal but not the smashed state for the target object when primed by the sentence, despite the fact that a bowling ball was being dropped on it, causing a slower RT than when the normal object was shown. For the squashable objects, the data interpreted in line with the Horachak & Garrido study suggests that both the smashed and unsmashed sates were activated when primed by the bowling ball sentences, resulting in no difference between reaction times when a smashed vs normal image of thw squashable object was shown. -->
+<!-- ``` -->
+
+<!-- # visualize log and raw RT pattern -->
+<!-- ```{r} -->
+<!-- conditionMeans <- subjectMeans1 %>% group_by(trialcondition) %>% summarise(rawRTmean=mean(subj_meanRaw), sd_r=sd(subj_meanRaw), LogRTmean=mean(subj_mean), sd_L=sd(subj_mean)) -->
+<!-- ## SEM calculations -->
+<!-- n= subjectMeans1 %>% group_by(subject) %>% n_groups()  -->
+<!-- conditionMeans <- conditionMeans %>% mutate(SEM_r=sd_r/sqrt(n), SEM_L=sd_L/sqrt(n)) -->
+<!-- ##graphs -->
+<!-- conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_") %>% ggplot(aes(x=squashability, y=rawRTmean, fill=state)) + geom_col(position = "dodge") +  labs(x="object squashability", y="RT (ms)", title = "RT interaction of object state and squashability") + geom_errorbar(aes(ymin= (rawRTmean - SEM_r), ymax= (rawRTmean + SEM_r)), width=.25, position=position_dodge(width=0.9)) + theme_economist_white() + scale_fill_economist() -->
+
+<!-- conditionMeans %>% separate(trialcondition, into = c("squashability","state"), sep="_")  %>% ggplot(aes(x=squashability, y=LogRTmean, fill=state)) + geom_col(position = "dodge") + labs(x="object squashability", y="log10(RT)", title = "log10(RT) interaction of object state and squashability") + geom_errorbar(aes(ymin= (LogRTmean - SEM_L), ymax=(LogRTmean + SEM_L)), width=.25, position=position_dodge(width=0.9))  + theme_economist_white() + scale_fill_economist() -->
+
+<!-- ``` -->
