@@ -239,4 +239,7 @@ first_lang %>% group_by(demo2) %>% count()
 "40-49" = age %>% filter(c(age) <= 49 & c(age) >= 40) %>% count()
 "50-59" = (age %>% filter(c(age) <= 59 & c(age) >= 50) %>% count())
 "60+" = (age %>% filter(c(age) >= 60) %>% count())
+
 ```
+
+
