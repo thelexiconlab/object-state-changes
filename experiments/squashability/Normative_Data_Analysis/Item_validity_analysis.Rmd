@@ -27,15 +27,12 @@ data <- read_csv("survey_data.csv") %>% filter(typeoftrial == "survey") %>%
   mutate(item = as.character(item))%>%
   mutate(condition = fct_recode(condition, squashable = "s", filler = "f", unsquashable="u"),
          condition = fct_relevel(condition,  "unsquashable","filler", "squashable"))
-
 ```
 
 # basic plot
-
 ```{r}
 id_ratings = data %>% group_by(subject, condition) %>%
   summarise(mean_rating = mean(response))
-
 data %>% 
   group_by(condition) %>%
   summarise(ci = list(mean_cl_boot(response) %>% 
@@ -58,8 +55,8 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
         plot.title = element_text(hjust = .5, size = rel(1.5)),
         legend.position = "none")
 ```
-# model
 
+# model
 ```{r}
 library(ordinal)
 # make response a factor
@@ -69,7 +66,3 @@ contrasts(data$condition) = contr.treatment(3, base = 2)
 # run an ordinal mixed effects regression
 mod = clmm(ordinal_response~condition+(1|subject), data=data, Hess=T)
 summary(mod)
-```
-
-
-
