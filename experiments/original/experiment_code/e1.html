@@ -22,6 +22,7 @@
     <script src="images.js"></script>
     <link rel="stylesheet" href="expstyle.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+
   </head>
   <body></body>
   <script>
@@ -255,6 +256,10 @@ trial_duration: function(){
 
   var filler_comprehension = {
     type: jsPsychHtmlKeyboardResponse,
+    on_start: function() {
+        document.body.style.backgroundColor = 'black'
+        document.body.style.color = 'white'
+    },
     stimulus: function(){
       if(yes_q < no_q){
         yes_q = yes_q + 1
@@ -280,7 +285,11 @@ trial_duration: function(){
       on_finish: function(data){
         if(chosen == "yes"){data.comprehension_type = "s"}
         else{data.comprehension_type = "n"}
-      }
+      },
+      on_finish: function() {
+        document.body.style.backgroundColor = 'white'
+        document.body.style.color = 'black'
+    }
 }
 
   var comprehension_loop = {

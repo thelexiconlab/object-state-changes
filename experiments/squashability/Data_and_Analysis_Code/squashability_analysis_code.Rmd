@@ -7,33 +7,14 @@ output:
   pdf_document: default
 ---
 
-# import packages
-```{r}
-library(tidyverse)
-library(ggplot2)
-library (ggthemes)
-library(rstatix)
-library(ggpubr)
-library(emmeans)
-library(dplyr)
-```
-
-# import data
-```{r}
-##read prolific and sona data
-prolific1 = read_csv("data/prolific_1.csv")
-prolific2 = read_csv("data/prolific_2.csv")
-sona_data = read_csv("data/sentence-content-judgement-sona.csv")
 
 #compare number of columns: 30 vs 31
 ncol(prolific1)
 ncol(prolific2)
 ncol(sona_data)
-
 colnames(prolific1)
 colnames(prolific2)
 colnames(sona_data)
-
 #delete extra column in sona
 sona_data <- sona_data %>% select(-c(sona_id))
 ```
@@ -48,29 +29,22 @@ final_data = rbind(prolific1, prolific2, sona_data)
 final_data %>% pull(subject) %>% unique()
 ## N(initial) = 105
 ## note: R counts 'NA' as a participant 
-
 final_data %>% group_by(subject) %>% count()
-
 sona_data %>% pull(subject) %>% unique()
-
 ```
 
 # exclusions
 ```{r}
 ##exclude filler, practice, and non-picture trials
 data <- final_data %>% filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice")))
-
 ##calculate subject accuracy
 data <- data %>% mutate(accuracy=ifelse(correct=="TRUE",1,0))
 subject_accuracy <- data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
-
 ##exclude incorrect responses
 data <- data %>% filter(accuracy==1) 
-
 ##exclude subjects with accuracy > 60%
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.6)
 data <- data %>% filter(!subject %in% InaccurateSubjects$subject)
-
 ##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
 length(data %>% pull(subject) %>% unique())
 ```
@@ -79,16 +53,12 @@ length(data %>% pull(subject) %>% unique())
 ```{r}
 ##make rt numeric
 data <- data %>% mutate(rt = as.numeric(rt))
-
 ## rt histogram ----does NOT look normally distributed (positive skew)
 data %>% filter(rt <10000) %>% ggplot(aes(x=rt)) + geom_histogram(binwidth =20, fill="pink" ) + theme_economist() + labs(x="RT (ms)", y="frequency", title= "RT histogram")
-
 ##rt log (base 10) transformation
 data <- data %>% mutate(log10_rt=log(rt, 10))
-
 ##log10(rt) histogram
 data %>% ggplot(aes(x=log10_rt)) + geom_histogram(binwidth =0.1, fill="pink" ) + theme_economist() + labs(x="log10(rt)", y="frequency", title= "RT histogram")
-
 ##looks fairly normal now
 ```
 
@@ -269,4 +239,7 @@ first_lang %>% group_by(demo2) %>% count()
 "40-49" = age %>% filter(c(age) <= 49 & c(age) >= 40) %>% count()
 "50-59" = (age %>% filter(c(age) <= 59 & c(age) >= 50) %>% count())
 "60+" = (age %>% filter(c(age) >= 60) %>% count())
+
 ```
+
+
