@@ -37,13 +37,14 @@ data %>% group_by(subject) %>% count()
 # data treatment
 
 
-
+##comprehension scores **note this is based on coding bug
 ```{r}
 comprehension_scores <- data %>% group_by(subject) %>%
   filter(typeoftrial=="comprehension") %>% count(response==comprehension_type) %>%
    pivot_wider(names_from = c(2), values_from = n) 
 
-comprehension_scores <- comprehension_scores %>% mutate("correct"= c(2))
+comprehension_scores <- comprehension_scores %>% rename(correct = "FALSE") %>%
+  mutate(comp = correct/24)
 
 inaccurate_comp <- comprehension_scores %>% filter(comp < 0.8)
 
@@ -54,6 +55,8 @@ inaccurate_comp <- comprehension_scores %>% filter(comp < 0.8)
 ##exclude filler, practice, and non-picture trials
 exclusions_data <- data %>% 
   filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice", "practice_n", "practice_s"))) %>%
+  ##exclude bad comprehension
+  filter(!subject %in% inaccurate_comp$subject) %>%
   separate(trialcondition, into = c("weight", "state")) 
 ```
 
