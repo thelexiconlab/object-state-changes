@@ -129,6 +129,10 @@ var instructions2 = {
     
 
   var fixation1 = {
+    on_start: function(){
+        document.body.style.backgroundColor = 'white'
+        document.body.style.color = 'black'
+    },
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="font-size: 48px;">+</p>',
     choices: "NO_KEYS",
@@ -285,11 +289,7 @@ trial_duration: function(){
       on_finish: function(data){
         if(chosen == "yes"){data.comprehension_type = "s"}
         else{data.comprehension_type = "n"}
-      },
-      on_finish: function() {
-        document.body.style.backgroundColor = 'white'
-        document.body.style.color = 'black'
-    }
+      }
 }
 
   var comprehension_loop = {
@@ -477,7 +477,7 @@ function saveData(filename, filedata){
 
   
   
-var completion_code = '<strong>Your completion code is: ' + subject_id + ". Please copy-paste this code and submit it on Canvas.</strong>"
+var completion_code = "<strong>Your completion code is: CGCEM4FV. Please copy-paste this code and submit it on Prolific.</strong>"
 
   var endexperiment = {
       type: jsPsychHtmlButtonResponse,
@@ -500,7 +500,7 @@ var completion_code = '<strong>Your completion code is: ' + subject_id + ". Plea
   timeline.push(test_procedure);
   timeline.push(demoinstructions)
   timeline.push(demo_procedure);
-  timeline.push(save_data);
+ // timeline.push(save_data);
   timeline.push(endexperiment);
   
   jsPsych.run(timeline);

@@ -20,7 +20,6 @@ library(lmerTest)
 ```{r}
 ## read data
 data <- read_csv('data/replication_data.csv')
-
 ncol(data)
 colnames(data)
 ```
@@ -37,13 +36,13 @@ data %>% group_by(subject) %>% count()
 # data treatment
 
 
-##comprehension scores **note this is based on coding bug
+##comprehension scores **note this is based on the fixed code
 ```{r}
 comprehension_scores <- data %>% group_by(subject) %>%
   filter(typeoftrial=="comprehension") %>% count(response==comprehension_type) %>%
    pivot_wider(names_from = c(2), values_from = n) 
 
-comprehension_scores <- comprehension_scores %>% rename(correct = "FALSE") %>%
+comprehension_scores <- comprehension_scores %>% rename(correct = "TRUE") %>%
   mutate(comp = correct/24)
 
 inaccurate_comp <- comprehension_scores %>% filter(comp < 0.8)
