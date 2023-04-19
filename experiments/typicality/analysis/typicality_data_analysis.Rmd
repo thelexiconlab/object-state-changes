@@ -17,10 +17,10 @@ library(dplyr)
 # import & bind data
 ```{r}
 ## compile data for each sona/prolific subject into 2 files
-P_subjects = list.files(path ='./data/prolific', recursive = TRUE, pattern = '.csv', full.names = TRUE)
+P_subjects = list.files(path ='../data/prolific', recursive = TRUE, pattern = '.csv', full.names = TRUE)
 prolific_data <- read_csv(P_subjects) %>% rbind()
 
-S_subjects = list.files(path ='./data/sona', recursive = TRUE, pattern = '.csv', full.names = TRUE)
+S_subjects = list.files(path ='../data/sona', recursive = TRUE, pattern = '.csv', full.names = TRUE)
 sona_data <- read_csv(S_subjects) %>% rbind()
 
 ## merge sona and prolific data

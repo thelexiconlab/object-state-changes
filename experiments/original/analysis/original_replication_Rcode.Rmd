@@ -19,7 +19,7 @@ library(lmerTest)
 # import data
 ```{r}
 ## read data
-data <- read_csv('data/replication_data.csv')
+data <- read_csv('../data/unregistered.csv')
 ncol(data)
 colnames(data)
 ```

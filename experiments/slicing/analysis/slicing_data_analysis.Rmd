@@ -21,9 +21,9 @@ library(dplyr)
 ```{r}
 ## read sona and prolific data
 
-prolific_data <- read_csv('data/prolific_data.csv')
-sona_data <- read_csv('data/sona_data.csv') 
-prolific_data_2 <- read_csv('data/slicing_data2.csv')
+prolific_data <- read_csv('../data/prolific_data.csv')
+sona_data <- read_csv('../data/sona_data.csv') 
+prolific_data_2 <- read_csv('../data/slicing_data2.csv')
 
 ncol(prolific_data)
 ncol(sona_data)

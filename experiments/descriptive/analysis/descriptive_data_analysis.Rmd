@@ -16,7 +16,7 @@ library(dplyr)
 
 # import data
 ```{r}
-data <-read_csv('data/combined.csv')
+data <-read_csv('../data/combined.csv')
 
 colnames(data)
 ```
