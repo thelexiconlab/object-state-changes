@@ -17,7 +17,7 @@ library(dplyr)
 
 # import data and organize
 ```{r}
-data <- read_csv("survey_data.csv") %>% filter(typeoftrial == "survey") %>% 
+data <- read_csv("../data/survey_data.csv") %>% filter(typeoftrial == "survey") %>% 
   separate(trialcondition, into =c("condition", "item"), sep="_") %>%
   separate(response, into = c("label", "response"), sep = ":") %>%
   mutate(response=parse_number(response)) %>%

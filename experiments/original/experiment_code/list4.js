@@ -9,12 +9,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a porcelain figure</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 1,
@@ -26,12 +26,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a piece of cake</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 2,
@@ -43,12 +43,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on an empty can of beer</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 3,
@@ -60,12 +60,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a cracker</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 4,
@@ -77,12 +77,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a wineglass</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 5,
@@ -94,12 +94,12 @@ var list4 = [
       "trialcondition": "Light_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on an egg</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 6,
@@ -111,12 +111,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on an egg flan</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 7,
@@ -128,12 +128,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a blackberry</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 8,
@@ -145,12 +145,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on glasses</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 9,
@@ -162,12 +162,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a hat</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 10,
@@ -179,12 +179,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on a chocolate ice-cream</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 11,
@@ -196,12 +196,12 @@ var list4 = [
       "trialcondition": "Light_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a balloon on an iPAD</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 12,
@@ -213,12 +213,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on an iPhone</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 13,
@@ -230,12 +230,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a light bulb</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 14,
@@ -247,12 +247,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a mirror</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 15,
@@ -264,12 +264,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a chocolate muffin</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 16,
@@ -281,12 +281,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a donut</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 17,
@@ -298,12 +298,12 @@ var list4 = [
       "trialcondition": "Heavy_Normal",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a rice cake</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 18,
@@ -315,12 +315,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a ceramic plate</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 19,
@@ -332,12 +332,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a strawberry</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 20,
@@ -349,12 +349,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a piece of sushi</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 21,
@@ -366,12 +366,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a tile</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 22,
@@ -383,12 +383,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a tomato</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 23,
@@ -400,12 +400,12 @@ var list4 = [
       "trialcondition": "Heavy_Smashed",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a bowling ball on a paper cup</p>",
-      "cq_yes": "Was NA mentioned in the previous sentence?",
       "cq_no": "Was NA mentioned in the previous sentence?",
+      "cq_yes": "Was NA mentioned in the previous sentence?",
       "comprehension_no": "NA",
       "comprehension_yes": "NA",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was NA mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was NA mentioned in the previous sentence?</p>"
     },
     {
       "index": 24,
@@ -417,12 +417,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a toothbrush on the sponge</p>",
-      "cq_yes": "Was a car mentioned in the previous sentence?",
-      "cq_no": "Was a sponge mentioned in the previous sentence?",
+      "cq_no": "Was a car mentioned in the previous sentence?",
+      "cq_yes": "Was a sponge mentioned in the previous sentence?",
       "comprehension_no": "a car",
       "comprehension_yes": "a sponge",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a sponge mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a car mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a sponge mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a car mentioned in the previous sentence?</p>"
     },
     {
       "index": 25,
@@ -434,12 +434,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a fork on the plate</p>",
-      "cq_yes": "Was a panda mentioned in the previous sentence?",
-      "cq_no": "Was a fork mentioned in the previous sentence?",
+      "cq_no": "Was a panda mentioned in the previous sentence?",
+      "cq_yes": "Was a fork mentioned in the previous sentence?",
       "comprehension_no": "a panda",
       "comprehension_yes": "a fork",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a fork mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a panda mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a fork mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a panda mentioned in the previous sentence?</p>"
     },
     {
       "index": 26,
@@ -451,12 +451,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a musician is playing a guitar</p>",
-      "cq_yes": "Was a cook mentioned in the previous sentence?",
-      "cq_no": "Was a musician mentioned in the previous sentence?",
+      "cq_no": "Was a cook mentioned in the previous sentence?",
+      "cq_yes": "Was a musician mentioned in the previous sentence?",
       "comprehension_no": "a cook",
       "comprehension_yes": "a musician",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a musician mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a cook mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a musician mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a cook mentioned in the previous sentence?</p>"
     },
     {
       "index": 27,
@@ -468,12 +468,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a cat is drinking water from a bowl</p>",
-      "cq_yes": "Was sleeping mentioned in the previous sentence?",
-      "cq_no": "Was drinking mentioned in the previous sentence?",
+      "cq_no": "Was sleeping mentioned in the previous sentence?",
+      "cq_yes": "Was drinking mentioned in the previous sentence?",
       "comprehension_no": "sleeping",
       "comprehension_yes": "drinking",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was drinking mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was sleeping mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was drinking mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was sleeping mentioned in the previous sentence?</p>"
     },
     {
       "index": 28,
@@ -485,12 +485,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how an old man is hammering a nail</p>",
-      "cq_yes": "Was yawning mentioned in the previous sentence?",
-      "cq_no": "Was hammering a nail mentioned in the previous sentence?",
+      "cq_no": "Was yawning mentioned in the previous sentence?",
+      "cq_yes": "Was hammering a nail mentioned in the previous sentence?",
       "comprehension_no": "yawning",
       "comprehension_yes": "hammering a nail",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was hammering a nail mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was yawning mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was hammering a nail mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was yawning mentioned in the previous sentence?</p>"
     },
     {
       "index": 29,
@@ -502,12 +502,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a boy is peeling a banana</p>",
-      "cq_yes": "Was a bear mentioned in the previous sentence?",
-      "cq_no": "Was a boy mentioned in the previous sentence?",
+      "cq_no": "Was a bear mentioned in the previous sentence?",
+      "cq_yes": "Was a boy mentioned in the previous sentence?",
       "comprehension_no": "a bear",
       "comprehension_yes": "a boy",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a boy mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a bear mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a boy mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a bear mentioned in the previous sentence?</p>"
     },
     {
       "index": 30,
@@ -519,12 +519,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how an elephant is eating a watermelon</p>",
-      "cq_yes": "Was a lizard mentioned in the previous sentence?",
-      "cq_no": "Was a watermelon mentioned in the previous sentence?",
+      "cq_no": "Was a lizard mentioned in the previous sentence?",
+      "cq_yes": "Was a watermelon mentioned in the previous sentence?",
       "comprehension_no": "a lizard",
       "comprehension_yes": "a watermelon",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a watermelon mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a lizard mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a watermelon mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a lizard mentioned in the previous sentence?</p>"
     },
     {
       "index": 31,
@@ -536,12 +536,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a postman is driving a car</p>",
-      "cq_yes": "Was a monkey mentioned in the previous sentence?",
-      "cq_no": "Was a postman mentioned in the previous sentence?",
+      "cq_no": "Was a monkey mentioned in the previous sentence?",
+      "cq_yes": "Was a postman mentioned in the previous sentence?",
       "comprehension_no": "a monkey",
       "comprehension_yes": "a postman",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a postman mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a monkey mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a postman mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a monkey mentioned in the previous sentence?</p>"
     },
     {
       "index": 32,
@@ -553,12 +553,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how an astronaut is putting on a space suit</p>",
-      "cq_yes": "Was a rabbit mentioned in the previous sentence?",
-      "cq_no": "Was an astronaut mentioned in the previous sentence?",
+      "cq_no": "Was a rabbit mentioned in the previous sentence?",
+      "cq_yes": "Was an astronaut mentioned in the previous sentence?",
       "comprehension_no": "a rabbit",
       "comprehension_yes": "an astronaut",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was an astronaut mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a rabbit mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was an astronaut mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a rabbit mentioned in the previous sentence?</p>"
     },
     {
       "index": 33,
@@ -570,12 +570,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a cook is taking a knife</p>",
-      "cq_yes": "Was taking a selfie mentioned in the previous sentence?",
-      "cq_no": "Was taking a knife mentioned in the previous sentence?",
+      "cq_no": "Was taking a selfie mentioned in the previous sentence?",
+      "cq_yes": "Was taking a knife mentioned in the previous sentence?",
       "comprehension_no": "taking a selfie",
       "comprehension_yes": "taking a knife",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was taking a knife mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a selfie mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was taking a knife mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a selfie mentioned in the previous sentence?</p>"
     },
     {
       "index": 34,
@@ -587,12 +587,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a photographer is taking a photo of a lion</p>",
-      "cq_yes": "Was a doctor mentioned in the previous sentence?",
-      "cq_no": "Was a photographer mentioned in the previous sentence?",
+      "cq_no": "Was a doctor mentioned in the previous sentence?",
+      "cq_yes": "Was a photographer mentioned in the previous sentence?",
       "comprehension_no": "a doctor",
       "comprehension_yes": "a photographer",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a photographer mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a doctor mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a photographer mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a doctor mentioned in the previous sentence?</p>"
     },
     {
       "index": 35,
@@ -604,12 +604,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a puppy is playing with a ball</p>",
-      "cq_yes": "Was a mongoose mentioned in the previous sentence?",
-      "cq_no": "Was a puppy mentioned in the previous sentence?",
+      "cq_no": "Was a mongoose mentioned in the previous sentence?",
+      "cq_yes": "Was a puppy mentioned in the previous sentence?",
       "comprehension_no": "a mongoose",
       "comprehension_yes": "a puppy",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a puppy mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a mongoose mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a puppy mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a mongoose mentioned in the previous sentence?</p>"
     },
     {
       "index": 36,
@@ -621,12 +621,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a cabbage on the table</p>",
-      "cq_yes": "Was a keychain mentioned in the previous sentence?",
-      "cq_no": "Was a cabbage mentioned in the previous sentence?",
+      "cq_no": "Was a keychain mentioned in the previous sentence?",
+      "cq_yes": "Was a cabbage mentioned in the previous sentence?",
       "comprehension_no": "a keychain",
       "comprehension_yes": "a cabbage",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a cabbage mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a keychain mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a cabbage mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a keychain mentioned in the previous sentence?</p>"
     },
     {
       "index": 37,
@@ -638,12 +638,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a keyboard on the bed</p>",
-      "cq_yes": "Was a hat mentioned in the previous sentence?",
-      "cq_no": "Was a bed mentioned in the previous sentence?",
+      "cq_no": "Was a hat mentioned in the previous sentence?",
+      "cq_yes": "Was a bed mentioned in the previous sentence?",
       "comprehension_no": "a hat",
       "comprehension_yes": "a bed",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a bed mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a hat mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a bed mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a hat mentioned in the previous sentence?</p>"
     },
     {
       "index": 38,
@@ -655,12 +655,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a watch on the laptop</p>",
-      "cq_yes": "Was a star mentioned in the previous sentence?",
-      "cq_no": "Was a watch mentioned in the previous sentence?",
+      "cq_no": "Was a star mentioned in the previous sentence?",
+      "cq_yes": "Was a watch mentioned in the previous sentence?",
       "comprehension_no": "a star",
       "comprehension_yes": "a watch",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a watch mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a star mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a watch mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a star mentioned in the previous sentence?</p>"
     },
     {
       "index": 39,
@@ -672,12 +672,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a cushion on the magazine</p>",
-      "cq_yes": "Was a joker mentioned in the previous sentence?",
-      "cq_no": "Was a cushion mentioned in the previous sentence?",
+      "cq_no": "Was a joker mentioned in the previous sentence?",
+      "cq_yes": "Was a cushion mentioned in the previous sentence?",
       "comprehension_no": "a joker",
       "comprehension_yes": "a cushion",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a cushion mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a joker mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a cushion mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a joker mentioned in the previous sentence?</p>"
     },
     {
       "index": 40,
@@ -689,12 +689,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a remote on the rug</p>",
-      "cq_yes": "Was a bed mentioned in the previous sentence?",
-      "cq_no": "Was a rug mentioned in the previous sentence?",
+      "cq_no": "Was a bed mentioned in the previous sentence?",
+      "cq_yes": "Was a rug mentioned in the previous sentence?",
       "comprehension_no": "a bed",
       "comprehension_yes": "a rug",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a rug mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a bed mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a rug mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a bed mentioned in the previous sentence?</p>"
     },
     {
       "index": 41,
@@ -706,12 +706,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a pencil on the shoe</p>",
-      "cq_yes": "Was a nail mentioned in the previous sentence?",
-      "cq_no": "Was a pencil mentioned in the previous sentence?",
+      "cq_no": "Was a nail mentioned in the previous sentence?",
+      "cq_yes": "Was a pencil mentioned in the previous sentence?",
       "comprehension_no": "a nail",
       "comprehension_yes": "a pencil",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a pencil mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a nail mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a pencil mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a nail mentioned in the previous sentence?</p>"
     },
     {
       "index": 42,
@@ -723,12 +723,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a thermometer on the box</p>",
-      "cq_yes": "Was the sky mentioned in the previous sentence?",
-      "cq_no": "Was a box mentioned in the previous sentence?",
+      "cq_no": "Was the sky mentioned in the previous sentence?",
+      "cq_yes": "Was a box mentioned in the previous sentence?",
       "comprehension_no": "the sky",
       "comprehension_yes": "a box",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a box mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was the sky mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a box mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was the sky mentioned in the previous sentence?</p>"
     },
     {
       "index": 43,
@@ -740,12 +740,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a ring on the newspaper</p>",
-      "cq_yes": "Was fruit mentioned in the previous sentence?",
-      "cq_no": "Was a ring mentioned in the previous sentence?",
+      "cq_no": "Was fruit mentioned in the previous sentence?",
+      "cq_yes": "Was a ring mentioned in the previous sentence?",
       "comprehension_no": "fruit",
       "comprehension_yes": "a ring",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a ring mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was fruit mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a ring mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was fruit mentioned in the previous sentence?</p>"
     },
     {
       "index": 44,
@@ -757,12 +757,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a needle on the mouse pad</p>",
-      "cq_yes": "Was a meadow mentioned in the previous sentence?",
-      "cq_no": "Was a mouse pad mentioned in the previous sentence?",
+      "cq_no": "Was a meadow mentioned in the previous sentence?",
+      "cq_yes": "Was a mouse pad mentioned in the previous sentence?",
       "comprehension_no": "a meadow",
       "comprehension_yes": "a mouse pad",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a mouse pad mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a meadow mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a mouse pad mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a meadow mentioned in the previous sentence?</p>"
     },
     {
       "index": 45,
@@ -774,12 +774,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a man is shaving his beard</p>",
-      "cq_yes": "Was a grasshopper mentioned in the previous sentence?",
-      "cq_no": "Was a man mentioned in the previous sentence?",
+      "cq_no": "Was a grasshopper mentioned in the previous sentence?",
+      "cq_yes": "Was a man mentioned in the previous sentence?",
       "comprehension_no": "a grasshopper",
       "comprehension_yes": "a man",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a man mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a grasshopper mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a man mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a grasshopper mentioned in the previous sentence?</p>"
     },
     {
       "index": 46,
@@ -791,12 +791,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a woman is taking money out of a wallet</p>",
-      "cq_yes": "Was a train mentioned in the previous sentence?",
-      "cq_no": "Was a wallet mentioned in the previous sentence?",
+      "cq_no": "Was a train mentioned in the previous sentence?",
+      "cq_yes": "Was a wallet mentioned in the previous sentence?",
       "comprehension_no": "a train",
       "comprehension_yes": "a wallet",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a wallet mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a train mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a wallet mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a train mentioned in the previous sentence?</p>"
     },
     {
       "index": 47,
@@ -808,12 +808,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a donkey is drinking water.</p>",
-      "cq_yes": "Was a dinosaur mentioned in the previous sentence?",
-      "cq_no": "Was a donkey mentioned in the previous sentence?",
+      "cq_no": "Was a dinosaur mentioned in the previous sentence?",
+      "cq_yes": "Was a donkey mentioned in the previous sentence?",
       "comprehension_no": "a dinosaur",
       "comprehension_yes": "a donkey",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a donkey mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a dinosaur mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a donkey mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a dinosaur mentioned in the previous sentence?</p>"
     },
     {
       "index": 48,
@@ -825,12 +825,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a man is boiling potatoes.</p>",
-      "cq_yes": "Was a rat mentioned in the previous sentence?",
-      "cq_no": "Was a man mentioned in the previous sentence?",
+      "cq_no": "Was a rat mentioned in the previous sentence?",
+      "cq_yes": "Was a man mentioned in the previous sentence?",
       "comprehension_no": "a rat",
       "comprehension_yes": "a man",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a man mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a rat mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a man mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a rat mentioned in the previous sentence?</p>"
     },
     {
       "index": 49,
@@ -842,12 +842,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a dentist is drinking a can of cola</p>",
-      "cq_yes": "Was eating mentioned in the previous sentence?",
-      "cq_no": "Was drinking mentioned in the previous sentence?",
+      "cq_no": "Was eating mentioned in the previous sentence?",
+      "cq_yes": "Was drinking mentioned in the previous sentence?",
       "comprehension_no": "eating",
       "comprehension_yes": "drinking",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was drinking mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was eating mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was drinking mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was eating mentioned in the previous sentence?</p>"
     },
     {
       "index": 50,
@@ -859,12 +859,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a nurse is taking a syringe</p>",
-      "cq_yes": "Was a giraffe mentioned in the previous sentence?",
-      "cq_no": "Was a nurse mentioned in the previous sentence?",
+      "cq_no": "Was a giraffe mentioned in the previous sentence?",
+      "cq_yes": "Was a nurse mentioned in the previous sentence?",
       "comprehension_no": "a giraffe",
       "comprehension_yes": "a nurse",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a nurse mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a giraffe mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a nurse mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a giraffe mentioned in the previous sentence?</p>"
     },
     {
       "index": 51,
@@ -876,12 +876,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a doctor is taking a stethoscope</p>",
-      "cq_yes": "Was a baby mentioned in the previous sentence?",
-      "cq_no": "Was a doctor mentioned in the previous sentence?",
+      "cq_no": "Was a baby mentioned in the previous sentence?",
+      "cq_yes": "Was a doctor mentioned in the previous sentence?",
       "comprehension_no": "a baby",
       "comprehension_yes": "a doctor",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a doctor mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a baby mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a doctor mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a baby mentioned in the previous sentence?</p>"
     },
     {
       "index": 52,
@@ -893,12 +893,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a student is writing on a board</p>",
-      "cq_yes": "Was a maid mentioned in the previous sentence?",
-      "cq_no": "Was a student mentioned in the previous sentence?",
+      "cq_no": "Was a maid mentioned in the previous sentence?",
+      "cq_yes": "Was a student mentioned in the previous sentence?",
       "comprehension_no": "a maid",
       "comprehension_yes": "a student",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a student mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a maid mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a student mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a maid mentioned in the previous sentence?</p>"
     },
     {
       "index": 53,
@@ -910,12 +910,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how an actress is taking a microphone</p>",
-      "cq_yes": "Was a tomato mentioned in the previous sentence?",
-      "cq_no": "Was a microphone mentioned in the previous sentence?",
+      "cq_no": "Was a tomato mentioned in the previous sentence?",
+      "cq_yes": "Was a microphone mentioned in the previous sentence?",
       "comprehension_no": "a tomato",
       "comprehension_yes": "a microphone",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a microphone mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a tomato mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a microphone mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a tomato mentioned in the previous sentence?</p>"
     },
     {
       "index": 54,
@@ -927,12 +927,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a kitten is playing in the sandbox</p>",
-      "cq_yes": "Was a frog mentioned in the previous sentence?",
-      "cq_no": "Was a kitten mentioned in the previous sentence?",
+      "cq_no": "Was a frog mentioned in the previous sentence?",
+      "cq_yes": "Was a kitten mentioned in the previous sentence?",
       "comprehension_no": "a frog",
       "comprehension_yes": "a kitten",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a kitten mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a frog mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a kitten mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a frog mentioned in the previous sentence?</p>"
     },
     {
       "index": 55,
@@ -944,12 +944,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You drop a towel on the TV</p>",
-      "cq_yes": "Was a bracelet mentioned in the previous sentence?",
-      "cq_no": "Was a towel mentioned in the previous sentence?",
+      "cq_no": "Was a bracelet mentioned in the previous sentence?",
+      "cq_yes": "Was a towel mentioned in the previous sentence?",
       "comprehension_no": "a bracelet",
       "comprehension_yes": "a towel",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a towel mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a bracelet mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a towel mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a bracelet mentioned in the previous sentence?</p>"
     },
     {
       "index": 56,
@@ -961,12 +961,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a teenage girl is playing the piano</p>",
-      "cq_yes": "Was a carpenter mentioned in the previous sentence?",
-      "cq_no": "Was a girl mentioned in the previous sentence?",
+      "cq_no": "Was a carpenter mentioned in the previous sentence?",
+      "cq_yes": "Was a girl mentioned in the previous sentence?",
       "comprehension_no": "a carpenter",
       "comprehension_yes": "a girl",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a girl mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a carpenter mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a girl mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a carpenter mentioned in the previous sentence?</p>"
     },
     {
       "index": 57,
@@ -978,12 +978,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a horse is chewing hay</p>",
-      "cq_yes": "Was a snake mentioned in the previous sentence?",
-      "cq_no": "Was a horse mentioned in the previous sentence?",
+      "cq_no": "Was a snake mentioned in the previous sentence?",
+      "cq_yes": "Was a horse mentioned in the previous sentence?",
       "comprehension_no": "a snake",
       "comprehension_yes": "a horse",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a horse mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a snake mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a horse mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a snake mentioned in the previous sentence?</p>"
     },
     {
       "index": 58,
@@ -995,12 +995,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a mouse is eating cheese</p>",
-      "cq_yes": "Was a bartender mentioned in the previous sentence?",
-      "cq_no": "Was a mouse mentioned in the previous sentence?",
+      "cq_no": "Was a bartender mentioned in the previous sentence?",
+      "cq_yes": "Was a mouse mentioned in the previous sentence?",
       "comprehension_no": "a bartender",
       "comprehension_yes": "a mouse",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a mouse mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a bartender mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a mouse mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a bartender mentioned in the previous sentence?</p>"
     },
     {
       "index": 59,
@@ -1012,12 +1012,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a panda is resting on a tree</p>",
-      "cq_yes": "Was barking mentioned in the previous sentence?",
-      "cq_no": "Was resting mentioned in the previous sentence?",
+      "cq_no": "Was barking mentioned in the previous sentence?",
+      "cq_yes": "Was resting mentioned in the previous sentence?",
       "comprehension_no": "barking",
       "comprehension_yes": "resting",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was resting mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was barking mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was resting mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was barking mentioned in the previous sentence?</p>"
     },
     {
       "index": 60,
@@ -1029,12 +1029,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how an owl is sitting on the branch</p>",
-      "cq_yes": "Was taking a shower mentioned in the previous sentence?",
-      "cq_no": "Was sitting mentioned in the previous sentence?",
+      "cq_no": "Was taking a shower mentioned in the previous sentence?",
+      "cq_yes": "Was sitting mentioned in the previous sentence?",
       "comprehension_no": "taking a shower",
       "comprehension_yes": "sitting",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was sitting mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a shower mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was sitting mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a shower mentioned in the previous sentence?</p>"
     },
     {
       "index": 61,
@@ -1046,12 +1046,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a parrot is eating an apple</p>",
-      "cq_yes": "Was a statue mentioned in the previous sentence?",
-      "cq_no": "Was a parrot mentioned in the previous sentence?",
+      "cq_no": "Was a statue mentioned in the previous sentence?",
+      "cq_yes": "Was a parrot mentioned in the previous sentence?",
       "comprehension_no": "a statue",
       "comprehension_yes": "a parrot",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a parrot mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a statue mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a parrot mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a statue mentioned in the previous sentence?</p>"
     },
     {
       "index": 62,
@@ -1063,12 +1063,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a butterfly is sitting on a flower</p>",
-      "cq_yes": "Was painting mentioned in the previous sentence?",
-      "cq_no": "Was sitting mentioned in the previous sentence?",
+      "cq_no": "Was painting mentioned in the previous sentence?",
+      "cq_yes": "Was sitting mentioned in the previous sentence?",
       "comprehension_no": "painting",
       "comprehension_yes": "sitting",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was sitting mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was painting mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was sitting mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was painting mentioned in the previous sentence?</p>"
     },
     {
       "index": 63,
@@ -1080,12 +1080,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a hairdresser is taking scissors</p>",
-      "cq_yes": "Was a farmer mentioned in the previous sentence?",
-      "cq_no": "Was a hairdresser mentioned in the previous sentence?",
+      "cq_no": "Was a farmer mentioned in the previous sentence?",
+      "cq_yes": "Was a hairdresser mentioned in the previous sentence?",
       "comprehension_no": "a farmer",
       "comprehension_yes": "a hairdresser",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a hairdresser mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a farmer mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a hairdresser mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a farmer mentioned in the previous sentence?</p>"
     },
     {
       "index": 64,
@@ -1097,12 +1097,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a pilot is reading a book</p>",
-      "cq_yes": "Was taking a nap mentioned in the previous sentence?",
-      "cq_no": "Was reading a book mentioned in the previous sentence?",
+      "cq_no": "Was taking a nap mentioned in the previous sentence?",
+      "cq_yes": "Was reading a book mentioned in the previous sentence?",
       "comprehension_no": "taking a nap",
       "comprehension_yes": "reading a book",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was reading a book mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a nap mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was reading a book mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was taking a nap mentioned in the previous sentence?</p>"
     },
     {
       "index": 65,
@@ -1114,12 +1114,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a thief is stealing a wallet</p>",
-      "cq_yes": "Was a fox mentioned in the previous sentence?",
-      "cq_no": "Was a thief mentioned in the previous sentence?",
+      "cq_no": "Was a fox mentioned in the previous sentence?",
+      "cq_yes": "Was a thief mentioned in the previous sentence?",
       "comprehension_no": "a fox",
       "comprehension_yes": "a thief",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a thief mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a fox mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a thief mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a fox mentioned in the previous sentence?</p>"
     },
     {
       "index": 66,
@@ -1131,12 +1131,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a police officer is talking on the phone</p>",
-      "cq_yes": "Was a parrot mentioned in the previous sentence?",
-      "cq_no": "Was a police officer mentioned in the previous sentence?",
+      "cq_no": "Was a parrot mentioned in the previous sentence?",
+      "cq_yes": "Was a police officer mentioned in the previous sentence?",
       "comprehension_no": "a parrot",
       "comprehension_yes": "a police officer",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a police officer mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a parrot mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a police officer mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a parrot mentioned in the previous sentence?</p>"
     },
     {
       "index": 67,
@@ -1148,12 +1148,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a president is writing in the notebook</p>",
-      "cq_yes": "Was playing in the park mentioned in the previous sentence?",
-      "cq_no": "Was writing in a notebook mentioned in the previous sentence?",
+      "cq_no": "Was playing in the park mentioned in the previous sentence?",
+      "cq_yes": "Was writing in a notebook mentioned in the previous sentence?",
       "comprehension_no": "playing in the park",
       "comprehension_yes": "writing in a notebook",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was writing in a notebook mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was playing in the park mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was writing in a notebook mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was playing in the park mentioned in the previous sentence?</p>"
     },
     {
       "index": 68,
@@ -1165,12 +1165,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a woman is paying with a debit card</p>",
-      "cq_yes": "Was a baby mentioned in the previous sentence?",
-      "cq_no": "Was a woman mentioned in the previous sentence?",
+      "cq_no": "Was a baby mentioned in the previous sentence?",
+      "cq_yes": "Was a woman mentioned in the previous sentence?",
       "comprehension_no": "a baby",
       "comprehension_yes": "a woman",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was a woman mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was a baby mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was a woman mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was a baby mentioned in the previous sentence?</p>"
     },
     {
       "index": 69,
@@ -1182,12 +1182,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a giraffe is playing with a zebra</p>",
-      "cq_yes": "Was cooking a meal mentioned in the previous sentence?",
-      "cq_no": "Was playing with a zebra mentioned in the previous sentence?",
+      "cq_no": "Was cooking a meal mentioned in the previous sentence?",
+      "cq_yes": "Was playing with a zebra mentioned in the previous sentence?",
       "comprehension_no": "cooking a meal",
       "comprehension_yes": "playing with a zebra",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was playing with a zebra mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was cooking a meal mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was playing with a zebra mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was cooking a meal mentioned in the previous sentence?</p>"
     },
     {
       "index": 70,
@@ -1199,12 +1199,12 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a zebra is playing with a horse</p>",
-      "cq_yes": "Was making waffles mentioned in the previous sentence?",
-      "cq_no": "Was playing mentioned in the previous sentence?",
+      "cq_no": "Was making waffles mentioned in the previous sentence?",
+      "cq_yes": "Was playing mentioned in the previous sentence?",
       "comprehension_no": "making waffles",
       "comprehension_yes": "playing",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was playing mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was making waffles mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was playing mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was making waffles mentioned in the previous sentence?</p>"
     },
     {
       "index": 71,
@@ -1216,11 +1216,11 @@ var list4 = [
       "trialcondition": "filler",
       "List": 4,
       "sentence_font": "<p style='font-size:36px;'>You see how a man is playing with a cat</p>",
-      "cq_yes": "Was walking in the rain mentioned in the previous sentence?",
-      "cq_no": "Was playing with a cat mentioned in the previous sentence?",
+      "cq_no": "Was walking in the rain mentioned in the previous sentence?",
+      "cq_yes": "Was playing with a cat mentioned in the previous sentence?",
       "comprehension_no": "walking in the rain",
       "comprehension_yes": "playing with a cat",
-      "no_font": "<p style='font-size:30px; color: #508AB0; '>Was playing with a cat mentioned in the previous sentence?</p>",
-      "yes_font": "<p style='font-size:30px;color: #508AB0;'>Was walking in the rain mentioned in the previous sentence?</p>"
+      "yes_font": "<p style='font-size:30px; color: #508AB0; '>Was playing with a cat mentioned in the previous sentence?</p>",
+      "no_font": "<p style='font-size:30px;color: #508AB0;'>Was walking in the rain mentioned in the previous sentence?</p>"
     }
   ]

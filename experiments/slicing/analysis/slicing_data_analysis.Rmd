@@ -1,10 +1,9 @@
 ---
-title: "object-state-changes-and squashability"
+title: "slicing experiment"
 output:
   word_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 # load packages
@@ -16,47 +15,47 @@ library(rstatix)
 library(ggpubr)
 library(emmeans)
 library(dplyr)
-library(lmerTest)
 setwd(here::here())
 getwd()
 ```
 
-# import data
+# import & bind data
 ```{r}
-prolific <- read_csv("../data/prolific_1.csv")
-prolific2 <- read_csv("../data/prolific_2.csv")
-sona <- read_csv("../data/sona.csv")
+## read sona and prolific data
 
-#compare number of columns: 30 vs 31
-ncol(prolific)
-ncol(sona)
-colnames(prolific)
+prolific_data <- read_csv('../data/prolific_data.csv')
+sona_data <- read_csv('../data/sona_data.csv') 
+prolific_data_2 <- read_csv('../data/slicing_data2.csv')
 
-colnames(sona)
-#delete extra column in sona
-sona <- sona %>% select(-c(sona_id))
+## remove extra col.s and problematic col.
+sona_data <- sona_data %>% select(!c(sona_id, subject_id, recorded_at))
+prolific_data <- prolific_data %>% select(!c(subject_id, recorded_at))
+prolific_data_2 <- prolific_data_2 %>% select(!c(recorded_at))
 
-# bind Prolific + Sona
-final_data = rbind(prolific, prolific2, sona) %>%
+##bind prolific & sona data
+data <- rbind(prolific_data, sona_data, prolific_data_2) %>%
   filter(!is.na(subject))
 ```
 
 # basic descriptives
 ```{r}
-length(final_data %>% pull(subject) %>% unique())
-## N(final) = 125
-final_data %>% group_by(subject) %>% count()
+## N(total) = 106
+length(data %>% pull(subject) %>% unique())
+
+## number of trials per subject
+View(data %>% group_by(subject) %>% count())
 ```
+
 # data treatment
 
 ## exclusions
 ```{r}
 ##exclude filler, practice, and non-picture trials
-exclusions_data <- final_data %>%
+exclusions_data <- data %>%
   filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice"))) %>%
   ##calculate subject accuracy
   mutate(accuracy=ifelse(correct=="TRUE",1,0)) %>% 
-  separate(trialcondition, into = c("squashability", "state"))
+  separate(trialcondition, into = c("verb", "state"))
 ```
 
 # accuracy analyses
@@ -70,12 +69,12 @@ InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
 ## plot
 ```{r}
 exclusions_data %>% 
-  group_by(squashability, state) %>%
+  group_by(verb, state) %>%
    summarise(ci = list(mean_cl_boot(accuracy) %>% 
                         rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed" ),
+  mutate(state = fct_recode(state, canonical = "whole", `non-canonical` = "slice" ),
          state = fct_relevel(state, "non-canonical","canonical"))%>%
-  ggplot(aes(x= state, y = mean, group = squashability, fill = squashability)) +
+  ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
@@ -92,7 +91,7 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ## main accuracy model
 ```{r}
 acc_model = glmer(data = exclusions_data, 
-                  accuracy ~ state*squashability + (1 + state + squashability|subject) + (1|stimulus),
+                  accuracy ~ state*verb + (1 + state*verb|subject) + (1|stimulus),
                   family = "binomial", 
                  control = glmerControl(optimizer = "bobyqa",
                                          optCtrl=list(maxfun=200000), 
@@ -103,7 +102,7 @@ car::Anova(acc_model)
 sjPlot::plot_model(acc_model, type = "int")
 ```
 
-Significant interaction
+No interaction but trending effects.
 
 # RT analyses
 
@@ -140,7 +139,7 @@ rt_data %>%
 ## MAD exclusions
 ```{r}
 mad_data = rt_data %>%
-  group_by(squashability, state) %>%
+  group_by(verb, state) %>%
   mutate(MAD=3*mad(log10_rt), med=median(log10_rt),
          L= (med - MAD), U=(med + MAD)) %>%
   filter(log10_rt < U) %>% filter(log10_rt > L)
@@ -151,12 +150,12 @@ mad_data = rt_data %>%
 ## plot
 ```{r}
 mad_data %>% 
-  group_by(squashability, state) %>%
+  group_by(verb, state) %>%
    summarise(ci = list(mean_cl_boot(rt) %>% 
                         rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed" ),
+  mutate(state = fct_recode(state, canonical = "whole", `non-canonical` = "slice" ),
          state = fct_relevel(state, "non-canonical","canonical"))%>%
-  ggplot(aes(x= state, y = mean, group = squashability, fill = squashability)) +
+  ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
@@ -174,15 +173,16 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ## main RT model
 ```{r}
 rt_model = lmer(data = mad_data, 
-                log10_rt ~ squashability*state +
-                  (1 + squashability*state |subject) + (1|stimulus),
+                log10_rt ~ verb*state +
+                  (1 + verb*state |subject) + (1|stimulus),
                 REML = FALSE, 
-                lmerControl(optimizer = "bobyqa",
-                            optCtrl=list(maxfun=200000),
+                control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
 car::Anova(rt_model)
 ```
+
+Significant interaction.
 
 ### assumptions
 ```{r}
@@ -195,10 +195,10 @@ sjPlot::plot_model(rt_model, type='resid')
 
 ```{r}
 # split into picture type (state)
-intact_data = mad_data %>% filter(state == "Normal")
-squashed_data = mad_data %>% filter(state == "Smashed")
+intact_data = mad_data %>% filter(state == "whole")
+squashed_data = mad_data %>% filter(state == "slice")
 # run separate models on these data
-intact_model = lmer(data = intact_data, log10_rt ~ squashability + (squashability | subject) + 
+intact_model = lmer(data = intact_data, log10_rt ~ verb + (verb | subject) + 
                       (1 | stimulus), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
@@ -206,7 +206,8 @@ intact_model = lmer(data = intact_data, log10_rt ~ squashability + (squashabilit
                   
 summary(intact_model)
 car::Anova(intact_model)
-squashed_model = lmer(data = squashed_data, log10_rt ~ squashability + (squashability | subject) + 
+
+squashed_model = lmer(data = squashed_data, log10_rt ~ verb + (verb | subject) + 
                       (1 | stimulus), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
@@ -215,12 +216,12 @@ summary(squashed_model)
 car::Anova(squashed_model)
 ```
 
-Marginal interaction: for "intact", unsquashable RT < squashable RT. For "smashed", squashable RT < unsquashable RT.
+Significant interaction: for "intact" pictures, neutral verb RT < modified verb RT. For "sliced" pictures, modified verb RT marginally < neutral verb RT.
 
 
 # Demographic Info
 ```{r}
-demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
+demo = data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
 age = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo2) %>%
   mutate(age = as.numeric(gsub("[^[:digit:] ]", "", demo2)))
