@@ -25,6 +25,8 @@ data1 <-read_csv('../data/combined.csv') %>%
 
 data2 <- read_csv('../data/prolific2.csv') %>%
   filter(!is.na(subject))
+
+data <- rbind(data1, data2)
 ```
 
 # basic descriptives
@@ -45,7 +47,7 @@ View (data %>% group_by(subject) %>% count())
 exclusions_data <- data %>%
   filter(typeoftrial=="picture" & !(trialcondition %in% c("Filler", "practice_s", "practice_n"))) %>%
   ##calculate subject accuracy
-  mutate(accuracy=ifelse(correct=="true",1,0)) %>% 
+  mutate(accuracy=ifelse(correct=="true" | correct=="TRUE",1,0)) %>% 
   separate(trialcondition, into = c("weight", "state"))
 ```
 

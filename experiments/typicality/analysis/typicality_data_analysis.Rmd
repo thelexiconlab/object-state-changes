@@ -83,7 +83,7 @@ exclusions_data %>%
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "mean accuracy", title = "squashability ratings")+
+  labs(y = "mean accuracy", title = "accuracy plot")+
   theme_clean()+
   scale_fill_manual(values = c("darksalmon", "darkslategray4"))+
   theme(plot.background = element_rect(
@@ -166,7 +166,7 @@ mad_data %>%
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per squashability x state condition")+
+  labs(y = "RT (ms)", title = "RT per color x state condition")+
   theme_clean()+
   scale_fill_manual(values = c("black", "lightgray"))+
   theme(plot.background = element_rect(
