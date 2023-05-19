@@ -114,7 +114,7 @@ rt_data <- exclusions_data %>% filter(accuracy==1) %>%
   ##exclude subjects with accuracy < 80%
   filter(!subject %in% InaccurateSubjects$subject)
 
-##total participants after exclusion: N = 103 (2 excluded--33%, 58% accuracy)
+##total participants after exclusion: N = 120 (5 excluded)
 length(rt_data %>% pull(subject) %>% unique())
 ```
 
