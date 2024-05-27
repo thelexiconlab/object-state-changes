@@ -16,10 +16,10 @@
     <script src="list2.js"> </script>
     <script src="practice.js"> </script>
     <script src="images.js"> </script>
-</script>
     
-<link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
 <script> 
 
@@ -33,14 +33,13 @@ var preload = {
   show_progress_bar: true,
   data: {
     typeoftrial: 'preload',
-    subject: subject_id }
+    subject: subject_id 
+  }
 };
     
 var ID = {
   type: jsPsychSurveyText,
-  questions: [
-    {prompt: 'Enter your Prolific ID below:', required: true, name: 'ID'},
-  ],
+  questions: [{prompt: 'Enter your Prolific ID below:', required: true, name: 'ID'}],
   button_label: 'Continue',
   data: {
     typeoftrial: 'ID',
@@ -104,8 +103,9 @@ var picture = {
   },
   on_finish: function(data){
     if(jsPsych.pluginAPI.compareKeys(data.response, jsPsych.timelineVariable('correct')))
-    {data.correct = true;}
-    else {data.correct = false;}
+      {data.correct = true;}
+    else 
+      {data.correct = false;}
   }
 };
 
@@ -113,7 +113,7 @@ var feedback = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function(){
     var last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
-      if(last_trial_correct){return "CORRECT!"; }
+      if(last_trial_correct) {return "CORRECT!";}
       else {return "WRONG!";}
     },
   choices : "NO_KEYS",
@@ -157,11 +157,11 @@ var movetoexp = {
 };
                            
 var list = [1,2]
-                
+// note: remove var Condition and console.log when putting into cognition.run                
 var CONDITION = list [Math.floor(Math.random()*list.length)];
                 
 var teststimuli =[]
-  if(CONDITION==1){teststimuli = list1}
+  if(CONDITION==1) {teststimuli = list1}
   else {teststimuli = list2}
                 
   console.log("list=",list)
@@ -191,91 +191,98 @@ var demoinstructions = {
 }; 
 
 var demo_1 = {
-      type: jsPsychSurveyText,
-      questions: [
-        {prompt: 'What is your age?', required: true, name: 'Age'},
-        {prompt: 'What is your gender?', required: true, name: 'Gender'},
-        {prompt: 'How many years of formal education have you had? (consider graduating high school to be 12 years)', 
-        required: true, name: 'Education'}
-      ],
-      button_label: 'Next',
-      data: {
-        typeoftrial: 'demo',
-        Experiment: jsPsych.timelineVariable('Experiment'),
-        subject: subject_id
-      }
+  type: jsPsychSurveyText,
+  questions: [
+    {prompt: 'What is your age?', required: true, name: 'Age'},
+    {prompt: 'What is your gender?', required: true, name: 'Gender'},
+    {prompt: 'How many years of formal education have you had? (consider graduating high school to be 12 years)', 
+      required: true, name: 'Education'}
+  ],
+  button_label: 'Next',
+  data: {
+    typeoftrial: 'demo',
+    Experiment: jsPsych.timelineVariable('Experiment'),
+    subject: subject_id
+  }
 };
 
 var demo_2 = {
   type: jsPsychSurveyMultiSelect,
   questions: [{
     prompt: "Please select all the racial categories that apply to you:", 
-    options: ["American Indian/Alaskan Native","Asian", "Black/African American", 
-      "Native Hawaiian or Other Pacific Islander" , 
-      "White/Caucasian", "More than once race", "Other"], 
+    options: [
+      "American Indian/Alaskan Native",
+      "Asian",
+      "Black/African American", 
+      "Native Hawaiian or Other Pacific Islander", 
+      "White/Caucasian",
+      "More than once race",
+      "Other"
+    ], 
     horizontal: false,
     required: false,
     name: 'Race'
+  }],
+  data: {
+    typeoftrial: 'demo',
+    Experiment: jsPsych.timelineVariable('Experiment'),
+    subject: subject_id
   }
+};
+
+var demo_3 = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "Are you of Hispanic, Latino/a/x or of Spanish origin?", 
+      name: 'Latino', 
+      options: ['Yes', 'No', 'Prefer not to respond'], 
+      required: false
+    }, 
+    {
+      prompt: "What is your dominant hand?", 
+      name: 'DominantHand', 
+      options: ['Left', 'Right', 'Ambidexterous'], 
+      required: false
+    }, 
+    {
+      prompt: "Please indicate what time of the day you feel most alert:", 
+      name: 'Alert', 
+      options: ['Morning', 'Afternoon', 'Evening', 'No Differences'], 
+      equired: false
+    }
   ],
   data: {
     typeoftrial: 'demo',
     Experiment: jsPsych.timelineVariable('Experiment'),
     subject: subject_id
-      }
-};
-
-var demo_3 = {
-    type: jsPsychSurveyMultiChoice,
-    questions: [
-    {
-        prompt: "Are you of Hispanic, Latino/a/x or of Spanish origin?", 
-        name: 'Latino', 
-        options: ['Yes', 'No', 'Prefer not to respond'], 
-        required: false
-      }, 
-      {
-        prompt: "What is your dominant hand?", 
-        name: 'DominantHand', 
-        options: ['Left', 'Right', 'Ambidexterous'], 
-        required: false
-      }, 
-      {
-        prompt: "Please indicate what time of the day you feel most alert:", 
-        name: 'Alert', 
-        options: ['Morning', 'Afternoon', 'Evening', 'No Differences'], 
-        required: false
-      },
-    ],
-      data: {
-        typeoftrial: 'demo',
-        Experiment: jsPsych.timelineVariable('Experiment'),
-        subject: subject_id
-      }
+  }
 };
 
 var english = {
-    type: jsPsychSurveyMultiChoice,
-    questions: [
-      {
-        prompt: "Is English your first language?", 
-        name: 'English', 
-        options: ['Yes', 'No'], 
-        required: true
-      },
-    ],
-      data: {
-        typeoftrial: 'english',
-        Experiment: jsPsych.timelineVariable('Experiment'),
-        subject: subject_id
-      }
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "Is English your first language?", 
+      name: 'English', 
+      options: ['Yes', 'No'], 
+      required: true
+    }
+  ],
+  data: {
+    typeoftrial: 'english',
+    Experiment: jsPsych.timelineVariable('Experiment'),
+    subject: subject_id
+  }
 };
 
 var not_english = {
   type: jsPsychSurveyText,
   preamble: "<p> You indicated that English is not your first language in the previous question. Please answer the following questions:</p> ",
-  questions: [ {prompt: "What is your first language?"},
-  {prompt: "At what age did you learn English?"} ],
+  questions: [ 
+    {prompt: "What is your first language?"},
+    {prompt: "At what age did you learn English?"}
+  ],
   data: {
     typeoftrial: 'notenglish',
     Experiment: jsPsych.timelineVariable('Experiment'),
@@ -296,7 +303,8 @@ var not_english_loop = {
 
 var demo_5 = {
   type: jsPsychSurveyText,
-  questions: [ {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)"},
+  questions: [ 
+    {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)"}
   ],
   data: {
     typeoftrial: 'demo',
@@ -312,22 +320,11 @@ var demo_procedure = {
 var completion_code = "<strong>Your completion code is: C125M9LH. Please copy-paste this code and submit it on Prolific to recieve compensation.</strong>"
 
 var end_experiment = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: 'Thank you for participating! Press any key to end the experiment.',
-  data: {
-    typeoftrial: 'instructions',
-    list_number: jsPsych.timelineVariable('List'),
-    trialcondition: jsPsych.timelineVariable('condition'),
-    subject: subject_id
-  }
-};
-
-var end_experiment_prolific = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function(){
     var text = "<p>Thank you for participating! </p>" + completion_code + '<p>Click <a href="https://drive.google.com/file/d/1c70cdHFlc0AaR6RujLWLJwWkv1RbHQJY/view?usp=sharing" target="_blank" rel="noopener noreferrer">here</a> to access the debriefing form and know more about our research. <p> Please click the button below to finish the experiment and save your data.</p> <p> IMPORTANT: Please <strong>do not leave this page </strong> without clicking the button below.</p> <p> You may close the tab/window after you click the button below.';
     return text;
-    }, 
+  }, 
   choices: ['Finish and Save Data']
 };
 
