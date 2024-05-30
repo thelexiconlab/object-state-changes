@@ -44,7 +44,7 @@ data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
 #                                             trialcondition, index, correct,
 #                                             comprehension_type, Experiment,
 #                                             question_order, data_source)
-# 
+ 
 # data  = data2 %>% select(subject, typeoftrial, response, stimulus, rt,
 #                                             trialcondition, index, correct,
 #                                             comprehension_type, Experiment,
@@ -67,12 +67,12 @@ View(data %>% group_by(subject) %>% count())
 # data treatment
 
 ##comprehension scores \*\*note this is based on the fixed code
+###for unregistered dataset: comp = incorrect/24
 
 ```{r}
 comprehension_scores <- data %>% group_by(data_source, subject) %>%
   filter(typeoftrial=="comprehension") %>% count(response==comprehension_type) %>%
-   pivot_wider(names_from = c(3), values_from = n) %>% rename(correct = "TRUE") %>%
-  mutate(comp = correct/24)
+   pivot_wider(names_from = c(3), values_from = n) %>% rename(correct = "TRUE") %>% rename(incorrect = "FALSE") %>% mutate(comp = correct /24)
 
 inaccurate_comp <- comprehension_scores %>% filter(comp < 0.5)
 

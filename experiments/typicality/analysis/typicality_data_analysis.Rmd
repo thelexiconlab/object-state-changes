@@ -27,11 +27,19 @@ prolific_data <- read_csv(P_subjects) %>% rbind()
 S_subjects = list.files(path ='../data/sona', recursive = TRUE, pattern = '.csv', full.names = TRUE)
 sona_data <- read_csv(S_subjects) %>% rbind()
 
+## import 2nd prolific data file
+prolific2 <- read_csv("../data/typicality.csv")
+
 ## merge sona and prolific data
 ncol(prolific_data)
 ncol(sona_data)
+ncol(prolific2)
+colnames(prolific2)
+colnames(prolific_data)
 
-data <- rbind(prolific_data, sona_data) %>% filter(!is.na(subject))
+prolific2 <- prolific2 %>% select(!(c(12:22)))
+
+data <- rbind(prolific_data, sona_data, prolific2) %>% filter(!is.na(subject))
 ```
 
 # basic descriptives
@@ -60,7 +68,7 @@ exclusions_data <- data %>%
 ##accuracy data
 ```{r}
 subject_accuracy <- exclusions_data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
-InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
+InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.78)
 ```
 
 ## plot
@@ -75,7 +83,7 @@ exclusions_data %>%
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "mean accuracy", title = "squashability ratings")+
+  labs(y = "mean accuracy", title = "accuracy plot")+
   theme_clean()+
   scale_fill_manual(values = c("darksalmon", "darkslategray4"))+
   theme(plot.background = element_rect(
@@ -87,6 +95,8 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ```
 ## main accuracy model
 ```{r}
+library(glmmTMB)
+library(lme4)
 acc_model = glmer(data = exclusions_data, 
                   accuracy ~ state*typicality + (1 + state*typicality|subject) + (1|stimulus),
                   family = "binomial", 
@@ -156,7 +166,7 @@ mad_data %>%
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per squashability x state condition")+
+  labs(y = "RT (ms)", title = "RT per color x state condition")+
   theme_clean()+
   scale_fill_manual(values = c("black", "lightgray"))+
   theme(plot.background = element_rect(
