@@ -26,7 +26,7 @@ getwd()
 ```{r}
 
 ## read data
-data1 <- read_csv('../data/preregistered.csv') %>% mutate(data_source = "prerregistered")
+data1 <- read_csv('../data/preregistered.csv') %>% mutate(data_source = "preregistered")
 data2 <- read_csv('../data/unregistered.csv') %>% mutate(data_source = "unregistered")
 
 data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
@@ -37,18 +37,11 @@ data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
                                             stimulus, trialcondition, index, correct,
                                             comprehension_type, Experiment,
                                             question_order, data_source)) %>%
-  filter(!is.na(subject))
+                            filter(!is.na(subject))
 
 ## USE THIS CODE TO EXAMINE ONE DATASET AT A TIME
-# data  = data1 %>% select(subject, typeoftrial, response, stimulus, rt,
-#                                             trialcondition, index, correct,
-#                                             comprehension_type, Experiment,
-#                                             question_order, data_source)
- 
-# data  = data2 %>% select(subject, typeoftrial, response, stimulus, rt,
-#                                             trialcondition, index, correct,
-#                                             comprehension_type, Experiment,
-#                                             question_order, data_source)
+# data  = data %>% filter(data_source == "preregistered")  ### preregistered
+# data  = data %>% filter(data_source == "unregistered")  ### unregistered
   
 ncol(data)
 colnames(data)
@@ -62,20 +55,27 @@ length(data %>% pull(subject) %>% unique())
 
 ## number of trials per subject = 338
 View(data %>% group_by(subject) %>% count())
+
+## Note: One participant accidentally clicked that English was not their first language,
+###          and they noted the mistake in their next response (pre-reg. data)
+##       For unreg data, #58851 said Spanish is 1st language, learned English at 3.
+###          #59274 and #40746 also selected 'No' for 1st language, but then wrote English is 1st language
+### 58851 and 40746 missed the accuracy cutoff anyway.
 ```
 
 # data treatment
 
-##comprehension scores \*\*note this is based on the fixed code
-###for unregistered dataset: comp = incorrect/24
+##comprehension scores (coding issue fixed, see comment)
 
 ```{r}
 comprehension_scores <- data %>% group_by(data_source, subject) %>%
   filter(typeoftrial=="comprehension") %>% count(response==comprehension_type) %>%
-   pivot_wider(names_from = c(3), values_from = n) %>% rename(correct = "TRUE") %>% rename(incorrect = "FALSE") %>% mutate(comp = correct /24)
+  pivot_wider(names_from = c(3), values_from = n) %>% rename(correct = "TRUE") %>% 
+  rename(incorrect = "FALSE") %>% mutate(comp = case_when(data_source == "unregistered" ~ incorrect /24,
+                                                          .default = correct /24))
+# For the unregistered data, comprehension responses were labeled 'incorrect' when they were actually 'correct' (and vice-versa). To address this, the code now calculates the comp.score by dividing incorrect/24 for the unregistered data: see the case_when() code above.
 
 inaccurate_comp <- comprehension_scores %>% filter(comp < 0.5)
-
 ```
 
 ## exclusions
