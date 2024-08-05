@@ -30,17 +30,15 @@ data1 <- read_csv('../data/preregistered.csv') %>% mutate(data_source = "preregi
 data2 <- read_csv('../data/unregistered.csv') %>% mutate(data_source = "unregistered")
 
 data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
-                                            trialcondition, index, correct,
-                                            comprehension_type, Experiment,
-                                            question_order, data_source), 
-                           data2 %>% select(subject, typeoftrial,response, rt, 
-                                            stimulus, trialcondition, index, correct,
-                                            comprehension_type, Experiment,
-                                            question_order, data_source)) %>%
-                            filter(!is.na(subject))
+                               trialcondition, index, correct, comprehension_type, 
+                               Experiment, question_order, data_source, time_elapsed), 
+              data2 %>% select(subject, typeoftrial,response, rt, stimulus, 
+                                trialcondition, index, correct, comprehension_type, 
+                                Experiment, question_order, data_source, time_elapsed)) %>% 
+                        filter(!is.na(subject))
 
 ## USE THIS CODE TO EXAMINE ONE DATASET AT A TIME
-# data  = data %>% filter(data_source == "preregistered")  ### preregistered
+ data  = data %>% filter(data_source == "preregistered")  ### preregistered
 # data  = data %>% filter(data_source == "unregistered")  ### unregistered
   
 ncol(data)
@@ -81,6 +79,10 @@ inaccurate_comp <- comprehension_scores %>% filter(comp < 0.5)
 ## exclusions
 
 ```{r}
+## exclude non-English language participants***
+#lang <- data %>% filter(typeoftrial == "notenglish")
+#final_data <- final_data %>% filter(!subject %in% lang$subject)
+
 ##exclude filler, practice, and non-picture trials
 exclusions_data <- data %>% 
   filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice", "practice_n", "practice_s"))) %>%

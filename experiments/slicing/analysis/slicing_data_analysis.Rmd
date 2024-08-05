@@ -15,6 +15,7 @@ library(rstatix)
 library(ggpubr)
 library(emmeans)
 library(dplyr)
+library(lmerTest)
 setwd(here::here())
 getwd()
 ```
@@ -37,13 +38,19 @@ data <- rbind(prolific_data, sona_data, prolific_data_2) %>%
   filter(!is.na(subject))
 ```
 
-# basic descriptives
+# basic descriptives and first langugae check
 ```{r}
 ## N(total) = 106
 length(data %>% pull(subject) %>% unique())
 
 ## number of trials per subject
 View(data %>% group_by(subject) %>% count())
+
+## Exclude English not first language subjects:
+lang <- data %>% filter(typeoftrial == "notenglish")
+data <- data %>% filter(!subject %in% lang$subject)
+### 19358(Korean,4or5), 61607(Zulu,3), 85526(Setswana,3), 1697(Xitsonga,3), 22979(Sepedi,4), 47633(Polish,6)
+length(data %>% pull(subject) %>% unique())
 ```
 
 # data treatment
@@ -152,14 +159,15 @@ mad_data = rt_data %>%
 mad_data %>% 
   group_by(verb, state) %>%
    summarise(ci = list(mean_cl_boot(rt) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "whole", `non-canonical` = "slice" ),
-         state = fct_relevel(state, "non-canonical","canonical"))%>%
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest %>%
+  mutate(state = fct_recode(state, whole = "whole", `sliced` = "slice" ),
+         state = fct_relevel(state, "sliced","whole"))%>%
   ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per verb x state condition")+
+  labs(y = "RT (ms)", title = "RT per sentence x picture condition",x = "picture state",
+       fill = "sentence type") +
   theme_clean()+
   scale_fill_manual(values = c("black", "lightgray"))+
   theme(plot.background = element_rect(
@@ -217,6 +225,7 @@ car::Anova(squashed_model)
 ```
 
 Significant interaction: for "intact" pictures, neutral verb RT < modified verb RT. For "sliced" pictures, modified verb RT marginally < neutral verb RT.
+^This changed slightly when removing non-English first language participants (n=6).
 
 
 # Demographic Info

@@ -51,6 +51,10 @@ final_data %>% group_by(subject) %>% count()
 
 ## exclusions
 ```{r}
+## exclude non-English language participants
+lang <- final_data %>% filter(typeoftrial == "notenglish")
+final_data <- final_data %>% filter(!subject %in% lang$subject)
+
 ##exclude filler, practice, and non-picture trials
 exclusions_data <- final_data %>%
   filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice"))) %>%
@@ -114,7 +118,7 @@ rt_data <- exclusions_data %>% filter(accuracy==1) %>%
   ##exclude subjects with accuracy < 80%
   filter(!subject %in% InaccurateSubjects$subject)
 
-##total participants after exclusion: N = 120 (5 excluded)
+##total participants after exclusion: N = 113 (5 excluded)
 length(rt_data %>% pull(subject) %>% unique())
 ```
 
