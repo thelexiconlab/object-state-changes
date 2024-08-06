@@ -49,12 +49,18 @@ final_data %>% group_by(subject) %>% count()
 ```
 # data treatment
 
+## exclude non-English first language participants***
+```{r}
+lang <- final_data %>% filter(typeoftrial == "notenglish") %>% 
+  separate(response, into = c("first", "age"), sep = ",") %>% 
+  separate(first, into = c("q0", "first"), sep = ":") %>% mutate(first = gsub(" ", "", first)) %>%
+  filter(toupper(first) != '"ENGLISH"')
+
+final_data <- final_data %>% filter(!subject %in% lang$subject)
+```
+
 ## exclusions
 ```{r}
-## exclude non-English language participants
-lang <- final_data %>% filter(typeoftrial == "notenglish")
-final_data <- final_data %>% filter(!subject %in% lang$subject)
-
 ##exclude filler, practice, and non-picture trials
 exclusions_data <- final_data %>%
   filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice"))) %>%
@@ -221,8 +227,21 @@ car::Anova(squashed_model)
 
 Marginal interaction: for "intact", unsquashable RT < squashable RT. For "smashed", squashable RT < unsquashable RT.
 
+# Demographics and other Descriptives
 
-# Demographic Info
+## Experiment Duration (minutes)
+```{r}
+duration <- final_data %>% filter(typeoftrial == "english") %>%
+  mutate(time_elapsed = time_elapsed/1000/60)
+
+duration %>% pull(time_elapsed) %>% hist(40)
+duration %>% pull(time_elapsed) %>% boxplot()
+
+duration %>%  summarise(med = median(time_elapsed), iqr = IQR(time_elapsed), max = max(time_elapsed), min = min(time_elapsed))
+quantile(duration$time_elapsed, c(.25,.75))
+```
+
+## Demographic Info
 ```{r}
 demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
