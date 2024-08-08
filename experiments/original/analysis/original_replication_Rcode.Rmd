@@ -107,6 +107,10 @@ subject_accuracy <- exclusions_data %>% group_by(subject) %>%
       summarise(TaskAccuracy=mean(correct))
 
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
+
+# Descriptives
+exclusions_data %>% summarise(overall.acc = mean(correct))
+exclusions_data %>% group_by(weight, state) %>% summarise(overall.acc = mean(correct))
 ```
 
 ## plot
@@ -275,7 +279,7 @@ quantile(duration$time_elapsed, c(.25,.75))
 
 ## demographics
 ```{r}
-demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
+demo = data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
 age = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo2) %>%
   mutate(age = as.numeric(gsub("[^[:digit:] ]", "", demo2)))
