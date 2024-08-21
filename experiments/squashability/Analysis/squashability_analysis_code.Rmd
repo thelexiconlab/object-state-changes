@@ -69,10 +69,12 @@ exclusions_data <- final_data %>%
   separate(trialcondition, into = c("squashability", "state"))
 ```
 
-## fix item labels 
+## item labels 
 ```{r}
 items <- gsub('.{0,6}$', '', exclusions_data$stimulus) %>% as.data.frame()
 exclusions_data <- exclusions_data %>% mutate(item = items[,1] )
+
+### For experimental picture trials: this code creates a new column 'items' to id the item (picture stimulus) used in each trial. The column 'stimulus' has the picture file name and specifies the smashed/intact picture state. This new col only has the item  (ex. the original stimulus label might be "tomatoS.png" or tomatoN.png" -> new label is "tomato")
 ```
 
 
@@ -109,7 +111,7 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ## main accuracy model
 ```{r}
 acc_model = glmer(data = exclusions_data, 
-                  accuracy ~ state*squashability + (1 + state + squashability|subject) + (1|item),
+                  accuracy ~ state*squashability + (1 + state + squashability|subject) + (1|stimulus),
                   family = "binomial", 
                  control = glmerControl(optimizer = "bobyqa",
                                          optCtrl=list(maxfun=200000), 
@@ -191,7 +193,7 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ```{r}
 rt_model = lmer(data = mad_data, 
                 log10_rt ~ squashability*state +
-                  (1 + squashability*state |subject) + (1|item),
+                  (1 + squashability*state |subject) + (1|stimulus),
                 REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),

@@ -73,7 +73,7 @@ lang <- data %>% filter(typeoftrial == "notenglish") %>%
 data <- data %>% filter(!subject %in% lang$subject)
 ```
 
-## comprehension scores (coding issue fixed, see comment)
+## comprehension scores
 
 ```{r}
 comprehension_scores <- data %>% group_by(data_source, subject) %>%
