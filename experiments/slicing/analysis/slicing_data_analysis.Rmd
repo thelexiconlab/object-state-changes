@@ -15,6 +15,7 @@ library(rstatix)
 library(ggpubr)
 library(emmeans)
 library(dplyr)
+library(lmerTest)
 setwd(here::here())
 getwd()
 ```
@@ -37,7 +38,7 @@ data <- rbind(prolific_data, sona_data, prolific_data_2) %>%
   filter(!is.na(subject))
 ```
 
-# basic descriptives
+# basic descriptives and first langugae check
 ```{r}
 ## N(total) = 106
 length(data %>% pull(subject) %>% unique())
@@ -47,6 +48,16 @@ View(data %>% group_by(subject) %>% count())
 ```
 
 # data treatment
+## exclude non-English first language participants***
+```{r}
+lang <- data %>% filter(typeoftrial == "notenglish") %>% 
+  separate(response, into = c("first", "age"), sep = ",") %>% 
+  separate(first, into = c("q0", "first"), sep = ":") %>% mutate(first = gsub(" ", "", first)) %>%
+  filter(toupper(first) != '"ENGLISH"')
+
+data <- data %>% filter(!subject %in% lang$subject)
+length(data %>% pull(subject) %>% unique())
+```
 
 ## exclusions
 ```{r}
@@ -152,14 +163,15 @@ mad_data = rt_data %>%
 mad_data %>% 
   group_by(verb, state) %>%
    summarise(ci = list(mean_cl_boot(rt) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "whole", `non-canonical` = "slice" ),
-         state = fct_relevel(state, "non-canonical","canonical"))%>%
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest %>%
+  mutate(state = fct_recode(state, whole = "whole", `sliced` = "slice" ),
+         state = fct_relevel(state, "sliced","whole"))%>%
   ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per verb x state condition")+
+  labs(y = "RT (ms)", title = "RT per sentence x picture condition",x = "picture state",
+       fill = "sentence type") +
   theme_clean()+
   scale_fill_manual(values = c("black", "lightgray"))+
   theme(plot.background = element_rect(
@@ -217,9 +229,24 @@ car::Anova(squashed_model)
 ```
 
 Significant interaction: for "intact" pictures, neutral verb RT < modified verb RT. For "sliced" pictures, modified verb RT marginally < neutral verb RT.
+^This changed slightly when removing non-English first language participants (n=6).
 
 
-# Demographic Info
+# Demographics and other Descriptives
+
+## Experiment Duration (minutes)
+```{r}
+duration <- data %>% filter(trial_index == 312) %>%
+  mutate(time_elapsed = time_elapsed/1000/60)
+
+duration %>% pull(time_elapsed) %>% hist(40)
+duration %>% pull(time_elapsed) %>% boxplot()
+
+duration %>%  summarise(med = median(time_elapsed), iqr = IQR(time_elapsed), max = max(time_elapsed), min = min(time_elapsed))
+quantile(duration$time_elapsed, c(.25,.75))
+```
+
+## Demographic Info
 ```{r}
 demo = data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")

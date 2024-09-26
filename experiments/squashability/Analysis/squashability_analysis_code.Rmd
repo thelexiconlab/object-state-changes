@@ -49,6 +49,16 @@ final_data %>% group_by(subject) %>% count()
 ```
 # data treatment
 
+## exclude non-English first language participants***
+```{r}
+lang <- final_data %>% filter(typeoftrial == "notenglish") %>% 
+  separate(response, into = c("first", "age"), sep = ",") %>% 
+  separate(first, into = c("q0", "first"), sep = ":") %>% mutate(first = gsub(" ", "", first)) %>%
+  filter(toupper(first) != '"ENGLISH"')
+
+final_data <- final_data %>% filter(!subject %in% lang$subject)
+```
+
 ## exclusions
 ```{r}
 ##exclude filler, practice, and non-picture trials
@@ -58,6 +68,15 @@ exclusions_data <- final_data %>%
   mutate(accuracy=ifelse(correct=="TRUE",1,0)) %>% 
   separate(trialcondition, into = c("squashability", "state"))
 ```
+
+## item labels 
+```{r}
+items <- gsub('.{0,6}$', '', exclusions_data$stimulus) %>% as.data.frame()
+exclusions_data <- exclusions_data %>% mutate(item = items[,1] )
+
+### For experimental picture trials: this code creates a new column 'items' to id the item (picture stimulus) used in each trial. The column 'stimulus' has the picture file name and specifies the smashed/intact picture state. This new col only has the item  (ex. the original stimulus label might be "tomatoS.png" or tomatoN.png" -> new label is "tomato")
+```
+
 
 # accuracy analyses
 
@@ -114,10 +133,9 @@ rt_data <- exclusions_data %>% filter(accuracy==1) %>%
   ##exclude subjects with accuracy < 80%
   filter(!subject %in% InaccurateSubjects$subject)
 
-##total participants after exclusion: N = 120 (5 excluded)
+##total participants after exclusion: N = 113 (5 excluded)
 length(rt_data %>% pull(subject) %>% unique())
 ```
-
 
 ## transforming RT
 ```{r}
@@ -199,7 +217,7 @@ intact_data = mad_data %>% filter(state == "Normal")
 squashed_data = mad_data %>% filter(state == "Smashed")
 # run separate models on these data
 intact_model = lmer(data = intact_data, log10_rt ~ squashability + (squashability | subject) + 
-                      (1 | stimulus), REML = FALSE, 
+                      (1 | item), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
@@ -207,7 +225,7 @@ intact_model = lmer(data = intact_data, log10_rt ~ squashability + (squashabilit
 summary(intact_model)
 car::Anova(intact_model)
 squashed_model = lmer(data = squashed_data, log10_rt ~ squashability + (squashability | subject) + 
-                      (1 | stimulus), REML = FALSE, 
+                      (1 | item), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
@@ -217,8 +235,21 @@ car::Anova(squashed_model)
 
 Marginal interaction: for "intact", unsquashable RT < squashable RT. For "smashed", squashable RT < unsquashable RT.
 
+# Demographics and other Descriptives
 
-# Demographic Info
+## Experiment Duration (minutes)
+```{r}
+duration <- final_data %>% filter(typeoftrial == "english") %>%
+  mutate(time_elapsed = time_elapsed/1000/60)
+
+duration %>% pull(time_elapsed) %>% hist(40)
+duration %>% pull(time_elapsed) %>% boxplot()
+
+duration %>%  summarise(med = median(time_elapsed), iqr = IQR(time_elapsed), max = max(time_elapsed), min = min(time_elapsed))
+quantile(duration$time_elapsed, c(.25,.75))
+```
+
+## Demographic Info
 ```{r}
 demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")
