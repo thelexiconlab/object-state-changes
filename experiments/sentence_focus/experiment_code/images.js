@@ -125,4 +125,8 @@ var images = [['PICTURES/orange.jpg'],
 ['PICTURES/windowshieldN.jpg'],
 ['PICTURES/windowshieldS.jpg'],
 ['PICTURES/wineglassN.jpg'],
-['PICTURES/wineglassS.jpg']];
+['PICTURES/wineglassS.jpg'],
+['PICTURES/cupB.jpg'],
+['PICTURES/cigaretteB.jpg'],
+['PICTURES/hammerB.jpg'],
+['PICTURES/tableB.jpg']];
