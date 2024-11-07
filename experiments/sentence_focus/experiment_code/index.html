@@ -26,16 +26,16 @@
     <script src="images.js"></script>
     <link rel="stylesheet" href="expstyle.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@2.0.0"></script>
 
   </head>
   <body></body>
   <script>
 var jsPsych = initJsPsych({
       on_finish: function() {
+        jsPsych.data.displayData();
       }
     });
-
-var timeline = [];
 
 var chosen = "X"
   
@@ -356,19 +356,30 @@ trial_duration: function(){
 
 
   var demo_1 = {
-      type: jsPsychSurveyText,
-      questions: [
-        {prompt: 'What is your age?', required: true, name: 'Age'},
-        {prompt: 'What is your gender?', required: true, name: 'Gender'},
-        {prompt: 'How many years of formal education have you had? (consider graduating high school to be 12 years)', 
-        required: true, name: 'Education'}
-      ],
-      button_label: 'Next',
+    type: jsPsychSurveyHtmlForm,
+        preamble: "<h2>Demographics Questionnaire</h2>", name: 'heading', rows: 1, columns: 50,
+        html: `
+        <label for="gender">What is your gender?</label>
+        <input type="text" id="gender" name="gender" required><br><br>
+        
+        <label for="age">What is your age?</label>
+        <input type="number" id="age" name="age" min="0" max="120" required><br><br>
+
+        <label for="education">How many years of formal education have you had? (consider graduating high school to be 12 years)</label>
+        <input type="number" id="education" name="education" min="0" max="120" required><br><br>
+    `,
       data: {
         typeoftrial: 'demo',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
-      }
+      },
+      on_finish: function(data){
+
+        data.age = data.response.age
+        data.gender = data.response.gender
+        data.education = data.response.education
+
+        }
   };
 
   var demo_2 = {
@@ -378,7 +389,7 @@ questions: [
     prompt: "Please select all the racial categories that apply to you:", 
     options: ["American Indian/Alaskan Native","Asian", "Black/African American", 
     "Native Hawaiian or Other Pacific Islander" , 
-      "White/Caucasian", "More than once race", "Other"], 
+      "White/Caucasian", "Other"], 
     horizontal: false,
     required: false,
     name: 'Race'
@@ -388,7 +399,17 @@ data: {
         typeoftrial: 'demo',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
+      },
+      on_finish: function(data){
+        data.race = data.response.Race
+        // if length of data.race is more than 1, then replace race with "multiracial"
+        if(data.race.length > 1){
+          data.race = "multiracial"
       }
+      else{
+        data.race = data.race[0]
+      }
+    }
 };
 
   var demo_3 = {
@@ -396,7 +417,7 @@ data: {
     questions: [
     {
         prompt: "Are you of Hispanic, Latino/a/x or of Spanish origin?", 
-        name: 'Latino', 
+        name: 'hispanic', 
         options: ['Yes', 'No', 'Prefer not to respond'], 
         required: false
       }, 
@@ -417,59 +438,72 @@ data: {
         typeoftrial: 'demo',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
-      }
+      },
+      on_finish: function(data){
+        data.hispanic = data.response.hispanic
+        data.dominantHand = data.response.DominantHand
+        data.alert = data.response.Alert
+    }
   };
 
 var english = {
-    type: jsPsychSurveyMultiChoice,
-    questions: [
-      {
-        prompt: "Is English your first language?", 
-        name: 'English', 
-        options: ['Yes', 'No'], 
-        required: true
-      },
-    ],
+  type: jsPsychHtmlButtonResponse,
+    stimulus: "Is English your first language?<br><br>",
+    choices: ['Yes','No'],
       data: {
         typeoftrial: 'english',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
-      }
+      },
+      on_finish: function(data){
+        if(data.response == 0){data.english = "yes"}
+        else{data.english = "no"}
+    }
   };
 
 
 var not_english = {
-type: jsPsychSurveyText,
-preamble: "<p> You indicated that English is not your first language in the previous question. Please answer the following questions:</p> ",
-questions: [ {prompt: "What is your first language?"},
-{prompt: "At what age did you learn English?"} ],
-data: {
+  type: jsPsychSurveyHtmlForm,
+  preamble: "You indicated that English is not your first language. Please answer the following questions:<br><br>",
+  html: `
+    <label for="first_language_detail">What is your first language?</label>
+    <input type="text" id="first_language" name="first_language" required><br><br>
+    
+    <label for="age_learned_english">At what age did you learn English?</label>
+    <input type="number" id="age_learned_english" name="age_learned_english" min="0" max="120" required><br><br>
+  `,
+  data: {
         typeoftrial: 'notenglish',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
-      }
+      },
+    on_finish: function(data){
+        data.first_language = data.response.first_language
+        data.age_learned_english = data.response.age_learned_english
+    }
 }
 
 var not_english_loop = {
 timeline: [not_english],
 conditional_function: function() {
-var dat = jsPsych.data.getLastTrialData().values()[0];
-var answer = JSON.stringify(dat.response.English);
-answer = answer.replace(/\W/g, '')
-if(answer.localeCompare("No") == 0) {return true;} 
-else {return false;}
-}
+        var lastTrialData = jsPsych.data.get().last(1).values()[0];
+        //console.log("lastTrialData=",lastTrialData)
+        return lastTrialData.response === 1;
+    }
 }
 
 var demo_5 = {
 type: jsPsychSurveyText,
-questions: [ {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)"},
+questions: [ {prompt: "Is there anything else we should know about, which might have affected your performance during the experiment? (e.g., lack of sleep, feeling ill etc.)",name: 'additional_info'},
 ],
 data: {
         typeoftrial: 'demo',
         Experiment: jsPsych.timelineVariable('Experiment'),
         subject: subject_id
-      }
+      },
+    on_finish: function(data){
+        data.other_info = data.response.additional_info
+    }
 }
 
 var demo_procedure = {
@@ -481,20 +515,6 @@ var save_data = {
     func: function(){saveData(subject_id+".csv",
       jsPsych.data.get().csv())}
 }
-
-/*
-function saveData(filename, filedata){
-  	$.ajax({
-  		type:'post',
-  		cache: false,
-  		url: 'save_data.php', // this is the path to the above PHP script
-      //url: https://script.google.com/macros/s/AKfycbzV--xTooSkBLufMs4AnrCTdwZxVNtycTE4JNtaCze2UijXAg8/exec
-  		data: {filename: filename, filedata: filedata}})
-  }
-
-*/
-
-  
   
 var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-paste this code and submit it on Prolific.</strong>"
 
@@ -509,20 +529,8 @@ var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-pa
 
   // add everything to timeline
 
-  timeline.push(preload);
-  //timeline.push(consent_trial);
- // timeline.push(ID);
-  timeline.push(instructions1);
-  timeline.push(instructions2);
- // timeline.push(practice_procedure);
-  timeline.push(movetoexp);
-  timeline.push(test_procedure);
-  timeline.push(demoinstructions)
-  timeline.push(demo_procedure);
-  //timeline.push(save_data);
-  timeline.push(endexperiment);
-  
-  jsPsych.run(timeline);
+  //jsPsych.run([preload, consent_trial, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
+  jsPsych.run([demo_procedure]);
 
 </script>
 </html>
