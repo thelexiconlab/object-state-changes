@@ -259,7 +259,7 @@ trial_duration: function(){
 
   const shuffled = filler_indices.sort(() => 0.5 - Math.random());
   // Get sub-array of first 40 elements after shuffled
-  let selected = shuffled.slice(0, 23);
+  let selected = shuffled.slice(0, 24);
 
   var yes_q = 0
   var no_q = 0
@@ -304,8 +304,6 @@ trial_duration: function(){
   var comprehension_loop = {
     timeline: [filler_comprehension],
     conditional_function: function() {
-    console.log("Type of last_trial_index:", typeof last_trial_index);
-    console.log("Types of selected values:", selected.map(item => typeof item));
     console.log("conditional_function executed")
     console.log("Is comprehension?", last_trial_condition === "filler" && selected.includes(last_trial_index));
     console.log("Selected indices for comprehension:", selected);
@@ -513,10 +511,10 @@ var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-pa
 
   timeline.push(preload);
   //timeline.push(consent_trial);
-  timeline.push(ID);
+ // timeline.push(ID);
   timeline.push(instructions1);
   timeline.push(instructions2);
-  timeline.push(practice_procedure);
+ // timeline.push(practice_procedure);
   timeline.push(movetoexp);
   timeline.push(test_procedure);
   timeline.push(demoinstructions)
