@@ -33,34 +33,35 @@
   <script>
 var jsPsych = initJsPsych({
       on_finish: function() {
-        jsPsych.data.displayData();
+        //jsPsych.data.displayData();
       }
     });
 
 var chosen = "X"
+
+
+var list = [1,2,3,4,5,6,7,8]
+
+var CONDITION = list[Math.floor(Math.random() * list.length)];
+console.log("CONDITION=", CONDITION)
+
+function get_stimuli(CONDITION) {
+  var teststimuli = []
+  if(CONDITION == 1){return list1a}
+  else if(CONDITION == 2){return list1b}
+  else if(CONDITION == 3){return list2a}
+  else if(CONDITION == 4){return list2b}
+  else if(CONDITION == 5){return list3a}
+  else if(CONDITION == 6){return list3b}
+  else if(CONDITION == 7){returnlist4a}
+  else{return list4b}
+};
+
+experiment_stimuli = get_stimuli(CONDITION)
+
+console.log("teststimuli=", teststimuli)
   
 var subject_id = Math.floor(Math.random()*100000);
-
-var check_consent = function(elem) {
-    if (document.getElementById('consent_checkbox').checked) {
-        return true;
-    }
-    else {
-        alert("If you wish to participate, you must check the box next to the statement 'I agree to participate in this study.'");
-        return false;
-    }
-    return false;
-};
-
-// declare the block.
-var consent_trial = {
-    type: jsPsychExternalHtml,
-    url: "consent.html",
-    cont_btn: "start",
-    check_fn: check_consent
-};
-
-
 var ID = {
       type: jsPsychSurveyText,
       questions: [
@@ -193,8 +194,8 @@ var instructions2 = {
     last_trial_index = +data.index
     
      // Log values to check if they are correctly assigned
-    console.log("Trial finished - last_trial_condition:", last_trial_condition);
-    console.log("Trial finished - last_trial_index:", last_trial_index);
+    //console.log("Trial finished - last_trial_condition:", last_trial_condition);
+    //console.log("Trial finished - last_trial_index:", last_trial_index);
 
   // Score the response as correct or incorrect.
   if(jsPsych.pluginAPI.compareKeys(data.response, jsPsych.timelineVariable('correct'))){
@@ -268,7 +269,7 @@ trial_duration: function(){
   var filler_comprehension = {
     type: jsPsychHtmlKeyboardResponse,
     on_start: function() {
-        console.log("Comprehension trial displayed");
+        //console.log("Comprehension trial displayed");
         document.body.style.backgroundColor = 'black'
         document.body.style.color = 'white'
     },
@@ -304,33 +305,20 @@ trial_duration: function(){
   var comprehension_loop = {
     timeline: [filler_comprehension],
     conditional_function: function() {
-    console.log("conditional_function executed")
-    console.log("Is comprehension?", last_trial_condition === "filler" && selected.includes(last_trial_index));
-    console.log("Selected indices for comprehension:", selected);
+    //console.log("conditional_function executed")
+    //console.log("Is comprehension?", last_trial_condition === "filler" && selected.includes(last_trial_index));
+    //console.log("Selected indices for comprehension:", selected);
     
     if(last_trial_condition == "filler" && selected.includes(last_trial_index)) {return true;} 
     else {return false;}
     }
   }
 
-  var teststimuli = []
-  var list = [1,2,3,4,5,6,7,8]
-
-  var CONDITION = list[Math.floor(Math.random() * list.length)];
-
-  if(CONDITION == 1){teststimuli = list1a}
-  else if(CONDITION == 2){teststimuli = list1b}
-  else if(CONDITION == 3){teststimuli = list2a}
-  else if(CONDITION == 4){teststimuli = list2b}
-  else if(CONDITION == 5){teststimuli = list3a}
-  else if(CONDITION == 6){teststimuli = list3b}
-  else if(CONDITION == 7){teststimuli = list4a}
-  else{teststimuli = list4b}
-
+  
 
   var test_procedure = {
     timeline: [fixation1, sentence, fixation2, picture, comprehension_loop],
-    timeline_variables: teststimuli,
+    timeline_variables: experiment_stimuli,
     randomize_order: true
   };
 
@@ -510,12 +498,6 @@ var demo_procedure = {
     timeline: [demo_1, demo_2,demo_3, english, not_english_loop, demo_5]
   }
 
-var save_data = {
-    type: jsPsychCallFunction,
-    func: function(){saveData(subject_id+".csv",
-      jsPsych.data.get().csv())}
-}
-  
 var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-paste this code and submit it on Prolific.</strong>"
 
   var endexperiment = {
@@ -529,8 +511,8 @@ var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-pa
 
   // add everything to timeline
 
-  //jsPsych.run([preload, consent_trial, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
-  jsPsych.run([demo_procedure]);
+  //jsPsych.run([preload, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
+ jsPsych.run([preload, ID, test_procedure]);
 
 </script>
 </html>
