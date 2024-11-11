@@ -53,13 +53,13 @@ function get_stimuli(CONDITION) {
   else if(CONDITION == 4){return list2b}
   else if(CONDITION == 5){return list3a}
   else if(CONDITION == 6){return list3b}
-  else if(CONDITION == 7){returnlist4a}
+  else if(CONDITION == 7){return list4a}
   else{return list4b}
 };
 
 experiment_stimuli = get_stimuli(CONDITION)
 
-console.log("teststimuli=", teststimuli)
+console.log("experiment_stimuli=", experiment_stimuli);
   
 var subject_id = Math.floor(Math.random()*100000);
 var ID = {
@@ -87,7 +87,8 @@ var instructions1 = {
   <p style="font-size:20px;"> In this experiment, you will be asked to make judgments about the content of different sentences.</p>
   <p style="font-size:20px;"> On each trial, you will read a sentence, and will be shown a picture immediately following the sentence. </p>
   <p style="font-size:20px;"> Your task is to decide whether the object displayed in the picture was mentioned in the sentence or not </p>
-  <p style="font-size:20px;"> and respond as quickly as possible by pressing <strong>S</strong> for yes or <strong>N</strong> for no. </p>
+  <p style="font-size:20px;"> and respond as quickly as possible by pressing <strong>Y</strong> for yes or <strong>N</strong> for no. </p>
+  <p style="font-size:20px;"> Please use your <strong>left</strong> hand to press the <strong>Y</strong> key and your <stong>right</strong> hand to press the <strong>N</strong> key. </p>
   <p style="font-size:20px;"> You will now do a practice session with feedback and instructions. </p>
   <p style="font-size:20px;"> Click the button below to continue.</p>
   `,
@@ -105,7 +106,7 @@ var instructions2 = {
   <p style="font-size:20px;"> On each trial, a sentence will appear on the screen. You should press SPACEBAR when you have read and understood the sentence.</p>
   <p style="font-size:20px;"> After you press SPACEBAR, a picture will appear on the screen. </p>
   <p style="font-size:20px;"> You need to indicate whether or not the pictured object was mentioned in the sentence. </p>
-  <p style="font-size:20px;"> If the object WAS mentioned in the preceding sentence, you should press <strong>S</strong> </p>
+  <p style="font-size:20px;"> If the object WAS mentioned in the preceding sentence, you should press <strong>Y</strong> </p>
   <p style="font-size:20px;"> If the object was NOT mentioned in the preceding sentence, you should press <strong>N</strong>. </p>
   <p style="font-size:20px;"> Click the button below to continue to the practice session.</p>
   `,
@@ -177,7 +178,7 @@ var instructions2 = {
   var picture = {
     type: jsPsychImageKeyboardResponse,
     stimulus: jsPsych.timelineVariable('imagepath'),
-    choices: ['S', 'N', 's', 'n'],
+    choices: ['Y', 'N', 'y', 'n'],
     data: {
         typeoftrial: 'picture',
         List: jsPsych.timelineVariable('List'),
@@ -187,15 +188,15 @@ var instructions2 = {
         index:jsPsych.timelineVariable('index'),
         subject: subject_id
       },
-  prompt: '<br>S (yes)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;N (no)',
+  prompt: '<br>Y (yes)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;N (no)',
   on_finish: function(data){
     // for comprehension
     last_trial_condition = data.trialcondition 
     last_trial_index = +data.index
     
      // Log values to check if they are correctly assigned
-    //console.log("Trial finished - last_trial_condition:", last_trial_condition);
-    //console.log("Trial finished - last_trial_index:", last_trial_index);
+    console.log("Trial finished - last_trial_condition:", last_trial_condition);
+    console.log("Trial finished - last_trial_index:", last_trial_index);
 
   // Score the response as correct or incorrect.
   if(jsPsych.pluginAPI.compareKeys(data.response, jsPsych.timelineVariable('correct'))){
@@ -215,7 +216,7 @@ stimulus: function(){
   var last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
   correct = last_trial_correct
   if(last_trial_correct){return "<p style='font-size: 70px; color: green;'>Correct!</p>"; } 
-  else {return "<p style='font-size: 70px;color: red;'>Wrong!</p> <p> Please pay attention. </p> <p>Remember, you should press <strong>S</strong> if the object in the picture was mentioned in the preceding sentence<br> and <strong>N</strong> if the object in the picture was not mentioned in the preceding sentence.";}
+  else {return "<p style='font-size: 70px;color: red;'>Wrong!</p> <p> Please pay attention. </p> <p>Remember, you should press <strong>Y</strong> if the object in the picture was mentioned in the preceding sentence<br> and <strong>N</strong> if the object in the picture was not mentioned in the preceding sentence.";}
 },
 trial_duration: function(){
   if(correct){return 1000}
@@ -236,7 +237,7 @@ trial_duration: function(){
       type: jsPsychHtmlButtonResponse,
       stimulus: `<p style="font-size:20px;">You have now completed the practice session! </p>
       <p style="font-size:20px;">You will now move on to the main experiment, where you will not be provided any feedback. </p>
-      <p style="font-size:20px;">Remember, you should press <strong>S</strong> if the pictured object was mentioned in the preceding sentence<br> and <strong>N</strong> if the pictured object was not mentioned in the preceding sentence.</p>
+      <p style="font-size:20px;">Remember, you should press <strong>Y</strong> with your left hand if the pictured object was mentioned in the preceding sentence<br> and <strong>N</strong> if the pictured object was not mentioned in the preceding sentence.</p>
       <p style="font-size:20px;">Please read the sentences carefully as you will be asked some <span style='color:#508AB0;'>comprehension questions </span> at random points during the experiment. </p>
       <p style="font-size:20px;">For these questions, make sure you are answering yes/no based on the content mentioned in the sentence.</p>
       <p style="font-size:20px;">Please click the button below to continue to the main experiment. </p>`,
@@ -285,8 +286,8 @@ trial_duration: function(){
         return jsPsych.timelineVariable('no_font')
       }
     },
-  prompt: '<br>S (yes)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;N (no)',
-  choices: ['S', 'N'],
+  prompt: '<br>Y (yes)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;N (no)',
+  choices: ['Y', 'N'],
     data: {
         typeoftrial: 'comprehension',
         List: jsPsych.timelineVariable('List'),
@@ -296,7 +297,7 @@ trial_duration: function(){
         subject: subject_id
       },
       on_finish: function(data){
-        if(chosen == "yes"){data.comprehension_type = "s"}
+        if(chosen == "yes"){data.comprehension_type = "y"}
         else{data.comprehension_type = "n"}
       }
 }
@@ -306,8 +307,8 @@ trial_duration: function(){
     timeline: [filler_comprehension],
     conditional_function: function() {
     //console.log("conditional_function executed")
-    //console.log("Is comprehension?", last_trial_condition === "filler" && selected.includes(last_trial_index));
-    //console.log("Selected indices for comprehension:", selected);
+    console.log("Is comprehension?", last_trial_condition === "filler" && selected.includes(last_trial_index));
+    console.log("Selected indices for comprehension:", selected);
     
     if(last_trial_condition == "filler" && selected.includes(last_trial_index)) {return true;} 
     else {return false;}
@@ -511,8 +512,8 @@ var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-pa
 
   // add everything to timeline
 
-  //jsPsych.run([preload, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
- jsPsych.run([preload, ID, test_procedure]);
+  jsPsych.run([preload, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
+ //jsPsych.run([preload, ID, test_procedure]);
 
 </script>
 </html>
