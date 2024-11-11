@@ -45,6 +45,7 @@ var list = [1,2,3,4,5,6,7,8]
 var CONDITION = list[Math.floor(Math.random() * list.length)];
 console.log("CONDITION=", CONDITION)
 
+
 function get_stimuli(CONDITION) {
   var teststimuli = []
   if(CONDITION == 1){return list1a}
@@ -58,7 +59,7 @@ function get_stimuli(CONDITION) {
 };
 
 experiment_stimuli = get_stimuli(CONDITION)
-
+console.log("CONDITION=", CONDITION)
 console.log("experiment_stimuli=", experiment_stimuli);
   
 var subject_id = Math.floor(Math.random()*100000);
@@ -237,7 +238,7 @@ trial_duration: function(){
       type: jsPsychHtmlButtonResponse,
       stimulus: `<p style="font-size:20px;">You have now completed the practice session! </p>
       <p style="font-size:20px;">You will now move on to the main experiment, where you will not be provided any feedback. </p>
-      <p style="font-size:20px;">Remember, you should press <strong>Y</strong> with your left hand if the pictured object was mentioned in the preceding sentence<br> and <strong>N</strong> if the pictured object was not mentioned in the preceding sentence.</p>
+      <p style="font-size:20px;">Remember, you should press <strong>Y</strong> with your left hand if the pictured object was mentioned in the preceding sentence<br> and <strong>N</strong> with your right hand if the pictured object was not mentioned in the preceding sentence.</p>
       <p style="font-size:20px;">Please read the sentences carefully as you will be asked some <span style='color:#508AB0;'>comprehension questions </span> at random points during the experiment. </p>
       <p style="font-size:20px;">For these questions, make sure you are answering yes/no based on the content mentioned in the sentence.</p>
       <p style="font-size:20px;">Please click the button below to continue to the main experiment. </p>`,
@@ -512,8 +513,8 @@ var completion_code = "<strong>Your completion code is: CTWG0E6Q. Please copy-pa
 
   // add everything to timeline
 
-  jsPsych.run([preload, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
- //jsPsych.run([preload, ID, test_procedure]);
+  //jsPsych.run([preload, ID, instructions1, instructions2, practice_procedure, movetoexp, test_procedure, demoinstructions, demo_procedure, endexperiment]);
+ jsPsych.run([preload, ID, test_procedure]);
 
 </script>
 </html>
