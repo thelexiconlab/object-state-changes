@@ -177,9 +177,9 @@ car::Anova(rt_model)
 
 ```{r}
 library(simr)
-# Start with an extended model up to 100 participants
+# Change the fixed effect to be small
 fixef(rt_model)["weightLight:stateSmashed:focusNotFocus"] = 0.05
-
+# Start with an extended model up to 250 participants
 extended_model <- extend(rt_model, along = "subject", n = 250)
 # Perform a power curve analysis to test the three-way interaction
 power_curve <- powerCurve(extended_model, 
