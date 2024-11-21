@@ -31,6 +31,7 @@ pilot_data <- read_csv("../data/sona_pilot.csv")
 length(pilot_data %>% pull(subject) %>% unique())
 ## N(final) = 10
 pilot_data %>% group_by(subject) %>% count()
+
 ```
 # data treatment
 
@@ -48,6 +49,9 @@ exclusions_data <- pilot_data %>%
   ##calculate subject accuracy
   mutate(accuracy=ifelse(correct=="TRUE",1,0)) %>% 
   separate(trialcondition, into = c("weight", "state","focus"))
+
+exclusions_data %>% group_by(subject, weight, state, focus) %>% count()
+
 ```
 
 ## item labels 
