@@ -85,7 +85,8 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
 ## main accuracy model
 ```{r}
 acc_model = glmer(data = exclusions_data, 
-                  accuracy ~ state*weight*focus + (1 + state + weight + focus|subject) + (1|stimulus),
+                  accuracy ~ state*weight*focus + 
+                    (1 + state + weight + focus|subject) + (1|stimulus),
                   family = "binomial", 
                  control = glmerControl(optimizer = "bobyqa",
                                          optCtrl=list(maxfun=200000), 
@@ -164,8 +165,26 @@ rt_model = lmer(data = mad_data,
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+fixef(rt_model)
 summary(rt_model)
 car::Anova(rt_model)
+```
+### power analyses
+
+```{r}
+library(simr)
+# Start with an extended model up to 100 participants
+fixef(rt_model)["weightLight:stateSmashed:focusNotFocus"] = 0.05
+
+extended_model <- extend(rt_model, along = "subject", n = 250)
+# Perform a power curve analysis to test the three-way interaction
+power_curve <- powerCurve(extended_model, 
+                          along = "subject", 
+                          fixed("weight:state:focus", "anova"), 
+                          nsim = 100)  # Number of simulations per sample size
+
+# Plot the power curve
+plot(power_curve)
 ```
 
 ### assumptions
