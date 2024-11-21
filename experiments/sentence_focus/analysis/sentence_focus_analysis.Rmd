@@ -177,6 +177,7 @@ car::Anova(rt_model)
 
 ```{r}
 library(simr)
+set.seed(123)
 # Change the fixed effect to be small
 fixef(rt_model)["weightLight:stateSmashed:focusNotFocus"] = 0.05
 # Start with an extended model up to 250 participants
