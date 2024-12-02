@@ -259,7 +259,7 @@ var list2a = [
     "sentence": "A falling brick came in contact with an iPad.",
     "imagefolder": "PICTURES/",
     "pic": "iPadN.jpg",
-    "imagepath": "PICTURES/iPaN.jpg",
+    "imagepath": "PICTURES/iPadN.jpg",
     "correct": "Y",
     "trialcondition": "Heavy_Normal_NotFocus",
     "List": 3,
