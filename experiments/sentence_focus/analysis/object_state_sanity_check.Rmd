@@ -1,0 +1,200 @@
+---
+title: "Object State Sanity Check"
+author: "Channing Hambric"
+date: "2024-12-02"
+output: html_document
+---
+
+
+# load packages
+```{r}
+library(tidyverse)
+library(rstatix)
+library(ggpubr)
+library(dplyr)
+library(stringr)
+```
+
+# import data
+```{r}
+#Data from self-running through each of 8 CBd conditions once (did not finish demo q's)
+check_data <-read_csv("../data/object-state-sentence-focus_checking.csv")
+```
+
+#participant counts
+```{r}
+check_data_clean <- check_data %>% 
+  filter(!is.na(subject))
+
+length(check_data_clean %>% pull(subject) %>% unique())
+
+#Should be 8 participants
+```
+#DESIGN:
+
+Practice - 4 trials total, 2 y, 2 n, 2 in target format 2 in filler format
+
+Experimental Trials - 40 target trials, 48 filler trials
+
+Of target trials, 5 trials each in the following conditions:
+Heavy_Normal_Focus
+Heavy_Smashed_Focus
+Heavy_Normal_NotFocus
+Heavy_Smashed_NotFocus
+Light_Normal_Focus
+Light_Smashed_Focus
+Light_Normal_NotFocus
+Light_Smashed_NotFocus
+
+Half of filler (24) get comprehension questions (12 y, 12 n)
+
+#checking practice
+```{r}
+prac_data <- check_data %>%
+  filter(trialcondition %in% c("practice_s","practice_n")) %>% filter(correct!="NA")
+
+#Each participant should get 4 practice, 2 with yes (true) as the correct answer and 2 with no (False)
+prac_data %>% group_by(subject, correct) %>% count()
+
+#Practice sentences should have 2 framed as targets ("came into contact with"), 2 framed as filler ("x is on a x")
+prac_data %>% select(sentence) %>% unique()
+
+```
+
+
+#checking experimental trials
+```{r}
+exp_data <- check_data %>%
+  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice_s","practice_n"))) %>%
+  separate(trialcondition, into = c("weight", "state","focus"))
+
+#There should be 320 trials total (8 sub x 40)
+exp_data %>% count()
+
+#There should be 40 trials per participant
+exp_data %>% group_by(subject) %>% count()
+
+#Each participant should have 20 trials in each weight condition
+exp_data %>% group_by(subject, weight) %>% count()
+
+#Each participant should have 20 trials in each state condition
+exp_data %>% group_by(subject, state) %>% count()
+
+#Each participant should have 20 trials in each focus condition
+exp_data %>% group_by(subject, focus) %>% count()
+
+#Each participant should have 5 trials in each of 8 weight x state x focus conditions
+exp_data %>% group_by(subject, weight, state, focus) %>% count()
+
+#Across participants, there should be 40 trials in each weight x state x focus condition (8 sub x 5 trials)
+exp_data %>% group_by(weight, state, focus) %>% count()
+
+
+#Each item should appear in each  of 8 conditions across lists
+items <- gsub('.{0,5}$', '', exp_data$object) %>% as.data.frame()
+exp_data <- exp_data %>% mutate(item = items[,1] )
+
+exp_data %>%
+  select(item, weight, state, focus) %>% unique() %>%
+  group_by(item) %>% arrange(item) %>%
+  summarise(count = n()) %>%  
+  mutate(status = case_when(
+    count < 8 ~ "item does not appear in all conditions",
+    count == 8 ~ "item appears in all conditions"
+  ))
+
+#Double checking against stimuli list rather than sub
+#Each list should have 40 exp trials
+exp_data %>% group_by(List) %>% count()
+
+#Each list should have 5 trials per condition
+exp_data %>% group_by(List, weight, state, focus) %>% count()
+
+#Checking that list corresponds to condition
+exp_data %>%select(condition,List) %>%unique()
+
+#Checking that all normal/smashed pictures were labeled as such
+lab_data <- exp_data %>%
+  mutate(check_state = str_sub(object, -5), 
+         label = case_when(
+           (check_state %in% c("S.jpg","S.png") & state == "Smashed") ~ TRUE,  
+           (check_state %in% c("N.jpg","N.png") & state == "Normal") ~ TRUE,  
+           TRUE ~ FALSE  
+         )) %>% select(check_state,object,label)
+
+if (all(lab_data$label == TRUE)) {
+  print("all images labeled correctly")
+} else {
+  print("Some images mislabeled")
+}
+
+#Checking if weight labeled correctly 
+weight_data <- exp_data %>%
+  mutate(weight_label = case_when(
+           str_detect(sentence, "brick") & weight == "Heavy" ~ TRUE,  
+           str_detect(sentence, "feather") & weight == "Light" ~ TRUE, 
+           TRUE ~ FALSE 
+         )) %>%
+  select(weight, sentence, weight_label)
+
+if (all(weight_data$weight_label == TRUE)) {
+  print("all images labeled correctly")
+} else {
+  print("Some images mislabeled")
+}
+
+#Checking focus labeling
+exp_data <- exp_data %>%
+  mutate(item = case_when(
+    item == "tortita" ~ "rice cake",         
+    item == "lamp" ~ "light bulb",          
+    item == "can" ~ "can of beer",
+    item == "icecream" ~ "ice cream bar",          
+    TRUE ~ item                             
+  ))
+focus_data <- exp_data %>%
+  mutate(focus_label = case_when(
+           str_detect(str_remove_all(str_to_lower(str_remove_all(sentence, "[-[:space:]]")), "\\.$"), 
+                      paste0(str_to_lower(str_remove_all(item, "[-[:space:]]")), "$")) & focus == "NotFocus" ~ TRUE,
+           !str_detect(str_remove_all(str_to_lower(str_remove_all(sentence, "[-[:space:]]")), "\\.$"), 
+                        paste0(str_to_lower(str_remove_all(item, "[-[:space:]]")), "$")) & focus == "Focus" ~ TRUE,  
+           TRUE ~ FALSE 
+         )) %>%
+  select(item,sentence, focus, focus_label)
+
+#Note that item/.jpg labels differed for lamp (light bulb), tortita (rice cake), beer can (can), and ice cream bar (ice cream)
+#Note that there was a typo from previous labeling (chocolate ice cream instead of ice cream bar) in List 1 (1a), has been corrected
+
+#if (all(focus_data$focus_label == TRUE)) {
+ # print("all images labeled correctly")
+#} else {
+ # print("Some images mislabeled")
+#}
+
+
+```
+
+#checking filler
+```{r}
+filler_data <- check_data %>%
+  filter(trialcondition=="filler") %>% filter(index!="NA")
+
+#There should be 384 total (8 sub x 48 trials)
+filler_data %>% count()
+
+#There should be 48 trials per participant
+filler_data %>% group_by(subject) %>% count()
+
+#Should be 192 comprehension q's (24 per 8 sub)
+check_data %>% filter(typeoftrial=="comprehension") %>% count()
+
+#Should be 24 comprehension q's per sub
+check_data %>% filter(typeoftrial=="comprehension") %>% group_by(subject) %>%count()
+
+#Should be 12 yes and 12 no comp q's per subject
+check_data %>% filter(typeoftrial=="comprehension") %>% group_by(subject,comprehension_type) %>%count()
+
+```
+
+
+
