@@ -18,7 +18,9 @@ library(stringr)
 # import data
 ```{r}
 #Data from second pilot - N=8
-check_data <-read_csv("../data/object-state-sentence-focus_checking2.csv")
+check_data <-read.csv("../data/object-state-sentence-focus_checking2.csv", fileEncoding = "UTF-8")
+
+base<-check_data
 ```
 
 #participant counts
@@ -193,26 +195,34 @@ check_data %>% filter(typeoftrial=="comprehension") %>% group_by(subject,compreh
 
 #Checking Demos (are req q's answered)
 ```{r}
+#check that all p's have an age, gender, and education values
 
-#EDIT
-demo = check_data %>% filter(typeoftrial %in% c("demo") & response != "0") %>%
-  separate(response, into = c("demo1", "demo2", "demo3", "demo4","demo5"), sep = ":")
+demo = base %>% filter(typeoftrial %in% c("demo","english","notenglish")) 
 
-age <- demo[!is.na(demo$age), ] %>% summarise(mean_age = mean(age))
+#Should be 8 age entries
+demo %>% select(subject,age) %>%na.omit() %>%count()
 
-race = demo %>% filter(demo1 == "{\"Race\"") %>% select(demo2)
-race %>% group_by(demo2) %>% count()
+#Should be 8 gender entries
+demo %>%select(subject, gender) %>%       
+  filter(!is.na(gender) & gender != "") %>%  
+  count() 
 
-gender_education = demo %>% select(gender,education) %>%na.omit()
-gender_education %>% group_by(gender) %>%
-  count()
-gender_education %>% group_by(education) %>%
-  count()
+#Should be 8 ed entries
+demo %>% select(subject,education) %>%na.omit() %>%count()
 
 
-#change above to save full part data in other var name
-first_lang = demo %>% filter(demo1 == "{\"English\"") %>% select(demo2)
-first_lang %>% group_by(demo2) %>% count()
+#Check count of non/native speakers
+#0 = native speaker
+demo %>% filter(typeoftrial=="english") %>%group_by(response) %>%count()
+
+#Getting English AOA
+demo_sep <- base %>% filter(typeoftrial %in% c("notenglish")) %>%
+  separate(response, into = c("Not Native Speaker","AOA"), sep = ",")%>%
+  mutate(AOA = gsub("[^0-9]", "", AOA)) %>%  # Keep only numeric values in AOA
+  filter(AOA != "")  # Remove rows where AOA is empty
+demo_sep %>%select(subject,AOA)
+
+
 
 ```
 

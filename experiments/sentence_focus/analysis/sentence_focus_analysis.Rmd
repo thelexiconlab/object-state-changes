@@ -22,14 +22,14 @@ library(lmerTest)
 # import data
 ```{r}
 
-pilot_data <- read_csv("../data/sona_pilot.csv")
+pilot_data <- read.csv("../data/object-state-sentence-focus_checking2.csv", fileEncoding = "UTF-8")
 
 ```
 
 # basic descriptives
 ```{r}
 length(pilot_data %>% pull(subject) %>% unique())
-## N(final) = 10
+## N(final) = 8
 pilot_data %>% group_by(subject) %>% count()
 
 ```
