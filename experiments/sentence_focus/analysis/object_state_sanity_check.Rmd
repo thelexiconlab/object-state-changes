@@ -17,8 +17,8 @@ library(stringr)
 
 # import data
 ```{r}
-#Data from self-running through each of 8 CBd conditions once (did not finish demo q's)
-check_data <-read_csv("../data/object-state-sentence-focus_checking.csv")
+#Data from second pilot - N=8
+check_data <-read_csv("../data/object-state-sentence-focus_checking2.csv")
 ```
 
 #participant counts
@@ -54,7 +54,7 @@ prac_data <- check_data %>%
   filter(trialcondition %in% c("practice_s","practice_n")) %>% filter(correct!="NA")
 
 #Each participant should get 4 practice, 2 with yes (true) as the correct answer and 2 with no (False)
-prac_data %>% group_by(subject, correct) %>% count()
+prac_data %>% group_by(subject,trialcondition) %>% count()
 
 #Practice sentences should have 2 framed as targets ("came into contact with"), 2 framed as filler ("x is on a x")
 prac_data %>% select(sentence) %>% unique()
@@ -90,25 +90,21 @@ exp_data %>% group_by(subject, weight, state, focus) %>% count()
 exp_data %>% group_by(weight, state, focus) %>% count()
 
 
+#Commenting out since not all conditions sampled
 #Each item should appear in each  of 8 conditions across lists
+
 items <- gsub('.{0,5}$', '', exp_data$object) %>% as.data.frame()
 exp_data <- exp_data %>% mutate(item = items[,1] )
 
-exp_data %>%
-  select(item, weight, state, focus) %>% unique() %>%
-  group_by(item) %>% arrange(item) %>%
-  summarise(count = n()) %>%  
-  mutate(status = case_when(
-    count < 8 ~ "item does not appear in all conditions",
-    count == 8 ~ "item appears in all conditions"
-  ))
+#exp_data %>%
+#  select(item, weight, state, focus) %>% unique() %>%
+#  group_by(item) %>% arrange(item) %>%
+#  summarise(count = n()) %>%  
+#  mutate(status = case_when(
+#    count < 8 ~ "item does not appear in all conditions",
+ #   count == 8 ~ "item appears in all conditions"
+ # ))
 
-#Double checking against stimuli list rather than sub
-#Each list should have 40 exp trials
-exp_data %>% group_by(List) %>% count()
-
-#Each list should have 5 trials per condition
-exp_data %>% group_by(List, weight, state, focus) %>% count()
 
 #Checking that list corresponds to condition
 exp_data %>%select(condition,List) %>%unique()
