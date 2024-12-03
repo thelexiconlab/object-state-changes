@@ -163,13 +163,12 @@ focus_data <- exp_data %>%
   select(item,sentence, focus, focus_label)
 
 #Note that item/.jpg labels differed for lamp (light bulb), tortita (rice cake), beer can (can), and ice cream bar (ice cream)
-#Note that there was a typo from previous labeling (chocolate ice cream instead of ice cream bar) in List 1 (1a), has been corrected
 
-#if (all(focus_data$focus_label == TRUE)) {
- # print("all images labeled correctly")
-#} else {
- # print("Some images mislabeled")
-#}
+if (all(focus_data$focus_label == TRUE)) {
+  print("all images labeled correctly")
+} else {
+  print("Some images mislabeled")
+}
 
 
 ```
@@ -195,6 +194,33 @@ check_data %>% filter(typeoftrial=="comprehension") %>% group_by(subject) %>%cou
 check_data %>% filter(typeoftrial=="comprehension") %>% group_by(subject,comprehension_type) %>%count()
 
 ```
+
+#Checking Demos (are req q's answered)
+```{r}
+
+#EDIT
+demo = check_data %>% filter(typeoftrial %in% c("demo") & response != "0") %>%
+  separate(response, into = c("demo1", "demo2", "demo3", "demo4","demo5"), sep = ":")
+
+age <- demo[!is.na(demo$age), ] %>% summarise(mean_age = mean(age))
+
+race = demo %>% filter(demo1 == "{\"Race\"") %>% select(demo2)
+race %>% group_by(demo2) %>% count()
+
+gender_education = demo %>% select(gender,education) %>%na.omit()
+gender_education %>% group_by(gender) %>%
+  count()
+gender_education %>% group_by(education) %>%
+  count()
+
+
+#change above to save full part data in other var name
+first_lang = demo %>% filter(demo1 == "{\"English\"") %>% select(demo2)
+first_lang %>% group_by(demo2) %>% count()
+
+```
+
+
 
 
 
