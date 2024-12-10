@@ -22,36 +22,53 @@ library(lmerTest)
 # import data
 ```{r}
 
-pilot_data <- read.csv("../data/object-state-sentence-focus_checking2.csv", fileEncoding = "UTF-8")
+sona_data <- read.csv("../data/object-state-sentence-focus_SONA_clean_12.10.csv", fileEncoding = "UTF-8")
+prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.10.csv", fileEncoding = "UTF-8")
+
+comb_data<-rbind(sona_data,prolific_data)
 
 ```
 
 # basic descriptives
 ```{r}
-length(pilot_data %>% pull(subject) %>% unique())
-## N(final) = 8
-pilot_data %>% group_by(subject) %>% count()
+length(comb_data %>% pull(subject) %>% unique())
+
+comb_data %>% group_by(subject) %>% count()
 
 ```
 # data treatment
 
 ## exclude non-English first language participants***
 ```{r}
-lang <- pilot_data %>% filter(english=="no") 
-pilot_data <- pilot_data %>% filter(!subject %in% lang$subject)
+lang <- comb_data %>% filter(english=="no") 
+comb_data <- comb_data %>% filter(!subject %in% lang$subject)
+
+length(comb_data %>% pull(subject) %>% unique())
+```
+
+## comprehension scores
+```{r}
+comprehension_scores <- comb_data %>% group_by(subject) %>%
+  filter(typeoftrial=="comprehension") %>% count(response==comprehension_type) %>%
+  pivot_wider(names_from = c(2), values_from = n) %>% rename(correct = "TRUE") %>% 
+  rename(incorrect = "FALSE") %>% mutate(comp = correct /24)
+
+inaccurate_comp <- comprehension_scores %>% filter(comp < 0.5) 
+
+#Dropping all p's with <50% on comprehension score
+comb_data<- comb_data %>% filter(!(subject %in% inaccurate_comp$subject))
+
+length(comb_data %>% pull(subject) %>% unique())
 ```
 
 ## exclusions
 ```{r}
 ##exclude filler, practice, and non-picture trials
-exclusions_data <- pilot_data %>%
-  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice_s","practice_n"))) %>%
+exclusions_data <- comb_data %>%
+  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice_y","practice_n"))) %>%
   ##calculate subject accuracy
   mutate(accuracy=ifelse(correct=="TRUE",1,0)) %>% 
   separate(trialcondition, into = c("weight", "state","focus"))
-
-exclusions_data %>% group_by(subject, weight, state, focus) %>% count()
-
 ```
 
 ## item labels 
@@ -63,12 +80,18 @@ exclusions_data <- exclusions_data %>% mutate(item = items[,1] )
 ```
 
 
-# accuracy analyses
+# accuracy analysis
 
-##accuracy data
+##accuracy check - comprehension + target attn checks
 ```{r}
+#Excluding subjects w <80 % accuracy on target trials
 subject_accuracy <- exclusions_data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
+
+exclusions_data<- exclusions_data %>% filter(!(subject %in% InaccurateSubjects$subject))
+
+#Now all data excludes those who failed comprehension and target accuracy checks
+length(exclusions_data %>% pull(subject) %>% unique())
 ```
 
 ## plot
