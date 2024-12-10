@@ -88,10 +88,6 @@ exclusions_data <- exclusions_data %>% mutate(item = items[,1] )
 subject_accuracy <- exclusions_data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
 
-exclusions_data<- exclusions_data %>% filter(!(subject %in% InaccurateSubjects$subject))
-
-#Now all data excludes those who failed comprehension and target accuracy checks
-length(exclusions_data %>% pull(subject) %>% unique())
 ```
 
 ## plot
