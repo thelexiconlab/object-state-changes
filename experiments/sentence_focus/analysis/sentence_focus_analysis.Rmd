@@ -23,7 +23,7 @@ library(lmerTest)
 ```{r}
 
 sona_data <- read.csv("../data/object-state-sentence-focus_SONA_clean_12.10.csv", fileEncoding = "UTF-8")
-prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.10.csv", fileEncoding = "UTF-8")
+prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.11.csv", fileEncoding = "UTF-8")
 
 comb_data<-rbind(sona_data,prolific_data)
 
@@ -116,6 +116,7 @@ acc_model = glmer(data = exclusions_data,
                       check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(acc_model)
 car::Anova(acc_model)
+emmeans(acc_model,pairwise~weight*state*focus,simple="weight")
 
 sjPlot::plot_model(acc_model, type = "int")
 ```
@@ -130,7 +131,7 @@ rt_data <- exclusions_data %>% filter(accuracy==1) %>%
   ##exclude subjects with accuracy < 80%
   filter(!subject %in% InaccurateSubjects$subject)
 
-##total participants after exclusion: N = 113 (5 excluded)
+##total participants after exclusion: N = 139 
 length(rt_data %>% pull(subject) %>% unique())
 ```
 
@@ -191,6 +192,7 @@ rt_model = lmer(data = mad_data,
 fixef(rt_model)
 summary(rt_model)
 car::Anova(rt_model)
+emmeans(rt_model,pairwise~weight*state*focus, simple="weight")
 ```
 ### power analyses
 

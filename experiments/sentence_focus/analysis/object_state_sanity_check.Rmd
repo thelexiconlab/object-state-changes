@@ -17,8 +17,8 @@ library(stringr)
 
 # import data
 ```{r}
-#Data from second pilot - N=8
-check_data <-read.csv("../data/object-state-sentence-focus_checking2.csv", fileEncoding = "UTF-8")
+#Data from third self pilot - N=8
+check_data <-read.csv("../data/object-state-sentence-focus_checking4.csv", fileEncoding = "UTF-8")
 
 base<-check_data
 ```
@@ -53,7 +53,7 @@ Half of filler (24) get comprehension questions (12 y, 12 n)
 #checking practice
 ```{r}
 prac_data <- check_data %>%
-  filter(trialcondition %in% c("practice_s","practice_n")) %>% filter(correct!="NA")
+  filter(trialcondition %in% c("practice_y","practice_n")) %>% filter(correct!="NA")
 
 #Each participant should get 4 practice, 2 with yes (true) as the correct answer and 2 with no (False)
 prac_data %>% group_by(subject,trialcondition) %>% count()
@@ -67,7 +67,7 @@ prac_data %>% select(sentence) %>% unique()
 #checking experimental trials
 ```{r}
 exp_data <- check_data %>%
-  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice_s","practice_n"))) %>%
+  filter(typeoftrial=="picture" & !(trialcondition %in% c("filler", "practice_y","practice_n"))) %>%
   separate(trialcondition, into = c("weight", "state","focus"))
 
 #There should be 320 trials total (8 sub x 40)
@@ -98,14 +98,14 @@ exp_data %>% group_by(weight, state, focus) %>% count()
 items <- gsub('.{0,5}$', '', exp_data$object) %>% as.data.frame()
 exp_data <- exp_data %>% mutate(item = items[,1] )
 
-#exp_data %>%
-#  select(item, weight, state, focus) %>% unique() %>%
-#  group_by(item) %>% arrange(item) %>%
-#  summarise(count = n()) %>%  
-#  mutate(status = case_when(
-#    count < 8 ~ "item does not appear in all conditions",
- #   count == 8 ~ "item appears in all conditions"
- # ))
+exp_data %>%
+  select(item, weight, state, focus) %>% unique() %>%
+  group_by(item) %>% arrange(item) %>%
+  summarise(count = n()) %>%  
+  mutate(status = case_when(
+    count < 8 ~ "item does not appear in all conditions",
+    count == 8 ~ "item appears in all conditions"
+  ))
 
 
 #Checking that list corresponds to condition
