@@ -23,7 +23,7 @@ library(lmerTest)
 ```{r}
 
 sona_data <- read.csv("../data/object-state-sentence-focus_SONA_clean_12.10.csv", fileEncoding = "UTF-8")
-prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.11.csv", fileEncoding = "UTF-8")
+prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.13.csv", fileEncoding = "UTF-8")
 
 comb_data<-rbind(sona_data,prolific_data)
 
@@ -244,6 +244,7 @@ squashed_model = lmer(data = squashed_data, log10_rt ~ weight*focus + (weight+fo
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(squashed_model)
 car::Anova(squashed_model)
+emmeans(squashed_model, pairwise~weight*focus, simple="weight")
 ```
 
 # Demographics and other Descriptives
