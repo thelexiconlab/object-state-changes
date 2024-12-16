@@ -20,6 +20,7 @@ library(emmeans)
 library(dplyr)
 library(lmerTest)
 library(paletteer)
+library(Hmisc)
 ```
 
 # import data
@@ -197,17 +198,17 @@ emmeans(rt_model,pairwise~weight*state*focus, simple="weight")
 ```
 ### power analyses
 ```{r}
-library(simr)
-set.seed(123)
+#library(simr)
+#set.seed(123)
 # Change the fixed effect to be small
-fixef(rt_model)["weightLight:stateSmashed:focusNotFocus"] = 0.05
+#fixef(rt_model)["weightLight:stateSmashed:focusNotFocus"] = 0.05
 # Start with an extended model up to 250 participants
-extended_model <- extend(rt_model, along = "subject", n = 250)
+#extended_model <- extend(rt_model, along = "subject", n = 250)
 # Perform a power curve analysis to test the three-way interaction
-power_curve <- powerCurve(extended_model, 
-                          along = "subject", 
-                          fixed("weight:state:focus", "anova"), 
-                          nsim = 100)  # Number of simulations per sample size
+#power_curve <- powerCurve(extended_model, 
+#                          along = "subject", 
+#                         fixed("weight:state:focus", "anova"), 
+#                          nsim = 100)  # Number of simulations per sample size
 
 # Plot the power curve
 #plot(power_curve)
@@ -228,9 +229,9 @@ sjPlot::plot_model(rt_model, type='resid')
 # split into picture type (state)
 intact_data = mad_data %>% filter(state == "Normal")
 squashed_data = mad_data %>% filter(state == "Smashed")
-# run separate models on these data
+#run separate models on these data
 intact_model = lmer(data = intact_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
-                      (1 | item), REML = FALSE, 
+                     (1 | item), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
@@ -241,7 +242,7 @@ emmeans(intact_model, pairwise~weight*focus, simple="weight")
 
 
 squashed_model = lmer(data = squashed_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
-                      (1 | item), REML = FALSE, 
+                     (1 | item), REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
