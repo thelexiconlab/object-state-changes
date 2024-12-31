@@ -17,6 +17,7 @@ library(emmeans)
 library(dplyr)
 library(stats)
 library(lmerTest)
+library(ggbeeswarm)
 setwd(here::here())
 getwd()
 ```
@@ -43,6 +44,10 @@ data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
   
 ncol(data)
 colnames(data)
+
+#upload frequencies for items
+freq <- read_csv('../data/item_freq.csv') 
+
 ```
 
 # basic descriptives
@@ -52,7 +57,7 @@ colnames(data)
 length(data %>% pull(subject) %>% unique())
 
 ## number of trials per subject = 338
-View(data %>% group_by(subject) %>% count())
+#View(data %>% group_by(subject) %>% count())
 
 ## Note: One participant accidentally clicked that English was not their first language,
 ###          and they noted the mistake in their next response (pre-reg. data)
@@ -95,6 +100,11 @@ exclusions_data <- data %>%
   ##exclude bad comprehension
   filter(!subject %in% inaccurate_comp$subject) %>%
   separate(trialcondition, into = c("weight", "state")) 
+
+exclusions_data <- exclusions_data %>%
+  mutate(Item = gsub("^.*/", "", stimulus)) %>% 
+  mutate(Item = substr(Item, 1, nchar(Item) - 5))
+
 ```
 
 # accuracy analyses
@@ -160,6 +170,20 @@ car::Anova(acc_model_no_interaction)
 
 anova(acc_model_no_interaction, acc_model_with_interaction)
 
+
+#adding word freq as a covariate
+exclusions_data<- exclusions_data %>% left_join(freq, by = "Item")
+exclusions_data$subject <- as.factor(exclusions_data$subject)
+acc_model_cov = glmer(data = exclusions_data, 
+                  correct ~ weight + state + Freq + (1 + weight + state|subject) + (1|stimulus),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(acc_model_cov)
+car::Anova(acc_model_cov)
+
+#didn't change anything
 ```
 
 Model WITH interaction is a better fit so we report the with_interaction model. No significant effects either way.
@@ -243,7 +267,7 @@ summary(rt_model_with_interaction)
 car::Anova(rt_model_with_interaction)
 
 rt_model_no_interaction = lmer(data = mad_data, 
-                log10_rt ~ weight + state + (1 + weight + state |subject) + (1|stimulus),
+                log10_rt ~ weight*state + (1 + weight + state |subject) + (1|stimulus),
                 REML = FALSE, 
                 control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
@@ -251,6 +275,33 @@ summary(rt_model_no_interaction)
 car::Anova(rt_model_no_interaction)
 
 anova(rt_model_no_interaction, rt_model_with_interaction)
+
+
+#adding freq as a covariate
+rt_model_cov = lmer(data = mad_data, 
+                log10_rt ~ weight*state + Freq+(1 + weight + state |subject) + (1|stimulus),
+                REML = FALSE, 
+                control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
+                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(rt_model_cov)
+car::Anova(rt_model_cov)
+#brought p value down a lot but still ns 
+
+mad_data %>% group_by(weight,state) %>%count()
+
+```
+### looking at frequencies across langs
+
+```{r}
+comp_freq<- read_csv('../data/comp_freq.csv') %>%
+  rename(Subtlex_Zipf = `Subtlex-Zipf`)
+
+comp_freq %>%
+  ggplot(aes(x = Subtlex_Zipf, color = Language, fill = Language)) +
+  geom_density(alpha = 0.5, size = 1) +  # Density plot with transparency
+  labs(y = 'Density', x = 'Subtlex-Zipf') +
+  theme_few() +
+  theme(legend.position = "top")
 ```
 
 No significant interaction found - model with NO interaction provided a better fit.
@@ -275,6 +326,26 @@ duration %>% pull(time_elapsed) %>% boxplot()
 
 duration %>%  summarise(med = median(time_elapsed), iqr = IQR(time_elapsed), max = max(time_elapsed), min = min(time_elapsed))
 quantile(duration$time_elapsed, c(.25,.75))
+```
+## power analysis
+
+```{r}
+library(simr)
+set.seed(123)
+#Change the fixed effect to be small
+fixef(rt_model_with_interaction)["weightLight:stateSmashed"] = 0.05
+#Start with an extended model up to 100 participants
+extended_model <- extend(rt_model_with_interaction, along = "subject", n = 150)
+#Perform a power curve analysis to test the three-way interaction
+power_curve <- powerCurve(extended_model, 
+                          along = "subject", 
+                        fixed("weight:state", "anova"), 
+                         nsim = 100)  # Number of simulations per sample size
+
+# Plot the power curve
+plot(power_curve)
+
+#hits 80% power around n=50
 ```
 
 ## demographics
