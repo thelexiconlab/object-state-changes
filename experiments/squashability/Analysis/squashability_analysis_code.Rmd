@@ -220,7 +220,7 @@ power_curve <- powerCurve(extended_model,
 # Plot the power curve
 plot(power_curve)
 
-#
+#will hit around ~ 225 
 ```
 
 ### assumptions
