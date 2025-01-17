@@ -18,6 +18,7 @@ library(dplyr)
 library(stats)
 library(lmerTest)
 library(ggbeeswarm)
+library(patchwork)
 setwd(here::here())
 getwd()
 ```
@@ -39,7 +40,7 @@ data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
                         filter(!is.na(subject))
 
 ## USE THIS CODE TO EXAMINE ONE DATASET AT A TIME
- data  = data %>% filter(data_source == "preregistered")  ### preregistered
+data  = data %>% filter(data_source == "preregistered")  ### preregistered
 # data  = data %>% filter(data_source == "unregistered")  ### unregistered
   
 ncol(data)
@@ -53,7 +54,7 @@ freq <- read_csv('../data/item_freq.csv')
 # basic descriptives
 
 ```{r}
-## N(total) = 178 (excluding NAs)
+## 
 length(data %>% pull(subject) %>% unique())
 
 ## number of trials per subject = 338
@@ -126,25 +127,26 @@ exclusions_data %>% group_by(weight, state) %>% summarise(overall.acc = mean(cor
 ## plot
 
 ```{r}
-exclusions_data %>% 
+accuracy_plot<-exclusions_data %>% 
   group_by(weight, state) %>%
    summarise(ci = list(mean_cl_boot(correct) %>% 
                         rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
   mutate(state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed" ),
-         state = fct_relevel(state, "non-canonical","canonical"))%>%
+         state = fct_relevel(state, "Non-canonical","Canonical"))%>%
   ggplot(aes(x= state, y = mean, group = weight, fill = weight)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "mean accuracy", title = "accuracy by condition")+
+  labs(y = "accuracy", title = "")+
   theme_clean()+
-  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
-  theme(plot.background = element_rect(
+  scale_fill_manual(values = c("darksalmon", "darkslategray4"))+
+  theme(aspect.ratio=1.5,legend.position="none",plot.background = element_rect(
     color = "white"),
-    strip.text.x = element_text(size =rel(2)),
-        axis.text = element_text(size =rel(1.5)),
-        axis.title = element_text(size =rel(2)),
+    strip.text.x = element_text(size =rel(2.3)),
+        axis.text = element_text(size =rel(2.3)),
+        axis.title = element_text(size =rel(3)),
         plot.title = element_text(hjust = .5, size = rel(1.5)))
+accuracy_plot
 ```
 
 ## main accuracy model
@@ -233,25 +235,36 @@ length(mad_data %>% pull(subject) %>% unique())
 ## plot
 
 ```{r}
-mad_data %>% 
+
+rt_plot <- mad_data %>% 
   group_by(weight, state) %>%
-   summarise(ci = list(mean_cl_boot(rt) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed" ),
-         state = fct_relevel(state, "non-canonical","canonical"))%>%
-  ggplot(aes(x= state, y = mean, group = weight, fill = weight)) +
-geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
-  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
-                color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per condition")+
-  theme_clean()+
-  scale_fill_manual(values = c("black", "lightgray"))+
-  theme(plot.background = element_rect(
-    color = "white"),
-    strip.text.x = element_text(size =rel(2)),
-        axis.text = element_text(size =rel(1.5)),
-        axis.title = element_text(size =rel(2)),
-        plot.title = element_text(hjust = .5, size = rel(1.5)))
+  summarise(ci = list(mean_cl_boot(rt) %>% 
+                        rename(mean = y, lwr = ymin, upr = ymax))) %>% 
+  unnest %>%
+  mutate(
+    weight = str_to_lower(as.character(weight)),  # Capitalize first letters of weight levels
+    state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed"),
+    state = fct_relevel(state, "Non-canonical", "Canonical")
+  ) %>%
+  ggplot(aes(x = state, y = mean, group = weight, fill = weight)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24") +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), size = 0.5, width = 0.15, 
+                color = "black", position = position_dodge(0.70)) +
+  labs(y = "reaction time (ms)", title = "") +
+  theme_clean() +
+  scale_fill_manual(values = c("darksalmon", "darkslategray4")) +
+  theme(
+    legend.position = "top",
+    aspect.ratio = 1.5,
+    plot.background = element_rect(color = "white"),
+    strip.text.x = element_text(size = rel(2.3)),
+    axis.text = element_text(size = rel(2.3)),
+    axis.title = element_text(size = rel(3)),
+    plot.title = element_text(hjust = 0.5, size = rel(2)),
+    legend.text = element_text(size = rel(2)),  
+    legend.title = element_text(size = rel(2)) 
+  )
+accuracy_plot+rt_plot
 ```
 
 ## main RT model
@@ -275,17 +288,6 @@ summary(rt_model_no_interaction)
 car::Anova(rt_model_no_interaction)
 
 anova(rt_model_no_interaction, rt_model_with_interaction)
-
-
-#adding freq as a covariate
-rt_model_cov = lmer(data = mad_data, 
-                log10_rt ~ weight*state + Freq+(1 + weight + state |subject) + (1|stimulus),
-                REML = FALSE, 
-                control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(rt_model_cov)
-car::Anova(rt_model_cov)
-#brought p value down a lot but still ns 
 
 mad_data %>% group_by(weight,state) %>%count()
 
@@ -333,17 +335,17 @@ quantile(duration$time_elapsed, c(.25,.75))
 library(simr)
 set.seed(123)
 #Change the fixed effect to be small
-fixef(rt_model_with_interaction)["weightLight:stateSmashed"] = 0.05
+#fixef(rt_model_with_interaction)["weightLight:stateSmashed"] = 0.05
 #Start with an extended model up to 100 participants
-extended_model <- extend(rt_model_with_interaction, along = "subject", n = 150)
+#extended_model <- extend(rt_model_with_interaction, along = "subject", n = 150)
 #Perform a power curve analysis to test the three-way interaction
-power_curve <- powerCurve(extended_model, 
-                          along = "subject", 
-                        fixed("weight:state", "anova"), 
-                         nsim = 100)  # Number of simulations per sample size
+#power_curve <- powerCurve(extended_model, 
+                         # along = "subject", 
+                       # fixed("weight:state", "anova"), 
+                         #nsim = 100)  # Number of simulations per sample size
 
 # Plot the power curve
-plot(power_curve)
+#plot(power_curve)
 
 #hits 80% power around n=50
 ```
