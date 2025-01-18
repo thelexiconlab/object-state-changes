@@ -240,7 +240,7 @@ rt_model = lmer(data = mad_data,
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
 car::Anova(rt_model)
-emmeans(rt_model,pairwise~weight*state*focus,simple="weight")
+emmeans(rt_model,pairwise~weight*state*focus,simple="weight",pbkrtest.limit = 7100)
 
 #need to output t's instead of z.ratios
 ```
