@@ -32,15 +32,16 @@ prolific_data <- read.csv("../data/object-state-sentence-focus-prolific_12.13.cs
 
 comb_data<-rbind(sona_data,prolific_data)
 length(comb_data %>% pull(subject) %>% unique())
-
 ```
 
 # data treatment
 ```{r}
 ## exclude non-English first language participants
 lang <- comb_data %>% filter(english=="no") 
-comb_data <- comb_data %>% filter(!subject %in% lang$subject)
+#how many exclude
+length(lang %>% pull(subject) %>% unique())
 
+comb_data <- comb_data %>% filter(!subject %in% lang$subject)
 
 #calculate comprehension scores
 comprehension_scores <- comb_data %>% group_by(subject) %>%
@@ -50,6 +51,8 @@ comprehension_scores <- comb_data %>% group_by(subject) %>%
 
 #marking those with bad comprehension
 inaccurate_comp <- comprehension_scores %>% filter(comp < 0.5) 
+#how many excluded
+length(inaccurate_comp%>% pull(subject) %>% unique())
 
 #Dropping all p's with <50% on comprehension score
 comb_data<- comb_data %>% filter(!(subject %in% inaccurate_comp$subject))
@@ -60,6 +63,8 @@ exclusions_data <- comb_data %>%
   ##calculate subject accuracy
   mutate(accuracy=ifelse(correct=="TRUE",1,0)) %>% 
   separate(trialcondition, into = c("weight", "state","focus"))
+
+length(exclusions_data %>% pull(subject) %>% unique())
 
 ### For experimental picture trials: this code creates a new column 'items' to id the item (picture stimulus) used in each trial. The column 'stimulus' has the picture file name and specifies the smashed/intact picture state. This new col only has the item  (ex. the original stimulus label might be "tomatoS.png" or tomatoN.png" -> new label is "tomato")
 items <- gsub('.{0,5}$', '', exclusions_data$object) %>% as.data.frame()
