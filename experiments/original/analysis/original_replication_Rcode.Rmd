@@ -46,9 +46,6 @@ data  = data %>% filter(data_source == "preregistered")  ### preregistered
 ncol(data)
 colnames(data)
 
-#upload frequencies for items
-freq <- read_csv('../data/item_freq.csv') 
-
 ```
 
 # basic descriptives
@@ -130,9 +127,11 @@ exclusions_data %>% group_by(weight, state) %>% summarise(overall.acc = mean(cor
 accuracy_plot<-exclusions_data %>% 
   group_by(weight, state) %>%
    summarise(ci = list(mean_cl_boot(correct) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed" ),
-         state = fct_relevel(state, "Non-canonical","Canonical"))%>%
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest(cols = c(ci))%>%
+  mutate(
+    state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed"),
+    state = fct_relevel(state, "canonical", "non-canonical"),  
+  )%>%
   ggplot(aes(x= state, y = mean, group = weight, fill = weight)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
@@ -172,20 +171,6 @@ car::Anova(acc_model_no_interaction)
 
 anova(acc_model_no_interaction, acc_model_with_interaction)
 
-
-#adding word freq as a covariate
-exclusions_data<- exclusions_data %>% left_join(freq, by = "Item")
-exclusions_data$subject <- as.factor(exclusions_data$subject)
-acc_model_cov = glmer(data = exclusions_data, 
-                  correct ~ weight + state + Freq + (1 + weight + state|subject) + (1|stimulus),
-                  family = "binomial", 
-                  control = glmerControl(optimizer = "bobyqa",
-                                         optCtrl=list(maxfun=200000), 
-                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(acc_model_cov)
-car::Anova(acc_model_cov)
-
-#didn't change anything
 ```
 
 Model WITH interaction is a better fit so we report the with_interaction model. No significant effects either way.
@@ -240,11 +225,10 @@ rt_plot <- mad_data %>%
   group_by(weight, state) %>%
   summarise(ci = list(mean_cl_boot(rt) %>% 
                         rename(mean = y, lwr = ymin, upr = ymax))) %>% 
-  unnest %>%
+  unnest(cols = c(ci)) %>%
   mutate(
-    weight = str_to_lower(as.character(weight)),  # Capitalize first letters of weight levels
-    state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed"),
-    state = fct_relevel(state, "Non-canonical", "Canonical")
+    weight = str_to_lower(as.character(weight)),  
+    state = fct_recode(state, canonical = "Normal", `non-canonical` = "Smashed")
   ) %>%
   ggplot(aes(x = state, y = mean, group = weight, fill = weight)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24") +
@@ -289,24 +273,9 @@ car::Anova(rt_model_no_interaction)
 
 anova(rt_model_no_interaction, rt_model_with_interaction)
 
-mad_data %>% group_by(weight,state) %>%count()
-
-```
-### looking at frequencies across langs
-
-```{r}
-comp_freq<- read_csv('../data/comp_freq.csv') %>%
-  rename(Subtlex_Zipf = `Subtlex-Zipf`)
-
-comp_freq %>%
-  ggplot(aes(x = Subtlex_Zipf, color = Language, fill = Language)) +
-  geom_density(alpha = 0.5, size = 1) +  # Density plot with transparency
-  labs(y = 'Density', x = 'Subtlex-Zipf') +
-  theme_few() +
-  theme(legend.position = "top")
 ```
 
-No significant interaction found - model with NO interaction provided a better fit.
+No significant interaction found - model with NO interaction provided a better fit (but not sig better)
 
 ### assumptions
 
