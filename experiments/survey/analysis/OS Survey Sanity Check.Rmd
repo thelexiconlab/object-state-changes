@@ -1,0 +1,215 @@
+---
+title: "OS Survey Sanity Check"
+author: "Channing Hambric"
+date: "2025-02-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages
+```{r}
+library(tidyverse)
+library(rstatix)
+library(ggpubr)
+library(dplyr)
+library(ggthemes)
+library(ggplot2)
+library(stringr)
+library(paletteer)
+library(patchwork)
+
+```
+
+# Import Data
+```{r}
+#Data from pilot - N=8
+data <-read.csv("../data/Object_State_Survey_Pilot_Testing.csv", fileEncoding = "UTF-8")
+
+```
+
+# Qualtrics data cleaning & reorganization
+```{r}
+# Remove second row (assuming it's unwanted)
+data <- data[-c(2), ]
+
+# Select demographic columns
+demos <- data %>%
+  select(id,Age, Gender, Race, Hispanic, NES, EngAOA,NativeLang) %>%
+  slice(-1)
+
+# Move 'id' to the first column and delete demos
+pre_clean_data <- data %>% relocate(id, .before = everything()) %>% select(-matches("Practice")) %>% select(-c(Age, Gender, Race, Hispanic, NES, NativeLang))
+
+
+#Below will need to be changed for PG (adding null sub condition)
+#Setting Up Rating Data
+rating_data <- pre_clean_data %>%
+  select(1, matches("_Before_|_After_|_Imply_")) %>%
+  slice(-1) %>%
+  pivot_longer(cols = -1,  
+               names_to = "Condition",  
+               values_to = "Score") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "focus", "extra"), 
+           sep = "_", 
+           fill = "right") %>%
+  select(-extra) %>%
+  mutate(Score = na_if(Score, "")) %>%  
+  mutate(Score = na_if(Score, " ")) %>% 
+  drop_na(Score) %>%
+  mutate(
+    verb = recode(verb, "D" = "Drop", "C" = "Contact"),
+    tense = recode(tense, "Pr" = "Present", "Pa" = "Past"),
+    target_object = recode(target_object, "T" = "tomato", "B" = "Blueberry", "M" = "muffin"),
+    focus = recode(focus, "NF" = "NotFocus", "F" = "Focus"),
+    focus = recode(focus, "1" = "NA"),
+    Score = as.numeric(Score)  # Convert Score to numeric scale
+  )
+
+#Setting Up Ranking Data
+ranking_data <- pre_clean_data %>%
+  select(1, matches("_Rank_"))  
+
+# Extract ranked objects
+new_names <-ranking_data %>%select(-1)%>%
+  slice(1) %>%  # Select the first row
+  unlist() %>%  # Convert to vector
+  str_split(" - ", simplify = TRUE) %>%  # Split by " - "
+  .[, 2]  # Get the second part after the hyphen
+
+# Replace numeric suffix in column names with extracted objects
+colnames(ranking_data)[-1] <- str_replace(colnames(ranking_data)[-1], "\\d+$", new_names)
+
+# Separate out conditions
+ranking_data <- ranking_data %>% 
+  slice(-1) %>%
+  pivot_longer(cols = -1,  
+               names_to = "Condition",  
+               values_to = "Ranking") %>% 
+  mutate(Ranking = na_if(Ranking, "")) %>%  
+  mutate(Ranking = na_if(Ranking, " ")) %>% 
+  drop_na(Ranking) %>%
+  mutate(Condition_type = ifelse(str_starts(Condition, "C"), "C", "D"))  # Identify if drop or contact verb
+
+# Separate contact conditions
+c_conditions <- ranking_data %>%
+  filter(Condition_type == "C") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "focus", "ranked_object"), 
+           sep = "_", 
+           fill = "right")
+
+# Separate drop conditions
+d_conditions <- ranking_data %>%
+  filter(Condition_type == "D") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "ranked_object"), 
+           sep = "_", 
+           fill = "right") %>%
+  mutate(focus = NA)  # Set focus to NA for 'D' conditions
+
+# Combine the results
+ranking_data <- bind_rows(c_conditions, d_conditions) %>%
+  select(-Condition_type) %>% 
+  mutate(
+    verb = recode(verb, "D" = "Drop", "C" = "Contact"),
+    tense = recode(tense, "Pr" = "Present", "Pa" = "Past"),
+    target_object = recode(target_object, "T" = "tomato", "B" = "Blueberry", "M" = "muffin"),
+    focus = recode(focus, "NF" = "NotFocus", "F" = "Focus")
+  ) %>% 
+  filter(!is.na(Ranking) & str_trim(Ranking) != "") %>%
+  mutate(ranked_object_recoded = recode(ranked_object,
+                                "the muffin" = "target object",
+                                "the tomato" = "target object",
+                                "the blueberry" = "target object",
+                                "the brick" = "falling object",
+                                "the bowling ball" = "falling object"))  
+
+```
+
+
+##DESIGN:
+[English]
+6 conditions total, 4 questions per condition, each condition presented w/ 1 of 3 items [tomato,blueberry,muffin] 
+Each condition: Questions 1-3 continuous numeric scale, Q4 rank order (1-3 or 1-2)
+
+Conditions [English]
+Drop_Present
+Drop_Past
+Contact_Present_NotFocus
+Contact_Past_NotFocus
+Contact_Present_Focus
+Contact_Past_Focus
+
+[Portuguese]
+8 conditions total, 4 questions per condition, each condition presented w/ 1 of 3 items [tomato,blueberry,muffin] 
+Each condition: Questions 1-3 continuous numeric scale, Q4 rank order (1-3 or 1-2)
+
+Conditions [Portuguese]
+Drop_Present_NullSubject
+Drop_Past_NullSubject
+Drop_Present_ExpSubject
+Drop_Past_ExpSubject
+Contact_Present_NotFocus
+Contact_Past_NotFocus
+Contact_Present_Focus
+Contact_Past_Focus
+
+## Count subjects
+```{r}
+#should be 8 in each
+rating_data %>% group_by(id) %>% count()
+ranking_data %>% group_by(id) %>% count()
+```
+
+
+## Ratings Check
+```{r}
+#Should be 6 conditions
+rating_data %>% group_by(verb,tense,focus) %>% count()
+
+#BEFORE Q- Should be 1 before question per participant per combined condition
+rating_data %>% filter(question=="Before") %>%group_by(id,verb,tense,focus) %>% count()
+#Should be 8 across 8 subs
+rating_data %>% filter(question=="Before") %>%group_by(verb,tense,focus) %>% count()
+
+#AFTER Q- Should be 1 before question per participant per combined condition
+rating_data %>% filter(question=="After") %>%group_by(id,verb,tense,focus) %>% count()
+#Should be 8 across 8 subs
+rating_data %>% filter(question=="After") %>%group_by(verb,tense,focus) %>% count()
+
+#IMPLY Q - Should be 1 before question per participant per combined condition
+#BEFORE - Should be 1 before question per participant per combined condition
+rating_data %>% filter(question=="Imply") %>%group_by(id,verb,tense,focus) %>% count()
+#Should be 8 across 8 subs
+rating_data %>% filter(question=="Imply") %>%group_by(verb,tense,focus) %>% count()
+
+```
+
+
+## Ranking Check
+```{r}
+#Should be 6 conditions
+ranking_data %>% group_by(verb,tense,focus) %>% count()
+
+#For each subject, should be 3 in Drop conditions (since "you" is also ranked)  and 2 in Contact conditions
+ranking_data  %>%group_by(id,verb,tense,focus) %>% count()
+
+#Should be 24 (3 obj per ranking * 8 sub) in each Drop and 16 (2 obj per ranking * 8) in each Contact, across 8 subs
+ranking_data  %>%group_by(verb,tense,focus) %>% count()
+
+```
+## Demos check
+
+```{r}
+#Age, race, gender - should be 8 entries total
+demos %>% group_by(Age,Race,Gender) %>% count()
+
+#how many Nonnative Eng speakers, Nonnative English AOA - should add up to 8
+demos%>%group_by(NES,NativeLang,EngAOA) %>% count()
+```
+
+

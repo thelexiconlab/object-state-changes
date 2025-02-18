@@ -1,0 +1,325 @@
+---
+title: "OS Survey Sanity Check"
+author: "Channing Hambric"
+date: "2025-02-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages
+```{r}
+library(tidyverse)
+library(rstatix)
+library(ggpubr)
+library(dplyr)
+library(ggthemes)
+library(ggplot2)
+library(stringr)
+library(paletteer)
+library(patchwork)
+library(lme4)
+library(lmerTest)
+library(tidyboot)
+
+```
+
+# Import Data
+```{r}
+#Data from pilot - N=8
+data <-read.csv("../data/Object_State_Survey_Pilot_Testing.csv", fileEncoding = "UTF-8")
+
+```
+
+# Qualtrics data cleaning & reorganization
+```{r}
+# Remove second row (filled with Qualtrics misc)
+data <- data[-c(2), ]
+
+# Grab demographic columns
+demos <- data %>%
+  select(id,Age, Gender, Race, Hispanic, NES, EngAOA,NativeLang) %>%
+  slice(-1)
+
+# Move 'id' to the first column and delete demos
+pre_clean_data <- data %>% relocate(id, .before = everything()) %>% select(-matches("Practice")) %>% select(-c(Age, Gender, Race, Hispanic, NES, NativeLang))
+
+
+#Below will need to be changed for PG (adding null sub condition)
+#Setting Up Rating Data
+rating_data <- pre_clean_data %>%
+  select(1, matches("_Before_|_After_|_Imply_")) %>%
+  slice(-1) %>%
+  pivot_longer(cols = -1,  
+               names_to = "Condition",  
+               values_to = "Score") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "focus", "extra"), 
+           sep = "_", 
+           fill = "right") %>%
+  select(-extra) %>%
+  mutate(Score = na_if(Score, "")) %>%  
+  mutate(Score = na_if(Score, " ")) %>% 
+  drop_na(Score) %>%
+  mutate(
+    verb = recode(verb, "D" = "Drop", "C" = "Contact"),
+    tense = recode(tense, "Pr" = "Present", "Pa" = "Past"),
+    target_object = recode(target_object, "T" = "tomato", "B" = "Blueberry", "M" = "muffin"),
+    focus = recode(focus, "NF" = "NotFocus", "F" = "Focus"),
+    focus = recode(focus, "1" = "NA"),
+    Score = as.numeric(Score),id= as.factor(id)) #make id factor
+
+#Setting Up Ranking Data
+ranking_data <- pre_clean_data %>%
+  select(1, matches("_Rank_"))  
+
+# Extract ranked objects from question text
+new_names <-ranking_data %>%select(-1)%>%
+  slice(1) %>%  # Select the first row
+  unlist() %>%  # Convert to vector
+  str_split(" - ", simplify = TRUE) %>%  # Split by " - "
+  .[, 2]  # Get the word after the hyphen
+
+# Replace numeric suffix in column names with extracted objects
+colnames(ranking_data)[-1] <- str_replace(colnames(ranking_data)[-1], "\\d+$", new_names)
+
+# Separate out conditions
+ranking_data <- ranking_data %>% 
+  slice(-1) %>%
+  pivot_longer(cols = -1,  
+               names_to = "Condition",  
+               values_to = "Ranking") %>% 
+  mutate(Ranking = na_if(Ranking, "")) %>%  
+  mutate(Ranking = na_if(Ranking, " ")) %>% 
+  drop_na(Ranking) %>%
+  mutate(Condition_type = ifelse(str_starts(Condition, "C"), "C", "D"))  # Identify if drop or contact verb
+
+# Separate out contact conditions (incl focus)
+c_conditions <- ranking_data %>%
+  filter(Condition_type == "C") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "focus", "ranked_object"), 
+           sep = "_", 
+           fill = "right")
+
+# Separate out drop conditions
+d_conditions <- ranking_data %>%
+  filter(Condition_type == "D") %>%
+  separate(Condition, 
+           into = c("verb", "tense", "target_object", "question", "ranked_object"), 
+           sep = "_", 
+           fill = "right") %>%
+  mutate(focus = NA)  # Set focus to NA for 'D' conditions
+
+# Combine the results
+ranking_data <- bind_rows(c_conditions, d_conditions) %>%
+  select(-Condition_type) %>% 
+  mutate(
+    verb = recode(verb, "D" = "Drop", "C" = "Contact"),
+    tense = recode(tense, "Pr" = "Present", "Pa" = "Past"),
+    target_object = recode(target_object, "T" = "tomato", "B" = "Blueberry", "M" = "muffin"),
+    focus = recode(focus, "NF" = "NotFocus", "F" = "Focus")
+  ) %>% 
+  filter(!is.na(Ranking) & str_trim(Ranking) != "") %>%
+  mutate(ranked_object_recoded = recode(ranked_object,
+                                "the muffin" = "target object",
+                                "the tomato" = "target object",
+                                "the blueberry" = "target object",
+                                "the brick" = "falling object",
+                                "the bowling ball" = "falling object"))  
+
+```
+
+
+## Rating Analyses
+```{r}
+
+#BEFORE the described event occurred, the object was...
+#overall
+before_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="Before"))
+summary(before_analysis)
+car::Anova(before_analysis)
+#looking @ focus w/i "Came into contact" conditions
+before_analysis_focus<-lmer(Score~tense*target_object*focus+(1|id),rating_data%>%filter(question=="Before",verb=="Contact"))
+summary(before_analysis_focus)
+car::Anova(before_analysis_focus)
+
+#AFTER the described event occurred, the object was...
+#overall
+after_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="After"))
+summary(after_analysis)
+car::Anova(after_analysis)
+#looking @ focus w/i "Came into contact" conditions
+after_analysis_focus<-lmer(Score~tense*target_object*focus+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_focus)
+car::Anova(after_analysis_focus)
+
+#Does the sentence imply that the object was smashed?
+#overall
+imply_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="Imply"))
+summary(imply_analysis)
+car::Anova(imply_analysis)
+#looking @ focus w/i "Came into contact" conditions
+imply_analysis_focus<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="Imply",verb=="Contact"))
+summary(imply_analysis_focus)
+car::Anova(imply_analysis_focus)
+```
+
+## Rating Plot
+```{r}
+#labels for figure
+rating_data <- rating_data %>% 
+  mutate(
+    question = recode(question, 
+                      "Before" = "Before the described event occurred, the object was...", 
+                      "After" = "After the described event occurred, the object was...", 
+                      "Imply" = "Does the sentence imply that the object was smashed?"),
+    question = factor(question, levels = c(
+      "Does the sentence imply that the object was smashed?", 
+      "After the described event occurred, the object was...", 
+      "Before the described event occurred, the object was..."))
+  )
+#Drop
+drop_rating_plot <- rating_data %>%  
+  filter(verb == "Drop") %>%
+  group_by(question, tense) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = tense, fill = tense)) +
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Drop") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  # Rotate x-axis labels and adjust alignment
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+#Contact
+contact_rating_plot <- rating_data %>%  filter(verb == "Contact") %>%
+  group_by(question,tense,focus) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = tense, fill = tense)) + facet_wrap(~focus)+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact") +
+  theme_few() +theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  # Rotate x-axis labels and adjust alignment
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+gridExtra::grid.arrange(drop_rating_plot,contact_rating_plot)
+
+```
+
+## Ranking Analysis
+```{r}
+#Drop verb conditions - Participants rank 3 objects 1-3 (you,target obj, dropped obj)
+#ordinal logistic regression
+library(MASS) #this is an old package, so calling here so it doesn't call outdated subpackages
+ranking_data_drop<-ranking_data%>%filter(verb=="Drop")%>%
+  mutate(
+    Ranking = factor(Ranking, levels = c(1, 2, 3), ordered = TRUE),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense),
+    target_object = as.factor(target_object))
+
+#Reshape data
+lapply(ranking_data_drop[, c("Ranking", "ranked_object_recoded", "tense","target_object")], table)
+ftable(xtabs(~ Ranking + ranked_object_recoded  +tense + target_object, data = ranking_data_drop))
+
+#model
+model_drop <- polr(Ranking ~ ranked_object_recoded*tense*target_object, data = ranking_data_drop, Hess=TRUE)
+summary(model_drop)
+ctable_drop <- coef(summary(model_drop))
+p_drop <- pnorm(abs(ctable_drop[, "t value"]), lower.tail = FALSE) * 2 #generate p values
+ctable_drop <- cbind(ctable_drop, "p value" = p_drop)
+ctable_drop
+
+#Contact verb conditions- Participants rank 2 objects 1-2 (target obj, falling obj)
+#since there is no 3rd object to rank, this just becomes binary logistic
+
+#recode data
+ranking_data_contact<-ranking_data%>%filter(verb=="Contact")%>%
+  mutate(Ranking = recode(Ranking, 
+                     "1" = "1", 
+                     "2" = "0"),
+    Ranking = factor(Ranking, levels = c("1", "0")),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense),
+    target_object = as.factor(target_object),
+    focus = as.factor(focus))
+
+#model
+model_contact <- glm(Ranking ~ ranked_object_recoded*tense*focus*target_object, 
+                     data = ranking_data_contact, 
+                     family = binomial(link = "logit"))  
+summary(model_contact)
+
+
+```
+
+## Rank plot
+```{r}
+#Drop
+drop_ranking_plot <- ranking_data %>%
+  filter(verb == "Drop") %>%
+  group_by(ranked_object, tense) %>%
+  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) + facet_wrap(~tense)+ 
+  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
+  labs(y = 'Frequency', x = "Ranked Focus", title = "Drop") +
+  theme_few() +theme(
+    legend.position = "left",
+    plot.title = element_text(hjust = 0.5),  # Center the title
+    legend.title = element_blank()  # Hide the legend title
+  ) +scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+
+
+#Contact
+contact_ranking_plot_present <- ranking_data %>%
+  filter(verb == "Contact",tense=="Present") %>%
+  group_by(ranked_object, tense,focus) %>%
+  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) +  facet_wrap(~focus)+
+  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
+  labs(y = 'Frequency', x = "Ranked Focus", title = "Contact - Present") +
+  theme_few() +theme(legend.position="none",plot.title = element_text(hjust = 0.5))+scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+
+contact_ranking_plot_past <- ranking_data %>%
+  filter(verb == "Contact",tense=="Past") %>%
+  group_by(ranked_object, tense,focus) %>%
+  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) +  facet_wrap(~focus)+
+  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
+  labs(y = 'Frequency', x = "Ranked Focus", title = " Contact - Past") +
+  theme_few() +theme(legend.position = "none",plot.title = element_text(hjust = 0.5))+scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+
+drop_ranking_plot+contact_ranking_plot_present+contact_ranking_plot_past
+
+
+```
+
+#Power analysis
+
+```{r}
+#using after_focus ratings to estimate finest grain comparison
+#note it is rank deficient since not all obj represented in all conditions in small pilot sample
+after_analysis_limited<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_limited)
+
+
+library(simr)
+set.seed(123)
+small_effect <- 0.3 * sd(rating_data$Score) #cohens d = 0.3 for small effect
+fixef(after_analysis_limited)["tensePresent:focusNotFocus:target_objectmuffin"] = small_effect
+# Extend the model
+extended_model <- extend(after_analysis_limited, along = "id", n = 100)
+power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus:target_object", "anova"), nsim = 100)
+
+# Plot the power curve
+plot(power_curve)
+
+#Aim for ~35 per lang
+```
+
