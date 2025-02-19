@@ -170,7 +170,7 @@ car::Anova(imply_analysis_focus)
 ## Rating Plot
 ```{r}
 #labels for figure
-rating_data <- rating_data %>% 
+rating_data_plot <- rating_data %>% 
   mutate(
     question = recode(question, 
                       "Before" = "Before the described event occurred, the object was...", 
@@ -182,7 +182,7 @@ rating_data <- rating_data %>%
       "Before the described event occurred, the object was..."))
   )
 #Drop
-drop_rating_plot <- rating_data %>%  
+drop_rating_plot <- rating_data_plot %>%  
   filter(verb == "Drop") %>%
   group_by(question, tense) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
@@ -198,7 +198,7 @@ drop_rating_plot <- rating_data %>%
   )+coord_flip()
 
 #Contact
-contact_rating_plot <- rating_data %>%  filter(verb == "Contact") %>%
+contact_rating_plot <- rating_data_plot %>%  filter(verb == "Contact") %>%
   group_by(question,tense,focus) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
   ggplot(aes(x = question, y = empirical_stat, group = tense, fill = tense)) + facet_wrap(~focus)+
@@ -213,6 +213,29 @@ contact_rating_plot <- rating_data %>%  filter(verb == "Contact") %>%
 
 gridExtra::grid.arrange(drop_rating_plot,contact_rating_plot)
 
+```
+
+#Power analysis
+
+```{r}
+#using after_focus ratings to estimate finest grain comparison
+#note it is rank deficient since not all target obj represented in all conditions in small pilot sample
+after_analysis_limited<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_limited)
+
+
+library(simr)
+set.seed(123)
+small_effect <- 0.3 * sd(rating_data$Score) #cohens d = 0.3 for small effect
+fixef(after_analysis_limited)["tensePresent:focusNotFocus:target_objectmuffin"] = small_effect
+# Extend the model
+extended_model <- extend(after_analysis_limited, along = "id", n = 100)
+power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus:target_object", "anova"), nsim = 100)
+
+# Plot the power curve
+plot(power_curve)
+
+#Aim for ~35 per lang
 ```
 
 ## Ranking Analysis
@@ -298,28 +321,5 @@ contact_ranking_plot_past <- ranking_data %>%
 drop_ranking_plot+contact_ranking_plot_present+contact_ranking_plot_past
 
 
-```
-
-#Power analysis
-
-```{r}
-#using after_focus ratings to estimate finest grain comparison
-#note it is rank deficient since not all obj represented in all conditions in small pilot sample
-after_analysis_limited<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
-summary(after_analysis_limited)
-
-
-library(simr)
-set.seed(123)
-small_effect <- 0.3 * sd(rating_data$Score) #cohens d = 0.3 for small effect
-fixef(after_analysis_limited)["tensePresent:focusNotFocus:target_objectmuffin"] = small_effect
-# Extend the model
-extended_model <- extend(after_analysis_limited, along = "id", n = 100)
-power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus:target_object", "anova"), nsim = 100)
-
-# Plot the power curve
-plot(power_curve)
-
-#Aim for ~35 per lang
 ```
 
