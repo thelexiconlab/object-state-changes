@@ -24,6 +24,7 @@ library(lme4)
 library(lmerTest)
 library(tidyboot)
 
+
 ```
 
 # Import Data
@@ -135,34 +136,34 @@ ranking_data <- bind_rows(c_conditions, d_conditions) %>%
 
 ## Rating Analyses
 ```{r}
-
+#CBing condition of target_object not sig, dropping as factor in all analyses
 #BEFORE the described event occurred, the object was...
 #overall
-before_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="Before"))
+before_analysis<-lmer(Score~verb*tense+(1|id),rating_data%>%filter(question=="Before"))
 summary(before_analysis)
 car::Anova(before_analysis)
 #looking @ focus w/i "Came into contact" conditions
-before_analysis_focus<-lmer(Score~tense*target_object*focus+(1|id),rating_data%>%filter(question=="Before",verb=="Contact"))
+before_analysis_focus<-lmer(Score~tense*focus+(1|id),rating_data%>%filter(question=="Before",verb=="Contact"))
 summary(before_analysis_focus)
 car::Anova(before_analysis_focus)
 
 #AFTER the described event occurred, the object was...
 #overall
-after_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="After"))
+after_analysis<-lmer(Score~verb*tense+(1|id),rating_data%>%filter(question=="After"))
 summary(after_analysis)
 car::Anova(after_analysis)
 #looking @ focus w/i "Came into contact" conditions
-after_analysis_focus<-lmer(Score~tense*target_object*focus+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
+after_analysis_focus<-lmer(Score~tense*focus+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
 summary(after_analysis_focus)
 car::Anova(after_analysis_focus)
 
 #Does the sentence imply that the object was smashed?
 #overall
-imply_analysis<-lmer(Score~verb*tense*target_object+(1|id),rating_data%>%filter(question=="Imply"))
+imply_analysis<-lmer(Score~verb*tense+(1|id),rating_data%>%filter(question=="Imply"))
 summary(imply_analysis)
 car::Anova(imply_analysis)
 #looking @ focus w/i "Came into contact" conditions
-imply_analysis_focus<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="Imply",verb=="Contact"))
+imply_analysis_focus<-lmer(Score~tense*focus+(1|id),rating_data%>%filter(question=="Imply",verb=="Contact"))
 summary(imply_analysis_focus)
 car::Anova(imply_analysis_focus)
 ```
@@ -207,7 +208,7 @@ contact_rating_plot <- rating_data_plot %>%  filter(verb == "Contact") %>%
   ylim(0, 100) +  
   labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact") +
   theme_few() +theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  # Rotate x-axis labels and adjust alignment
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
     plot.title = element_text(size = 14)
   )+coord_flip()
 
@@ -219,67 +220,61 @@ gridExtra::grid.arrange(drop_rating_plot,contact_rating_plot)
 
 ```{r}
 #using after_focus ratings to estimate finest grain comparison
-#note it is rank deficient since not all target obj represented in all conditions in small pilot sample
-after_analysis_limited<-lmer(Score~tense*focus*target_object+(1|id),rating_data%>%filter(question=="After",verb=="Contact"))
-summary(after_analysis_limited)
-
-
 library(simr)
 set.seed(123)
 small_effect <- 0.3 * sd(rating_data$Score) #cohens d = 0.3 for small effect
-fixef(after_analysis_limited)["tensePresent:focusNotFocus:target_objectmuffin"] = small_effect
+fixef(after_analysis_focus)["tensePresent:focusNotFocus"] = small_effect
 # Extend the model
-extended_model <- extend(after_analysis_limited, along = "id", n = 100)
-power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus:target_object", "anova"), nsim = 100)
+extended_model <- extend(after_analysis_focus, along = "id", n = 100)
+power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus", "anova"), nsim = 1000)
 
 # Plot the power curve
 plot(power_curve)
 
-#Aim for ~35 per lang
+#Aim for ~75 per lang
 ```
 
 ## Ranking Analysis
 ```{r}
+library(ordinal)
 #Drop verb conditions - Participants rank 3 objects 1-3 (you,target obj, dropped obj)
 #ordinal logistic regression
-library(MASS) #this is an old package, so calling here so it doesn't call outdated subpackages
+
 ranking_data_drop<-ranking_data%>%filter(verb=="Drop")%>%
   mutate(
     Ranking = factor(Ranking, levels = c(1, 2, 3), ordered = TRUE),
     ranked_object_recoded = as.factor(ranked_object_recoded),
-    tense = as.factor(tense),
-    target_object = as.factor(target_object))
+    tense = as.factor(tense))
 
-#Reshape data
-lapply(ranking_data_drop[, c("Ranking", "ranked_object_recoded", "tense","target_object")], table)
-ftable(xtabs(~ Ranking + ranked_object_recoded  +tense + target_object, data = ranking_data_drop))
+# set reference categories for the model
+contrasts(ranking_data_drop$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_drop$ranked_object_recoded) = contr.treatment(3, base = 2) #target obj as reference
 
-#model
-model_drop <- polr(Ranking ~ ranked_object_recoded*tense*target_object, data = ranking_data_drop, Hess=TRUE)
+#too little variation among ids, so for now just using clm instead of clmm
+model_drop <- clm(Ranking ~ ranked_object_recoded * tense, 
+                   data = ranking_data_drop, 
+                   link = "logit")
 summary(model_drop)
-ctable_drop <- coef(summary(model_drop))
-p_drop <- pnorm(abs(ctable_drop[, "t value"]), lower.tail = FALSE) * 2 #generate p values
-ctable_drop <- cbind(ctable_drop, "p value" = p_drop)
-ctable_drop
 
 #Contact verb conditions- Participants rank 2 objects 1-2 (target obj, falling obj)
-#since there is no 3rd object to rank, this just becomes binary logistic
-
 #recode data
-ranking_data_contact<-ranking_data%>%filter(verb=="Contact")%>%
-  mutate(Ranking = recode(Ranking, 
-                     "1" = "1", 
-                     "2" = "0"),
-    Ranking = factor(Ranking, levels = c("1", "0")),
+ranking_data_contact <- ranking_data %>%
+  filter(verb == "Contact") %>%
+  mutate(
+    Ranking = as.factor(Ranking),
     ranked_object_recoded = as.factor(ranked_object_recoded),
     tense = as.factor(tense),
     target_object = as.factor(target_object),
     focus = as.factor(focus))
-
 #model
-model_contact <- glm(Ranking ~ ranked_object_recoded*tense*focus*target_object, 
-                     data = ranking_data_contact, 
-                     family = binomial(link = "logit"))  
+# set reference categories for the model
+contrasts(ranking_data_contact$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_contact$focus) = contr.treatment(2, base = 2) #not focus as reference
+contrasts(ranking_data_contact$ranked_object_recoded) = contr.treatment(2, base = 2) #only 2 levels, target obj as reference
+
+model_contact <- clm(Ranking ~ ranked_object_recoded * tense * focus, 
+                   data = ranking_data_contact, 
+                   link = "logit")
 summary(model_contact)
 
 
@@ -287,38 +282,48 @@ summary(model_contact)
 
 ## Rank plot
 ```{r}
-#Drop
-drop_ranking_plot <- ranking_data %>%
-  filter(verb == "Drop") %>%
-  group_by(ranked_object, tense) %>%
-  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) + facet_wrap(~tense)+ 
-  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
-  labs(y = 'Frequency', x = "Ranked Focus", title = "Drop") +
-  theme_few() +theme(
-    legend.position = "left",
-    plot.title = element_text(hjust = 0.5),  # Center the title
-    legend.title = element_blank()  # Hide the legend title
-  ) +scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+
+#logit plots
+#bar plots since discrete/dependent rankings?
+#drop
+preds_drop <- data.frame(
+  ranking_data_drop,  
+  predict(model_drop, type = "prob")  # Get predicted probabilities
+)
+preds_drop_long <- preds_drop %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+ggplot(preds_drop_long, aes(x = as.numeric(Ranking), y = Probability, fill = ranked_object_recoded)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  scale_x_continuous(breaks = c(1, 2, 3), labels = c("1", "2", "3")) + 
+  labs(title = "Predicted Probabilities by Ranked Object",
+       x = "Ranking",
+       y = "Probability",
+       fill = "Ranked Object") +scale_fill_discrete(name = "Ranked Object")+
+  theme_few()+scale_fill_paletteer_d("lisa::JackBush")
 
 
-#Contact
-contact_ranking_plot_present <- ranking_data %>%
-  filter(verb == "Contact",tense=="Present") %>%
-  group_by(ranked_object, tense,focus) %>%
-  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) +  facet_wrap(~focus)+
-  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
-  labs(y = 'Frequency', x = "Ranked Focus", title = "Contact - Present") +
-  theme_few() +theme(legend.position="none",plot.title = element_text(hjust = 0.5))+scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+#contact
+preds_contact <- data.frame(
+  ranking_data_contact,  
+  predict(model_contact, type = "prob")  # Get predicted probabilities
+)
+preds_contact_long <- preds_contact %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
 
-contact_ranking_plot_past <- ranking_data %>%
-  filter(verb == "Contact",tense=="Past") %>%
-  group_by(ranked_object, tense,focus) %>%
-  ggplot(aes(x = factor(Ranking), fill = ranked_object_recoded)) +  facet_wrap(~focus)+
-  geom_bar(stat = 'count', position = "fill") +  # Use 'count' to get frequencies
-  labs(y = 'Frequency', x = "Ranked Focus", title = " Contact - Past") +
-  theme_few() +theme(legend.position = "none",plot.title = element_text(hjust = 0.5))+scale_fill_paletteer_d("ggthemes::Classic_10_Light")
+ggplot(preds_contact_long, aes(x = as.factor(Ranking), y = Probability, fill = ranked_object_recoded)) +
+  geom_col(position = position_dodge()) + 
+  facet_wrap(~focus) +  
+  scale_x_discrete(labels = c("1", "2")) +  
+  scale_fill_paletteer_d("lisa::JackBush", name = "Ranked Object") +  # Move 'name' inside this function
+  labs(title = "Predicted Probabilities by Ranked Object",
+       x = "Ranking",
+       y = "Probability") +
+  theme_few()
 
-drop_ranking_plot+contact_ranking_plot_present+contact_ranking_plot_past
 
 
 ```
