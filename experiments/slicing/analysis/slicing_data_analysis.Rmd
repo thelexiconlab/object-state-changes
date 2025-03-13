@@ -15,7 +15,9 @@ library(rstatix)
 library(ggpubr)
 library(emmeans)
 library(dplyr)
+library(paletteer)
 library(lmerTest)
+library(patchwork)
 setwd(here::here())
 getwd()
 ```
@@ -42,9 +44,6 @@ data <- rbind(prolific_data, sona_data, prolific_data_2) %>%
 ```{r}
 ## N(total) = 106
 length(data %>% pull(subject) %>% unique())
-
-## number of trials per subject
-View(data %>% group_by(subject) %>% count())
 ```
 
 # data treatment
@@ -75,29 +74,39 @@ exclusions_data <- data %>%
 ```{r}
 subject_accuracy <- exclusions_data %>% group_by(subject) %>% summarise(TaskAccuracy=mean(accuracy))
 InaccurateSubjects <- subject_accuracy %>% filter(TaskAccuracy < 0.8)
+exclusions_data %>% summarise(overall.acc = mean(correct))
 ```
 
 ## plot
 ```{r}
-exclusions_data %>% 
+accuracy_plot <- exclusions_data %>% 
   group_by(verb, state) %>%
-   summarise(ci = list(mean_cl_boot(accuracy) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  mutate(state = fct_recode(state, canonical = "whole", `non-canonical` = "slice" ),
-         state = fct_relevel(state, "non-canonical","canonical"))%>%
-  ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
-geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
-  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
-                color = "black", position = position_dodge(0.70))+
-  labs(y = "mean accuracy", title = "slicing response accuracy")+
-  theme_clean()+
-  scale_fill_manual(values = c("darksalmon", "darkslategray4"))+
-  theme(plot.background = element_rect(
-    color = "white"),
-    strip.text.x = element_text(size =rel(2)),
-        axis.text = element_text(size =rel(1.5)),
-        axis.title = element_text(size =rel(2)),
-        plot.title = element_text(hjust = .5, size = rel(1.5)))
+  summarise(ci = list(mean_cl_boot(accuracy) %>% 
+                        rename(mean = y, lwr = ymin, upr = ymax))) %>% 
+  unnest(ci) %>%
+  mutate(state = fct_recode(state, `canonical` = "whole", `sliced` = "slice"),
+         state = fct_relevel(state, "canonical", "sliced")) %>%
+  ggplot(aes(x = state, y = mean, group = verb, fill = verb)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24") +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), size = 0.5, width = .15, 
+                color = "black", position = position_dodge(0.70)) +
+  labs(y = "accuracy", title = "") +
+  theme_clean() +
+  scale_fill_paletteer_d("ggthemes::Classic_10_Light") +
+  theme(
+    legend.position = "none",
+    aspect.ratio = 1.5,
+    plot.background = element_rect(color = "white"),
+    strip.text.x = element_text(size = rel(2.3)),
+    axis.text = element_text(size = rel(2.3)),
+    axis.title = element_text(size = rel(3)),
+    plot.title = element_text(hjust = 0.5, size = rel(2)),
+    legend.text = element_text(size = rel(2)),  
+    legend.title = element_text(size = rel(2))
+  )
+
+accuracy_plot
+
 ```
 ## main accuracy model
 ```{r}
@@ -110,7 +119,7 @@ acc_model = glmer(data = exclusions_data,
 summary(acc_model)
 car::Anova(acc_model)
 
-sjPlot::plot_model(acc_model, type = "int")
+
 ```
 
 No interaction but trending effects.
@@ -160,26 +169,32 @@ mad_data = rt_data %>%
 
 ## plot
 ```{r}
-mad_data %>% 
+rt_plot<-mad_data %>% 
   group_by(verb, state) %>%
    summarise(ci = list(mean_cl_boot(rt) %>% 
                         rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest %>%
-  mutate(state = fct_recode(state, whole = "whole", `sliced` = "slice" ),
-         state = fct_relevel(state, "sliced","whole"))%>%
+  mutate(state = fct_recode(state, canonical = "whole", `sliced` = "slice" ),
+         state = fct_relevel(state, "canonical","sliced"))%>%
   ggplot(aes(x= state, y = mean, group = verb, fill = verb)) +
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per sentence x picture condition",x = "picture state",
+  labs(y = "response time (ms)", title = "",x = "state",
        fill = "sentence type") +
   theme_clean()+
-  scale_fill_manual(values = c("black", "lightgray"))+
-  theme(plot.background = element_rect(
-    color = "white"),
-    strip.text.x = element_text(size =rel(2)),
-        axis.text = element_text(size =rel(1.5)),
-        axis.title = element_text(size =rel(2)),
-        plot.title = element_text(hjust = .5, size = rel(1.5)))
+   scale_fill_paletteer_d("ggthemes::Classic_10_Light")+
+  theme(
+    legend.position = "top",
+    aspect.ratio = 1.5,
+    plot.background = element_rect(color = "white"),
+    strip.text.x = element_text(size = rel(2.3)),
+    axis.text = element_text(size = rel(2.3)),
+    axis.title = element_text(size = rel(3)),
+    plot.title = element_text(hjust = 0.5, size = rel(2)),
+    legend.text = element_text(size = rel(2)),  
+    legend.title = element_text(size = rel(2)))
+
+accuracy_plot+rt_plot
 ```
 
 ## main RT model
@@ -192,6 +207,7 @@ rt_model = lmer(data = mad_data,
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
 car::Anova(rt_model)
+emmeans(rt_model,pairwise~verb*state,simple="verb")
 ```
 
 Significant interaction.
@@ -246,10 +262,6 @@ squashed_model = lmer(data = squashed_data, log10_rt ~ verb + (verb | subject) +
 summary(squashed_model)
 car::Anova(squashed_model)
 ```
-
-Significant interaction: for "intact" pictures, neutral verb RT < modified verb RT. For "sliced" pictures, modified verb RT marginally < neutral verb RT.
-^This changed slightly when removing non-English first language participants (n=6).
-
 
 # Demographics and other Descriptives
 

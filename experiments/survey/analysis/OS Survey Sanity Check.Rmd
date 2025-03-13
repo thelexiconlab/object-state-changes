@@ -25,8 +25,8 @@ library(patchwork)
 
 # Import Data
 ```{r}
-#Data from pilot - N=8
-data <-read.csv("../data/Object_State_Survey_Pilot_Testing.csv", fileEncoding = "UTF-8")
+#Data from pilot - N=2
+data <-read.csv("../data/Object_State_Survey_Pilot_Testing_Prolific.csv", fileEncoding = "UTF-8") %>%rename("id"="PROLIFIC_PID")
 
 ```
 
@@ -160,7 +160,7 @@ Contact_Past_Focus
 
 ## Count subjects
 ```{r}
-#should be 8 in each
+#should be 2 in each
 rating_data %>% group_by(id) %>% count()
 ranking_data %>% group_by(id) %>% count()
 ```
@@ -173,18 +173,18 @@ rating_data %>% group_by(verb,tense,focus) %>% count()
 
 #BEFORE Q- Should be 1 before question per participant per combined condition
 rating_data %>% filter(question=="Before") %>%group_by(id,verb,tense,focus) %>% count()
-#Should be 8 across 8 subs
+#Should be 2 across 2 subs
 rating_data %>% filter(question=="Before") %>%group_by(verb,tense,focus) %>% count()
 
 #AFTER Q- Should be 1 before question per participant per combined condition
 rating_data %>% filter(question=="After") %>%group_by(id,verb,tense,focus) %>% count()
-#Should be 8 across 8 subs
+#Should be 2 across 2 subs
 rating_data %>% filter(question=="After") %>%group_by(verb,tense,focus) %>% count()
 
 #IMPLY Q - Should be 1 before question per participant per combined condition
 #BEFORE - Should be 1 before question per participant per combined condition
 rating_data %>% filter(question=="Imply") %>%group_by(id,verb,tense,focus) %>% count()
-#Should be 8 across 8 subs
+#Should be 2 across 2 subs
 rating_data %>% filter(question=="Imply") %>%group_by(verb,tense,focus) %>% count()
 
 ```
@@ -198,17 +198,17 @@ ranking_data %>% group_by(verb,tense,focus) %>% count()
 #For each subject, should be 3 in Drop conditions (since "you" is also ranked)  and 2 in Contact conditions
 ranking_data  %>%group_by(id,verb,tense,focus) %>% count()
 
-#Should be 24 (3 obj per ranking * 8 sub) in each Drop and 16 (2 obj per ranking * 8) in each Contact, across 8 subs
+#Should be 6 (3 obj per ranking * 2 sub) in each Drop and 4 (2 obj per ranking * 2) in each Contact, across 2 subs
 ranking_data  %>%group_by(verb,tense,focus) %>% count()
 
 ```
 ## Demos check
 
 ```{r}
-#Age, race, gender - should be 8 entries total
+#Age, race, gender - should be 2 entries total
 demos %>% group_by(Age,Race,Gender) %>% count()
 
-#how many Nonnative Eng speakers, Nonnative English AOA - should add up to 8
+#how many Nonnative Eng speakers, Nonnative English AOA - should add up to 2
 demos%>%group_by(NES,NativeLang,EngAOA) %>% count()
 ```
 

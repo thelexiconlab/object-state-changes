@@ -19,6 +19,7 @@ library(stats)
 library(lmerTest)
 library(ggbeeswarm)
 library(patchwork)
+library(paletteer)
 setwd(here::here())
 getwd()
 ```
@@ -39,12 +40,10 @@ data = rbind(data1 %>% select(subject, typeoftrial, response, stimulus, rt,
                                 Experiment, question_order, data_source, time_elapsed)) %>% 
                         filter(!is.na(subject))
 
-## USE THIS CODE TO EXAMINE ONE DATASET AT A TIME
+## ONLY INCLUDING PREREGISTERED DATA
 data  = data %>% filter(data_source == "preregistered")  ### preregistered
 # data  = data %>% filter(data_source == "unregistered")  ### unregistered
-  
-ncol(data)
-colnames(data)
+
 
 ```
 
@@ -66,7 +65,7 @@ length(data %>% pull(subject) %>% unique())
 
 # data treatment
 
-## exclude non-English first language participants***
+## exclude non-English first language participants
 ```{r}
 lang <- data %>% filter(typeoftrial == "notenglish") %>% 
   separate(response, into = c("first", "age"), sep = ",") %>% 
@@ -138,7 +137,7 @@ geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
                 color = "black", position = position_dodge(0.70))+
   labs(y = "accuracy", title = "")+
   theme_clean()+
-  scale_fill_manual(values = c("darksalmon", "darkslategray4"))+
+ scale_fill_paletteer_d("ggthemes::Classic_10_Light")+
   theme(aspect.ratio=1.5,legend.position="none",plot.background = element_rect(
     color = "white"),
     strip.text.x = element_text(size =rel(2.3)),
@@ -151,25 +150,16 @@ accuracy_plot
 ## main accuracy model
 
 ```{r}
-acc_model_with_interaction = glmer(data = exclusions_data, 
+
+acc_model = glmer(data = exclusions_data, 
                   correct ~ weight*state + (1 + weight*state|subject) + (1|stimulus),
                   family = "binomial", 
                   control = glmerControl(optimizer = "bobyqa",
                                          optCtrl=list(maxfun=200000), 
                       check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(acc_model_with_interaction)
-car::Anova(acc_model_with_interaction)
+summary(acc_model)
+car::Anova(acc_model)
 
-acc_model_no_interaction = glmer(data = exclusions_data, 
-                  correct ~ weight + state + (1 + weight + state|subject) + (1|stimulus),
-                  family = "binomial", 
-                  control = glmerControl(optimizer = "bobyqa",
-                                         optCtrl=list(maxfun=200000), 
-                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(acc_model_no_interaction)
-car::Anova(acc_model_no_interaction)
-
-anova(acc_model_no_interaction, acc_model_with_interaction)
 
 ```
 
@@ -236,7 +226,7 @@ rt_plot <- mad_data %>%
                 color = "black", position = position_dodge(0.70)) +
   labs(y = "reaction time (ms)", title = "") +
   theme_clean() +
-  scale_fill_manual(values = c("darksalmon", "darkslategray4")) +
+  scale_fill_paletteer_d("ggthemes::Classic_10_Light") +
   theme(
     legend.position = "top",
     aspect.ratio = 1.5,
@@ -254,28 +244,19 @@ accuracy_plot+rt_plot
 ## main RT model
 
 ```{r}
-rt_model_with_interaction = lmer(data = mad_data, 
+rt_model = lmer(data = mad_data, 
                 log10_rt ~ weight*state + (1 + weight*state |subject) + (1|stimulus),
                 REML = FALSE, 
                 lmerControl(optimizer = "bobyqa",
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(rt_model_with_interaction)
-car::Anova(rt_model_with_interaction)
+summary(rt_model)
+car::Anova(rt_model)
 
-rt_model_no_interaction = lmer(data = mad_data, 
-                log10_rt ~ weight*state + (1 + weight + state |subject) + (1|stimulus),
-                REML = FALSE, 
-                control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(rt_model_no_interaction)
-car::Anova(rt_model_no_interaction)
-
-anova(rt_model_no_interaction, rt_model_with_interaction)
 
 ```
 
-No significant interaction found - model with NO interaction provided a better fit (but not sig better)
+No significant interaction found 
 
 ### assumptions
 

@@ -17,7 +17,7 @@ library(stringr)
 
 # import data
 ```{r}
-#Data from pilot - N=x
+#Data from pilot - N=2
 check_data <-read.csv("../data/squashability_check.csv", fileEncoding = "UTF-8")
 
 base<-check_data
@@ -28,7 +28,7 @@ base<-check_data
 check_data_clean <- check_data %>% 
   filter(!is.na(subject))
 
-length(check_data_clean %>% pull(subject) %>% unique())
+length(check_data_clean %>% pull(subject_id) %>%unique())
 
 #Should be 2 participants
 ```

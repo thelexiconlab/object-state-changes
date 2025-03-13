@@ -106,7 +106,7 @@ accuracy_plot <- exclusions_data %>%
     legend.text = element_text(size = rel(1.5)),   # Adjust legend text size
     legend.title = element_text(size = rel(1.7))  # Adjust legend title size
   )  +
-  scale_fill_manual(values = c("darksalmon", "darkslategray4"))
+  scale_fill_paletteer_d("ggthemes::Classic_10_Light")
 accuracy_plot
                 
 ```
@@ -210,7 +210,7 @@ rt_plot <- mad_data %>%
   geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24") +
   geom_errorbar(aes(ymin = lwr, ymax = upr), size = 0.5, width = 0.15,
                 color = "black", position = position_dodge(0.70)) +
-  labs(y = "reaction time (ms)", title = "") +
+  labs(y = "response time (ms)", title = "") +
   theme_clean() +
   theme(
     aspect.ratio = 1.2,
@@ -223,7 +223,7 @@ rt_plot <- mad_data %>%
     legend.text = element_text(size = rel(1.5)),
     legend.title = element_text(size = rel(1.7))
   ) +
-  scale_fill_manual(values = c("darksalmon", "darkslategray4"))
+   scale_fill_paletteer_d("ggthemes::Classic_10_Light")
 
 # Combine the plots
 accuracy_plot + rt_plot
