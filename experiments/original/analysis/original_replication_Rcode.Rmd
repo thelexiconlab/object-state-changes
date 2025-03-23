@@ -262,8 +262,8 @@ No significant interaction found
 
 ```{r}
 library(glmmTMB)
-sjPlot::plot_model(rt_model_no_interaction, type='diag')
-sjPlot::plot_model(rt_model_no_interaction, type='resid')
+sjPlot::plot_model(rt_model, type='diag')
+sjPlot::plot_model(rt_model, type='resid')
 ```
 
 # demographics and other descriptives

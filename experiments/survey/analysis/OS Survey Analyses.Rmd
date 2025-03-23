@@ -1,0 +1,574 @@
+---
+title: "OS Survey"
+author: "Channing Hambric"
+date: "2025-02-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages
+```{r}
+library(tidyverse)
+library(rstatix)
+library(ggpubr)
+library(dplyr)
+library(ggthemes)
+library(ggplot2)
+library(stringr)
+library(paletteer)
+library(patchwork)
+library(lme4)
+library(lmerTest)
+library(tidyboot)
+library(emmeans)
+```
+
+## Import Data
+```{r}
+english_ratings<-read.csv("../data/rating_data_english.csv", fileEncoding = "UTF-8")
+english_rankings<-read.csv("../data/ranking_data_english.csv", fileEncoding = "UTF-8")
+  
+portuguese_ratings<-read.csv("../data/rating_data_portuguese.csv", fileEncoding = "UTF-8")
+portuguese_rankings<-read.csv("../data/ranking_data_portuguese.csv", fileEncoding = "UTF-8")
+```
+
+
+
+#ENGLISH
+
+## Rating Analyses
+```{r}
+#CBing condition of target_object not sig, dropping as factor in all analyses
+#BEFORE the described event occurred, the object was...
+#overall
+before_analysis<-lmer(Score~verb*tense+(1|id),english_ratings%>%filter(question=="Before"))
+summary(before_analysis)
+car::Anova(before_analysis)
+
+#looking @ focus w/i "Came into contact" conditions
+before_analysis_focus<-lmer(Score~tense*focus+(1|id),english_ratings%>%filter(question=="Before",verb=="Contact"))
+summary(before_analysis_focus)
+car::Anova(before_analysis_focus)
+
+#Nothing going on for "Before" question - not surprising
+
+#AFTER the described event occurred, the object was...
+#overall
+after_analysis<-lmer(Score~verb*tense+(1|id),english_ratings%>%filter(question=="After"))
+summary(after_analysis)
+car::Anova(after_analysis)
+emmeans(after_analysis,pairwise~verb)
+
+#After event -- Sig higher estimated deformity for "Drop" compared to "Came In Contact", no ME or intx with tense
+
+#looking @ focus w/i "Came into contact" conditions
+after_analysis_focus<-lmer(Score~tense*focus+(1|id),english_ratings%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_focus)
+car::Anova(after_analysis_focus)
+
+#After event -- just contact conditions -- sig higher estimated deformity when target object was NOT FOCUS - Direct Object
+
+#Does the sentence imply that the object was smashed?
+#overall
+imply_analysis<-lmer(Score~verb*tense+(1|id),english_ratings%>%filter(question=="Imply"))
+summary(imply_analysis)
+car::Anova(imply_analysis)
+emmeans(imply_analysis,pairwise~verb)
+#How much does it imply -- Sig higher estimated deformity for "Drop" compared to "Came In Contact"
+
+#looking @ focus w/i "Came into contact" conditions
+imply_analysis_focus<-lmer(Score~tense*focus+(1|id),english_ratings%>%filter(question=="Imply",verb=="Contact"))
+summary(imply_analysis_focus)
+car::Anova(imply_analysis_focus)
+
+#Imply -- just contact conditions -- sig higher estimated deformity when target object was NOT FOCUS - Direct Object, sig higher for present tense compared to past tense
+
+```
+
+## Rating Plot
+```{r}
+#labels for figure
+rating_data_plot <- english_ratings %>% 
+  mutate(
+    question = recode(question, 
+                      "Before" = "Before the described event occurred...", 
+                      "After" = "After the described event occurred...", 
+                      "Imply" = "Does the sentence imply..."),
+    question = factor(question, levels = c(
+      "Does the sentence imply...", 
+      "After the described event occurred...", 
+      "Before the described event occurred..."))
+  )
+
+#Verb Compare w tense
+verb_comp<-rating_data_plot %>% mutate(tense = factor(tense, levels = c("Present","Past")))%>%
+  group_by(question, verb,tense) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = verb, fill = verb)) + facet_wrap(~tense)+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb Comparison - English") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+verb_comp
+
+#Drop
+drop_rating_plot <- rating_data_plot %>%  
+  filter(verb == "Drop") %>%
+  group_by(question, tense) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = tense, fill = tense)) +
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Drop") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+drop_rating_plot
+#Contact
+contact_rating_plot <- rating_data_plot %>%  filter(verb == "Contact") %>%
+  group_by(question,tense,focus) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = focus, fill = focus)) +
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - English") +
+  theme_few() +theme(aspect.ratio = .5,
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+#gridExtra::grid.arrange(drop_rating_plot,contact_rating_plot)
+contact_rating_plot
+```
+
+## Ranking Analysis
+```{r}
+library(ordinal)
+#Drop verb conditions - Participants rank 3 objects 1-3 (you,target obj, dropped obj)
+#ordinal logistic regression
+
+ranking_data_drop<-english_rankings%>%filter(verb=="Drop")%>%
+  mutate(
+    Ranking = factor(Ranking, levels = c(1, 2, 3), ordered = TRUE),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense))
+
+# set reference categories for the model
+contrasts(ranking_data_drop$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_drop$ranked_object_recoded) = contr.treatment(3, base = 2) #target obj as reference
+
+#too little variation among ids, so for now just using clm instead of clmm
+model_drop <- clm(Ranking ~ ranked_object_recoded * tense, 
+                   data = ranking_data_drop, 
+                   link = "logit")
+summary(model_drop)
+
+#Contact verb conditions- Participants rank 2 objects 1-2 (target obj, falling obj)
+#recode data
+ranking_data_contact <- english_rankings %>%
+  filter(verb == "Contact") %>%
+  mutate(
+    Ranking = as.factor(Ranking),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense),
+    target_object = as.factor(target_object),
+    focus = as.factor(focus))
+#model
+# set reference categories for the model
+contrasts(ranking_data_contact$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_contact$focus) = contr.treatment(2, base = 2) #not focus as reference
+contrasts(ranking_data_contact$ranked_object_recoded) = contr.treatment(2, base = 2) #only 2 levels, target obj as reference
+
+model_contact <- clm(Ranking ~ ranked_object_recoded * tense * focus, 
+                   data = ranking_data_contact, 
+                   link = "logit")
+summary(model_contact)
+
+#Drop - sig higher probability of falling object being ranked as primary focus, 'you' of being ranked asleast important 
+
+#Contact - sig higher probability of target object being ranked as primary focus in Focus condition, sig higher probability of falling object being ranked as primary focus in NotFocus condition
+```
+
+## Rank plot
+```{r}
+
+#logit plots
+#bar plots since discrete/dependent rankings?
+#drop
+preds_drop <- data.frame(
+  ranking_data_drop,  
+  predict(model_drop, type = "prob")  # Get predicted probabilities
+)
+preds_drop_long <- preds_drop %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+drop_eng<-ggplot(preds_drop_long %>%filter(Ranking=="1"), aes(x = ranked_object_recoded, y = Probability, fill = ranked_object_recoded)) +
+  geom_bar(stat = "identity", position = "dodge")+ 
+  labs(title = "Drop",
+       x = "Ranking",
+       y = "Probability of Ranked #1",
+       fill = "Ranked Object") +scale_fill_discrete(name = "Ranked Object")+
+  theme_few()+scale_fill_paletteer_d("lisa::JackBush")+theme(legend.position = "none")
+
+
+#contact
+preds_contact <- data.frame(
+  ranking_data_contact,  
+  predict(model_contact, type = "prob")  # Get predicted probabilities
+)
+preds_contact_long <- preds_contact %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+
+contact_eng<-ggplot(preds_contact_long %>%filter(Ranking=="1"), aes(x = ranked_object_recoded, y = Probability, fill = ranked_object_recoded)) +
+  geom_col(position = position_dodge()) + 
+  scale_fill_paletteer_d("lisa::JackBush", name = "Ranked Object") +  facet_wrap(~focus)+
+  labs(title = "Contact",
+       x = "Ranking",
+       y = "Probability of Ranked #1") +
+  theme_few()+theme(legend.position = "none")
+
+drop_eng+contact_eng
+
+
+```
+# PORTUGUESE
+
+## Rating Analyses
+```{r}
+
+#CBing condition of target_object not sig, dropping as factor in all analyses
+#BEFORE the described event occurred, the object was...
+##TYPO FOR DROP - EXPLICIT - TOMATO - BEFORE - EXCLUDE (Accidentally said "after" instead of "before")
+portuguese_ratings <- portuguese_ratings %>%
+  filter(!(target_object == "tomato" & subject == "Explicit" & verb == "Drop"))
+
+#overall
+before_analysis_pg<-lmer(Score~verb*tense+(1|id),portuguese_ratings%>%filter(question=="Before"))
+summary(before_analysis_pg)
+car::Anova(before_analysis_pg)
+
+#all ns
+
+#looking @ focus w/i "Came into contact" conditions
+before_analysis_focus_pg<-lmer(Score~tense*focus+(1|id),portuguese_ratings%>%filter(question=="Before",verb=="Contact"))
+summary(before_analysis_focus_pg)
+car::Anova(before_analysis_focus_pg)
+
+#Randomly ME of focus, focus condition slightly higher starting deformity
+
+#looking @ subject within "drop" conditions
+before_analysis_subject_pg<-lmer(Score~tense*subject+(1|id),portuguese_ratings%>%filter(question=="Before",verb=="Drop"))
+summary(before_analysis_subject_pg)
+car::Anova(before_analysis_subject_pg)
+
+#all ns
+
+#AFTER the described event occurred, the object was...
+#overall
+after_analysis_pg<-lmer(Score~verb*tense+(1|id),portuguese_ratings%>%filter(question=="After"))
+summary(after_analysis_pg)
+car::Anova(after_analysis_pg)
+emmeans(after_analysis_pg,pairwise~verb)
+
+#As in English, "Drop" sig higher than "Contact"
+
+#looking @ focus w/i "Came into contact" conditions
+after_analysis_focus_pg<-lmer(Score~tense*focus+(1|id),portuguese_ratings%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_focus_pg)
+car::Anova(after_analysis_focus_pg)
+
+#As in English, sig higher estimated deformity when target object was NOT FOCUS - Direct Object
+
+#looking @ subject within "drop" conditions
+after_analysis_subject_pg<-lmer(Score~tense*subject+(1|id),portuguese_ratings%>%filter(question=="After",verb=="Drop"))
+summary(after_analysis_subject_pg)
+car::Anova(after_analysis_subject_pg)
+
+#all ns
+
+#Does the sentence imply that the object was smashed?
+#overall
+imply_analysis_pg<-lmer(Score~verb*tense+(1|id),portuguese_ratings%>%filter(question=="Imply"))
+summary(imply_analysis_pg)
+car::Anova(imply_analysis_pg)
+
+#As in English, sig higher estimated deformity when target object was NOT FOCUS - Direct Object
+
+#looking @ focus w/i "Came into contact" conditions
+imply_analysis_focus_pg<-lmer(Score~tense*focus+(1|id),portuguese_ratings%>%filter(question=="Imply",verb=="Contact"))
+summary(imply_analysis_focus_pg)
+car::Anova(imply_analysis_focus_pg)
+
+#As in English, sig higher estimated deformity when target object was NOT FOCUS - Direct Object
+
+#looking @ subject within "drop" conditions
+imply_analysis_subject_pg<-lmer(Score~tense*subject+(1|id),portuguese_ratings%>%filter(question=="Imply",verb=="Drop"))
+summary(imply_analysis_subject_pg)
+car::Anova(imply_analysis_subject_pg)
+
+#all ns
+```
+
+## Rating Plot
+```{r}
+#labels for figure
+rating_data_plot_pg <- portuguese_ratings %>% 
+  mutate(
+    question = recode(question, 
+                      "Before" = "Before the described event occurred...", 
+                      "After" = "After the described event occurred...", 
+                      "Imply" = "Does the sentence imply..."),
+    question = factor(question, levels = c(
+      "Does the sentence imply...", 
+      "After the described event occurred...", 
+      "Before the described event occurred..."))
+  )
+
+#Verb Compare w tense
+verb_comp_pg<-rating_data_plot_pg %>% mutate(tense = factor(tense, levels = c("Present","Past")))%>%
+  group_by(question, verb,tense) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = verb, fill = verb)) + facet_wrap(~tense)+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb Comparison - Portuguese") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+verb_comp_pg
+
+#Drop
+drop_rating_plot_pg <- rating_data_plot_pg %>%  
+  filter(verb == "Drop") %>%
+  group_by(question, tense, subject) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = subject, fill = subject)) + 
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Drop - Portuguese") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+drop_rating_plot_pg
+#Contact
+contact_rating_plot_pg <- rating_data_plot_pg %>%  filter(verb == "Contact") %>%
+  group_by(question,tense,focus) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = focus, fill = focus)) + 
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - Portuguese") +
+  theme_few() +theme(aspect.ratio = .5,
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+
+contact_rating_plot_pg
+```
+#Ranking 
+```{r}
+library(ordinal)
+#Drop verb conditions - Participants rank 3 objects 1-3 (you,target obj, dropped obj)
+#ordinal logistic regression
+
+ranking_data_drop_pg<-portuguese_rankings%>%filter(verb=="Drop")%>%
+  mutate(
+    Ranking = factor(Ranking, levels = c(1, 2, 3), ordered = TRUE),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense),subject = as.factor(subject))
+
+# set reference categories for the model
+contrasts(ranking_data_drop_pg$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_drop_pg$subject) = contr.treatment(2, base = 2) #null as reference
+contrasts(ranking_data_drop_pg$ranked_object_recoded) = contr.treatment(3, base = 2) #target obj as reference
+
+#too little variation among ids, so for now just using clm instead of clmm
+model_drop_pg <- clm(Ranking ~ ranked_object_recoded *tense*subject, 
+                   data = ranking_data_drop_pg, 
+                   link = "logit")
+summary(model_drop_pg)
+car::Anova(model_drop_pg)
+
+
+#Zooming in on target object ranking in null vs explicit, dropping tense since ns
+model_drop_pg_subject <- clm(Ranking ~ subject, 
+                   data = ranking_data_drop_pg%>%filter(ranked_object_recoded=="target object"), 
+                   link = "logit")
+summary(model_drop_pg_subject)
+
+#ns
+
+#you
+model_drop_pg_subject <- clm(Ranking ~ subject, 
+                   data = ranking_data_drop_pg%>%filter(ranked_object_recoded=="you"), 
+                   link = "logit")
+summary(model_drop_pg_subject)
+#sig
+
+#Contact verb conditions- Participants rank 2 objects 1-2 (target obj, falling obj)
+#recode data
+ranking_data_contact_pg <- portuguese_rankings %>%
+  filter(verb == "Contact") %>%
+  mutate(
+    Ranking = as.factor(Ranking),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    tense = as.factor(tense),
+    target_object = as.factor(target_object),
+    focus = as.factor(focus))
+#model
+# set reference categories for the model
+contrasts(ranking_data_contact_pg$tense) = contr.treatment(2, base = 2) #present as reference
+contrasts(ranking_data_contact_pg$focus) = contr.treatment(2, base = 2) #not focus as reference
+contrasts(ranking_data_contact_pg$ranked_object_recoded) = contr.treatment(2, base = 2) #only 2 levels, target obj as reference
+
+model_contact_pg <- clm(Ranking ~ ranked_object_recoded * tense * focus, 
+                   data = ranking_data_contact_pg, 
+                   link = "logit")
+summary(model_contact_pg)
+
+```
+
+#Ranking Plot
+```{r}
+
+#logit plots
+#bar plots since discrete/dependent rankings?
+#drop
+preds_drop_pg <- data.frame(
+  ranking_data_drop_pg,  
+  predict(model_drop_pg, type = "prob")  # Get predicted probabilities
+)
+preds_drop_long_pg <- preds_drop_pg %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+drop_pg<-ggplot(preds_drop_long_pg%>% filter(Ranking=="1"), aes(x = ranked_object_recoded, y = Probability, fill = ranked_object_recoded)) +
+  geom_bar(stat = "identity", position = "dodge") + facet_wrap(~subject)+
+  labs(title = "Drop",
+       x = "Object",
+       y = "Probability of Ranked #1",
+       fill = "Object") +scale_fill_discrete(name = "Subject")+
+  theme_few()+scale_fill_paletteer_d("lisa::JackBush")+theme(legend.position="none")
+
+
+#contact
+preds_contact_pg <- data.frame(
+  ranking_data_contact_pg,  
+  predict(model_contact_pg, type = "prob")  # Get predicted probabilities
+)
+preds_contact_long_pg <- preds_contact_pg %>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+
+contact_pg<-ggplot(preds_contact_long_pg%>%filter(Ranking=="1"), aes(x = ranked_object_recoded, y = Probability, fill = ranked_object_recoded)) +
+  geom_col(position = position_dodge()) + 
+  facet_wrap(~focus) +
+  scale_fill_paletteer_d("lisa::JackBush", name = "Ranked Object") +  
+  labs(title = "Contact",
+       x = "Object",
+       y = "Probability of Ranked #1") +
+  theme_few()+theme(legend.position="none")
+
+
+drop_pg+contact_pg
+```
+#Combining null sub drop PG data w/ English drop to compare
+
+```{r}
+ranking_data_drop<-ranking_data_drop%>%mutate(language="English")
+pg_drop_null<-ranking_data_drop_pg %>%filter(subject=="Null") %>% select(-subject)%>%mutate(language="Portuguese")
+
+ranking_data_drop_comp <-rbind(ranking_data_drop,pg_drop_null)%>%
+  mutate(
+    Ranking = factor(Ranking, levels = c(1, 2, 3), ordered = TRUE),
+    ranked_object_recoded = as.factor(ranked_object_recoded),
+    language = as.factor(language))
+
+#set reference categories for the model
+contrasts(ranking_data_drop_comp$language) = contr.treatment(2, base = 2) #english as reference
+contrasts(ranking_data_drop_comp$ranked_object_recoded) = contr.treatment(3, base = 2) #target obj as reference
+
+#too little variation among ids, so for now just using clm instead of clmm
+model_drop_comp <- clm(Ranking ~ ranked_object_recoded * language, 
+                   data = ranking_data_drop_comp, 
+                   link = "logit")
+summary(model_drop_comp)
+
+#Zooming in on target object ranking
+model_drop_comp_targ <- clm(Ranking ~ language, 
+                   data = ranking_data_drop_comp%>%filter(ranked_object_recoded=="target object"), 
+                   link = "logit")
+summary(model_drop_comp_targ)
+#Sig
+
+```
+
+## Compare Lang Plot
+```{r}
+
+#just plotting #1 ranking
+preds_drop_comp <- data.frame(
+  ranking_data_drop_comp,  
+  predict(model_drop_comp, type = "prob")  # Get predicted probabilities
+)
+preds_drop_long_comp <- preds_drop_comp %>% filter(Ranking=="1")%>%
+  pivot_longer(cols = starts_with("fit"),  # Probabilities for each ranking level
+               names_to = "Ranking_Level",
+               values_to = "Probability")
+ggplot(preds_drop_long_comp, aes(x = ranked_object_recoded, y = Probability, fill = language)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = " Drop - English vs. Null Subject Portuguese",
+       x = "Object",
+       y = "Probability of Ranked #1",
+       fill = "Language") +scale_fill_discrete(name = "Language")+
+  theme_few()+scale_fill_paletteer_d("lisa::JackBush")
+
+
+```
+### Power analysis
+
+```{r}
+#using after_focus ratings to estimate finest grain comparison
+library(simr)
+#set.seed(123)
+#small_effect <- 0.3 * sd(rating_data$Score) #cohens d = 0.3 for small effect
+#fixef(after_analysis_focus)["tensePresent:focusNotFocus"] = small_effect
+# Extend the model
+#extended_model <- extend(after_analysis_focus, along = "id", n = 100)
+#power_curve <- powerCurve(extended_model, along = "id", fixed("tense:focus", "anova"), nsim = 1000)
+
+# Plot the power curve
+#plot(power_curve)
+
+#Aim for ~75 per lang
+```
+
+
+
+
