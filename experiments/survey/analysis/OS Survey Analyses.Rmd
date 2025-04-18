@@ -498,7 +498,101 @@ contact_pg<-ggplot(preds_contact_long_pg%>%filter(Ranking=="1"), aes(x = ranked_
 
 drop_pg+contact_pg
 ```
-#Combining null sub drop PG data w/ English drop to compare
+# Combining PG data w/ English data to compare ratings
+```{r}
+combined_ratings<-rbind(english_ratings%>%mutate(Language="English"),portuguese_ratings%>%select(-subject)%>%mutate(Language="Portuguese"))
+
+#overall - Before
+before_analysis_combined<-lmer(Score~verb*tense*Language+(1|id),combined_ratings%>%filter(question=="Before"))
+summary(before_analysis_combined)
+
+#all ns
+
+#looking @ focus w/i "Came into contact" conditions
+before_analysis_focus_combined<-lmer(Score~tense*focus*Language+(1|id),combined_ratings%>%filter(question=="Before",verb=="Contact"))
+summary(before_analysis_focus_combined)
+car::Anova(before_analysis_focus_combined)
+
+#all ns
+
+#AFTER the described event occurred, the object was...
+#overall
+after_analysis_combined<-lmer(Score~verb*tense*Language+(1|id),combined_ratings%>%filter(question=="After"))
+summary(after_analysis_combined)
+emmeans(after_analysis_combined,pairwise~verb*Language,simple="Language")
+
+#ME of verb, ME of Language, sig intx of verb*Language (English speakers gave higher smashed rating for contact)
+
+#looking @ focus w/i "Came into contact" conditions
+after_analysis_focus_combined<-lmer(Score~tense*focus*Language+(1|id),combined_ratings%>%filter(question=="After",verb=="Contact"))
+summary(after_analysis_focus_combined)
+
+#ME of lang and focus, english & not focus rated higher
+
+
+#Does the sentence imply that the object was smashed?
+#overall
+imply_analysis_combined<-lmer(Score~verb*tense*Language+(1|id),combined_ratings%>%filter(question=="Imply"))
+summary(imply_analysis_combined)
+emmeans(imply_analysis_combined,pairwise~verb*Language,simple="Language")
+#sig intx of lang x verb, english speakes rated contact higher 
+
+#looking @ focus w/i "Came into contact" conditions
+imply_analysis_focus_combined<-lmer(Score~tense*focus*Language+(1|id),combined_ratings%>%filter(question=="Imply",verb=="Contact"))
+summary(imply_analysis_focus_combined)
+
+#ME of lang and focus, english & not focus rated higher
+
+```
+# Compare Ratings plot
+```{r}
+rating_data_plot_comb <- combined_ratings %>% 
+  mutate(
+    question = recode(question, 
+                      "Before" = "Before the described event occurred...", 
+                      "After" = "After the described event occurred...", 
+                      "Imply" = "Does the sentence imply..."),
+    question = factor(question, levels = c(
+      "Does the sentence imply...", 
+      "After the described event occurred...", 
+      "Before the described event occurred..."))
+  )
+
+verb_comp_comb<-rating_data_plot_comb %>% 
+  group_by(question, verb,Language) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group =Language, fill = Language)) + facet_wrap(~verb)+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb Comparison - Cross Language") +
+  theme_few() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+verb_comp_comb
+
+contact_rating_plot_comb <- rating_data_plot_comb %>%  filter(verb == "Contact") %>%
+  group_by(question,Language,focus) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, group = Language, fill = Language)) + facet_wrap(~focus)+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
+  ylim(0, 100) +  
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - Cross Language") +
+  theme_few() +theme(aspect.ratio = .5,
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
+    plot.title = element_text(size = 14)
+  )+coord_flip()
+
+
+contact_rating_plot_comb
+
+```
+
+
+# Combining [null sub] drop PG data w/ English drop to compare ranking
 
 ```{r}
 ranking_data_drop<-ranking_data_drop%>%mutate(language="English")
@@ -529,7 +623,7 @@ summary(model_drop_comp_targ)
 
 ```
 
-## Compare Lang Plot
+## Compare Lang Rank Plot
 ```{r}
 
 #just plotting #1 ranking

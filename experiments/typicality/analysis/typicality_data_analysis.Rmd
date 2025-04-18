@@ -176,7 +176,7 @@ mad_data %>%
 geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
   geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
                 color = "black", position = position_dodge(0.70))+
-  labs(y = "RT (ms)", title = "RT per color x state condition")+
+  labs(y = "response time (ms)", title = "")+
   theme_clean()+
   scale_fill_manual(values = c("black", "lightgray"))+
   theme(plot.background = element_rect(

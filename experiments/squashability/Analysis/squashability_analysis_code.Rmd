@@ -339,6 +339,8 @@ data <- read_csv("../data/survey_data.csv") %>% filter(typeoftrial == "survey") 
   mutate(item = as.character(item))%>%
   mutate(condition = fct_recode(condition, squashable = "s", filler = "f", unsquashable="u"),
          condition = fct_relevel(condition,  "unsquashable","filler", "squashable"))
+
+length(data %>% pull(subject) %>% unique())
 ```
 
 ## basic plot
@@ -348,22 +350,22 @@ id_ratings = data %>% group_by(subject, condition) %>%
 data %>% 
   group_by(condition) %>%
   summarise(ci = list(mean_cl_boot(response) %>% 
-                        rename(mean=y, lwr=ymin, upr=ymax))) %>% unnest%>%
-  ggplot(aes(x= condition, y = mean)) +
-geom_bar(stat = "identity", position = "dodge", width = 0.7, color = "gray24")+
-  geom_point(data = id_ratings, aes(x = condition, y = mean_rating),
+                        rename(mean=y, lwr=ymin, upr=ymax))) %>% 
+  unnest %>%
+  ggplot(aes(x=condition, y=mean)) +
+  geom_bar(aes(fill = condition), stat="identity", position="dodge", width=0.7, color="gray24") +
+  geom_point(data = id_ratings, aes(x=condition, y=mean_rating),
              shape = 21, position = position_jitter(width = 0.05),
-             alpha = 0.3)+
-  geom_errorbar(aes(ymin=lwr, ymax=upr), size = 0.5, width=.15, 
-                color = "black", position = position_dodge(0.70))+
-  labs(y = "mean ratings", title = "squashability ratings")+
-  theme_clean()+
-  scale_fill_manual(values = c("darksalmon", "darkslategray4","darkolivegreen4"))+
-  theme(plot.background = element_rect(
-    color = "white"),
-    strip.text.x = element_text(size =rel(2)),
-        axis.text = element_text(size =rel(1.5)),
-        axis.title = element_text(size =rel(2)),
+             alpha = 0.3) +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), size = 0.5, width = 0.15, 
+                color = "black", position = position_dodge(0.70)) +
+  labs(y = "mean ratings", title = "squashability ratings") +
+  theme_clean() +
+  scale_fill_manual(values = c("darksalmon", "darkslategray4", "darkolivegreen4")) +
+  theme(plot.background = element_rect(color = "white"),
+        strip.text.x = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.5)),
+        axis.title = element_text(size = rel(2)),
         plot.title = element_text(hjust = .5, size = rel(1.5)),
         legend.position = "none")
 ```
