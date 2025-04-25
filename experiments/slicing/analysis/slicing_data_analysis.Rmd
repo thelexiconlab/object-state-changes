@@ -110,6 +110,13 @@ accuracy_plot
 ```
 ## main accuracy model
 ```{r}
+acc_model_0 = glmer(data = exclusions_data, 
+                  accuracy ~ state*verb + (1|subject) + (1|stimulus),
+                  family = "binomial", 
+                 control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+
 acc_model = glmer(data = exclusions_data, 
                   accuracy ~ state*verb + (1 + state*verb|subject) + (1|stimulus),
                   family = "binomial", 
@@ -117,7 +124,9 @@ acc_model = glmer(data = exclusions_data,
                                          optCtrl=list(maxfun=200000), 
                       check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(acc_model)
-car::Anova(acc_model)
+
+performance::icc(acc_model)
+anova(acc_model_0,acc_model)
 
 
 ```
@@ -199,6 +208,7 @@ accuracy_plot+rt_plot
 
 ## main RT model
 ```{r}
+
 rt_model = lmer(data = mad_data, 
                 log10_rt ~ verb*state +
                   (1 + verb*state |subject) + (1|stimulus),
@@ -206,8 +216,8 @@ rt_model = lmer(data = mad_data,
                 control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
-car::Anova(rt_model)
-emmeans(rt_model,pairwise~verb*state,simple="verb")
+
+emmeans(rt_model,pairwise~verb*state)
 ```
 
 Significant interaction.
@@ -215,19 +225,19 @@ Significant interaction.
 ## power analysis
 ```{r}
 library(simr)
-set.seed(123)
+#set.seed(123)
 #Change the fixed effect to be small
-fixef(rt_model)["verbneutral:statewhole"] = 0.05
+#fixef(rt_model)["verbneutral:statewhole"] = 0.05
 #Start with an extended model up to 100 participants
-extended_model <- extend(rt_model, along = "subject", n = 200)
+#extended_model <- extend(rt_model, along = "subject", n = 200)
 #Perform a power curve analysis to test the three-way interaction
-power_curve <- powerCurve(extended_model, 
-                          along = "subject", 
-                        fixed("verb:state", "anova"), 
-                         nsim = 100)  # Number of simulations per sample size
+#power_curve <- powerCurve(extended_model, 
+                        #  along = "subject", 
+                        #fixed("verb:state", "anova"), 
+                       #  nsim = 100)  # Number of simulations per sample size
 
 # Plot the power curve
-plot(power_curve)
+#plot(power_curve)
 
 ```
 

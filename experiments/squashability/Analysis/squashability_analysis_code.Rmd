@@ -127,6 +127,14 @@ accuracy_plot
 ```
 ## main accuracy model
 ```{r}
+acc_model_0<-glmer(data = exclusions_data, 
+                  accuracy ~ state*squashability + (1|subject) + (1|stimulus),
+                  family = "binomial", 
+                 control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+
+
 acc_model = glmer(data = exclusions_data, 
                   accuracy ~ state*squashability + (1 + state*squashability|subject) + (1|stimulus),
                   family = "binomial", 
@@ -135,9 +143,11 @@ acc_model = glmer(data = exclusions_data,
                       check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(acc_model)
 car::Anova(acc_model)
-
+performance::icc(acc_model)
 
 sjPlot::plot_model(acc_model, type = "int")
+
+anova(acc_model_0,acc_model)
 ```
 
 Significant interaction
@@ -224,7 +234,6 @@ rt_model = lmer(data = mad_data,
                             optCtrl=list(maxfun=200000),
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
-car::Anova(rt_model)
 ```
 
 
@@ -354,14 +363,11 @@ data %>%
   unnest %>%
   ggplot(aes(x=condition, y=mean)) +
   geom_bar(aes(fill = condition), stat="identity", position="dodge", width=0.7, color="gray24") +
-  geom_point(data = id_ratings, aes(x=condition, y=mean_rating),
-             shape = 21, position = position_jitter(width = 0.05),
-             alpha = 0.3) +
   geom_errorbar(aes(ymin = lwr, ymax = upr), size = 0.5, width = 0.15, 
                 color = "black", position = position_dodge(0.70)) +
-  labs(y = "mean ratings", title = "squashability ratings") +
+  labs(y = "mean ratings", title = "") +
   theme_clean() +
-  scale_fill_manual(values = c("darksalmon", "darkslategray4", "darkolivegreen4")) +
+  scale_fill_paletteer_d("ggthemes::Classic_10_Light") +
   theme(plot.background = element_rect(color = "white"),
         strip.text.x = element_text(size = rel(2)),
         axis.text = element_text(size = rel(1.5)),
