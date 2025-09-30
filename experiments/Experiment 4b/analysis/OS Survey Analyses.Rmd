@@ -94,20 +94,26 @@ car::Anova(imply_analysis_focus)
 rating_data_plot <- english_ratings %>% 
   mutate(
     question = recode(question, 
-                      "Before" = "Before the described event occurred...", 
-                      "After" = "After the described event occurred...", 
-                      "Imply" = "Does the sentence imply..."),
+                      "Before" = "Q1. Before the described event occurred...", 
+                      "After" = "Q2. After the described event occurred...", 
+                      "Imply" = "Q3. Does the sentence imply..."),
     question = factor(question, levels = c(
-      "Does the sentence imply...", 
-      "After the described event occurred...", 
-      "Before the described event occurred..."))
+      "Q3. Does the sentence imply...", 
+      "Q2. After the described event occurred...", 
+      "Q1. Before the described event occurred..."))
   )
 
-#Verb Compare w tense
-verb_comp<-rating_data_plot %>% mutate(tense = factor(tense, levels = c("Present","Past")))%>%
-  group_by(question, verb,tense) %>%
+desired_verb_order <- c("Contact","Drop")  
+
+verb_comp <- rating_data_plot %>%
+  mutate(
+    tense = factor(tense, levels = c("Present", "Past")),
+    verb = factor(verb, levels = desired_verb_order)  # enforce order
+  ) %>%
+  group_by(question, verb, tense) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
-  ggplot(aes(x = question, y = empirical_stat, group = verb, fill = verb)) + facet_wrap(~tense)+
+  ggplot(aes(x = question, y = empirical_stat, group = verb, fill = verb)) +
+  facet_wrap(~tense) +
   geom_bar(stat = 'identity', position = "dodge") +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
   ylim(0, 100) +  
@@ -116,7 +122,8 @@ verb_comp<-rating_data_plot %>% mutate(tense = factor(tense, levels = c("Present
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
     plot.title = element_text(size = 14)
-  )+coord_flip()
+  ) +
+  coord_flip()
 verb_comp
 
 #Drop
@@ -136,21 +143,33 @@ drop_rating_plot <- rating_data_plot %>%
   )+coord_flip()
 
 drop_rating_plot
-#Contact
-contact_rating_plot <- rating_data_plot %>%  filter(verb == "Contact") %>%
-  group_by(question,tense,focus) %>%
-  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
-  ggplot(aes(x = question, y = empirical_stat, group = focus, fill = focus)) +
-  geom_bar(stat = 'identity', position = "dodge") +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
-  ylim(0, 100) +  
-  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - English") +
-  theme_few() +theme(aspect.ratio = .5,
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
-    plot.title = element_text(size = 14)
-  )+coord_flip()
 
-#gridExtra::grid.arrange(drop_rating_plot,contact_rating_plot)
+#Contact
+desired_focus_order <- c("NotFocus","Focus") 
+contact_rating_plot <- rating_data_plot %>%
+  filter(verb == "Contact") %>%
+    mutate(
+    focus = factor(focus, levels = desired_focus_order)  
+  ) %>% 
+  group_by(question, focus) %>%
+  tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
+  ggplot(aes(x = question, y = empirical_stat, fill = focus)) +
+  geom_bar(stat = 'identity', position = position_dodge(width = 0.9)) +
+  geom_errorbar(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    width = 0,
+    position = position_dodge(width = 0.9)
+  ) +
+  ylim(0, 100) +
+  coord_flip() +
+  labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - English") +
+  theme_few() +
+  theme(
+    aspect.ratio = 0.5,
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    plot.title = element_text(size = 14)
+  )+ scale_fill_manual(values = c("NotFocus" = "palegreen", "Focus" = "yellow2"))
+
 contact_rating_plot
 ```
 
@@ -331,13 +350,13 @@ car::Anova(imply_analysis_subject_pg)
 rating_data_plot_pg <- portuguese_ratings %>% 
   mutate(
     question = recode(question, 
-                      "Before" = "Before the described event occurred...", 
-                      "After" = "After the described event occurred...", 
-                      "Imply" = "Does the sentence imply..."),
+                      "Before" = "Q1. Before the described event occurred...", 
+                      "After" = "Q2. After the described event occurred...", 
+                      "Imply" = "Q3. Does the sentence imply..."),
     question = factor(question, levels = c(
-      "Does the sentence imply...", 
-      "After the described event occurred...", 
-      "Before the described event occurred..."))
+      "Q3. Does the sentence imply...", 
+      "Q2. After the described event occurred...", 
+      "Q1. Before the described event occurred..."))
   )
 
 #Verb Compare w tense
@@ -375,6 +394,10 @@ drop_rating_plot_pg <- rating_data_plot_pg %>%
 drop_rating_plot_pg
 #Contact
 contact_rating_plot_pg <- rating_data_plot_pg %>%  filter(verb == "Contact") %>%
+  filter(verb == "Contact") %>%
+    mutate(
+    focus = factor(focus, levels = desired_focus_order)  
+  ) %>% 
   group_by(question,tense,focus) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
   ggplot(aes(x = question, y = empirical_stat, group = focus, fill = focus)) + 
@@ -385,7 +408,7 @@ contact_rating_plot_pg <- rating_data_plot_pg %>%  filter(verb == "Contact") %>%
   theme_few() +theme(aspect.ratio = .5,
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
     plot.title = element_text(size = 14)
-  )+coord_flip()
+  )+coord_flip()+ scale_fill_manual(values = c("NotFocus" = "palegreen", "Focus" = "yellow2"))
 
 
 contact_rating_plot_pg
@@ -549,16 +572,20 @@ summary(imply_analysis_focus_combined)
 rating_data_plot_comb <- combined_ratings %>% 
   mutate(
     question = recode(question, 
-                      "Before" = "Before the described event occurred...", 
-                      "After" = "After the described event occurred...", 
-                      "Imply" = "Does the sentence imply..."),
+                      "Before" = "Q1. Before the described event occurred...", 
+                      "After" = "Q2. After the described event occurred...", 
+                      "Imply" = "Q3. Does the sentence imply..."),
     question = factor(question, levels = c(
-      "Does the sentence imply...", 
-      "After the described event occurred...", 
-      "Before the described event occurred..."))
+      "Q3. Does the sentence imply...", 
+      "Q2. After the described event occurred...", 
+      "Q1. Before the described event occurred..."))
   )
 
-verb_comp_comb<-rating_data_plot_comb %>% 
+desired_lang_order<-c("Portuguese","English")
+
+verb_comp_comb<-rating_data_plot_comb %>% mutate(
+    Language = factor(Language, levels = desired_lang_order)  # enforce order
+  ) %>%
   group_by(question, verb,Language) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
   ggplot(aes(x = question, y = empirical_stat, group =Language, fill = Language)) + facet_wrap(~verb)+
@@ -566,14 +593,16 @@ verb_comp_comb<-rating_data_plot_comb %>%
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
   ylim(0, 100) +  
   labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb Comparison - Cross Language") +
-  theme_few() +
+  theme_few() +scale_fill_manual(values=c("#FCBA65FF", "#EC8FA3FF"))+
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
     plot.title = element_text(size = 14)
   )+coord_flip()
 verb_comp_comb
 
-contact_rating_plot_comb <- rating_data_plot_comb %>%  filter(verb == "Contact") %>%
+contact_rating_plot_comb <- rating_data_plot_comb %>%  filter(verb == "Contact") %>%  mutate(
+    Language = factor(Language, levels = desired_lang_order)  # enforce order
+  ) %>%
   group_by(question,Language,focus) %>%
   tidyboot_mean(Score, nboot = 1000, na.rm = TRUE) %>%
   ggplot(aes(x = question, y = empirical_stat, group = Language, fill = Language)) + facet_wrap(~focus)+
@@ -581,7 +610,7 @@ contact_rating_plot_comb <- rating_data_plot_comb %>%  filter(verb == "Contact")
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(0.9)) +
   ylim(0, 100) +  
   labs(y = 'Rating [Intact - Smashed]', x = "", title = "Verb - Contact - Cross Language") +
-  theme_few() +theme(aspect.ratio = .5,
+  theme_few() +scale_fill_manual(values=c("#FCBA65FF", "#EC8FA3FF"))+theme(aspect.ratio = .5,
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
     plot.title = element_text(size = 14)
   )+coord_flip()
@@ -641,7 +670,7 @@ ggplot(preds_drop_long_comp, aes(x = ranked_object_recoded, y = Probability, fil
        x = "Object",
        y = "Probability of Ranked #1",
        fill = "Language") +scale_fill_discrete(name = "Language")+
-  theme_few()+scale_fill_paletteer_d("lisa::JackBush")
+  theme_few()+scale_fill_paletteer_d("nationalparkcolors::BlueRidgePkwy")
 
 
 ```
