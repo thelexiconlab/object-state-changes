@@ -1,0 +1,62 @@
+var practicestimuli = [
+  {
+    "index": 99,
+    "sentence": "A bowling ball came in contact with a teacup.",
+    "imagefolder": "PICTURES/",
+    "pic": "cupB",
+    "imagepath": "PICTURES/cupB.jpg",
+    "correct": "Y",
+    "trialcondition": "practice_y",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>A bowling ball came in contact with a teacup.</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "A balloon is on a cigarette.",
+    "imagefolder": "PICTURES/",
+    "pic": "cigaretteB",
+    "imagepath": "PICTURES/cigaretteB.jpg",
+    "correct": "Y",
+    "trialcondition": "practice_y",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>A balloon is on a cigarette.</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "A knife came in contact with a hammer.",
+    "imagefolder": "PICTURES/",
+    "pic": "calculator",
+    "imagepath": "PICTURES/calculator.jpg",
+    "correct": "N",
+    "trialcondition": "practice_n",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>A knife came in contact with a hammer. </p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  },
+  {
+    "index": 99,
+    "sentence": "A fork is on a notebook.",
+    "imagefolder": "PICTURES/",
+    "pic": "tableB",
+    "imagepath": "PICTURES/tableB.jpg",
+    "correct": "N",
+    "trialcondition": "practice_n",
+    "List": "practice",
+    "sentence_font": "<p style='font-size:36px;'>A fork is on a notebook.</p> <p style='font-size:12px;color:gray;'> Press spacebar when you have read and understood the sentence. </p>",
+    "comprehension_no": "NA",
+    "comprehension_yes": "NA",
+    "no_font": "<p style='font-size:36px; color: #508AB0; '>NA</p>",
+    "yes_font": "<p style='font-size:36px;color: #508AB0;'>NA</p>"
+  }
+]
