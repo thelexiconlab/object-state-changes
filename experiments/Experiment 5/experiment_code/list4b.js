@@ -1,4 +1,4 @@
-[
+var list4b = [
   {
     "index": 0,
     "sentence": "You dropped a balloon on top of a porcelain figure.",
