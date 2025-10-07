@@ -253,7 +253,7 @@ var list1a = [
   },
   {
     "index": 14,
-    "sentence": "You dropped a bowling ball on top of a chocolate ice-cream.",
+    "sentence": "You dropped a bowling ball on top of an ice-cream bar.",
     "sentence-old": "A falling brick came in contact with an ice-cream bar.",
     "imagefolder": "PICTURES/",
     "pic": "icecreamN.jpg",
