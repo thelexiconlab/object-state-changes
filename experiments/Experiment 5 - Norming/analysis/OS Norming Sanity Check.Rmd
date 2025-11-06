@@ -1,0 +1,63 @@
+---
+title: "OS Survey Sanity Check"
+author: "Channing Hambric"
+date: "2025-02-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages
+```{r}
+library(tidyverse)
+library(rstatix)
+library(ggpubr)
+library(dplyr)
+library(ggthemes)
+library(ggplot2)
+library(stringr)
+library(paletteer)
+library(patchwork)
+
+```
+
+# Import EnglishData
+```{r}
+#Data from pilot - N=2
+data <-read.csv("../data/object-state-norming_1.csv", fileEncoding = "UTF-8") 
+
+obj_clean <- data %>%
+  select(subject, state, exp_number, sentence, object,response) %>%
+  filter(state != "")%>%filter(response!=" ")
+
+sentence_clean<-data %>%select(subject,sentence,sentence_condition,target, Q1,Q2,Q3,A1,A2,A3,Apos1_label,Apos2_label,Apos3_label)%>%filter(sentence_condition!="")
+
+demos <- data %>% filter(typeoftrial %in% c("demo","english"))%>%
+  select(subject,age, gender, education,race, hispanic, dominantHand, alert, english) 
+
+```
+
+
+#Sanity check - 1 participant
+```{r}
+
+#object norming block
+#should be 88
+obj_clean %>% group_by(Subject) %>%count()
+
+#Should be 40 smashed, 24 whole, 24 sliced
+obj_clean %>% group_by(subject, state) %>% count()
+
+
+#sentence norming block
+#should be 9
+sentence_clean%>%group_by(subject) %>%count()
+
+#should be 9 rows, 1 in each condition
+sentence_clean%>%group_by(subject,sentence_condition) %>%count()
+```
+
+
+
