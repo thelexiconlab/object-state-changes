@@ -29,7 +29,7 @@ library(gt)
 
 # Import Data
 ```{r}
-data <-read.csv("../data/object-state-norming_1.csv", fileEncoding = "UTF-8") 
+data <-read.csv("../data/object-state-norming.csv", fileEncoding = "UTF-8") 
 
 obj_clean <- data %>%
   select(subject, state, exp_number, sentence, object,response) %>%
@@ -40,6 +40,8 @@ sentence_clean<-data %>%select(subject,sentence,sentence_condition,target, Q1,Q2
 demos <- data %>% filter(typeoftrial %in% c("demo","english"))%>%
   select(subject,age, gender, education,race, hispanic, dominantHand, alert, english) 
 
+
+data %>% group_by(subject) %>%count()
 ```
 
 
@@ -52,8 +54,11 @@ obj_clean%>%
     sd_rating = sd(response))
 
 #on average,  is there a difference between how canonical p's considered sliced vs whole objects 
-slice_model<-lm(data=obj_clean %>%filter(state!="Smashed"),response~state)
+slice_model<-lmer(data=obj_clean %>%filter(state!="Smashed"),response~state + (1|subject) + (1|object))
 summary(slice_model)
+car::Anova(slice_model)
+
+# whole items considered significantly more typical/canonical
 
 ```
 
@@ -101,37 +106,130 @@ sentence_long%>%
 q1_model<-lm(data=sentence_clean,Q1~sentence_condition)
 summary(q1_model)
 
+#As expected no meaningful differences
+
 #Q2 - Do sentences differ in what they imply to be the final state of the object
 q2_model<-lm(data=sentence_clean,Q2~sentence_condition)
 summary(q2_model)
+
+#Overall, Experiment 1. Experiment 2, & Experiment 4c (both Focus and Not Focus conditions) were judged to have the the greatest degree of state change after the described event occurred. Sentences from Experiment 4a were rated similarly to sentences suggested by Reviewer 2, with both Not Focus conditions indicating more state change than their Not Focus counterparts 
 
 #Q3 - Do sentences differ in how much they imply the action
 q3_model<-lm(data=sentence_clean,Q3~sentence_condition)
 summary(q3_model)
 
-#Q4 - Are different target objects rated more or less prominent across different sentenceconditions
-q4_model<-lm(data=sentence_long,answer~sentence_condition*label_recoded)
+#Overall, Experiment 1, Experiment 2, & Experiment 4c (both Focus and Not Focus conditions) most strongly implied state change. Sentences from Experiment 4a did not differ across Focus conditions, and implication ratings were similar to sentences suggested by Reviewer 2, with the exception that the not focus sentences suggested by Reviewer 2 implied more state change. 
+
+#Q4 - Are different target objects rated more or less prominent across different sentence conditions
+
+exp_order_focus<- c("E1","4a-Focus","4a-NotFocus","4c-Focus","4c-NotFocus","R2-Focus","R2-NotFocus")
+sentence_long_order_focus<-sentence_long%>%mutate(sentence_condition = factor(sentence_condition, levels = exp_order_focus))%>%filter(sentence_condition!="NA")
+
+
+q4_model<-lm(data=sentence_long_order_focus,answer~sentence_condition*label_recoded)
 summary(q4_model)
 
+#Overall, the falling object was most prominent in Experiment 4a Not Focus condition, followed by 4a Not Focus condition. The target object was most prominent in Experiment 4a - Focus and Not Focus conditions  (roughly equally so), though differences were minimal across #conditions.
 
+#So in other words, in the sentences without "you" as a third noun (Experiment 4a, both conditions), both the falling object and the target object were more salient than in other conditions. An argument can be made that adding a third noun just generally dilutes the #saliency of all entities, could argue it increases strain on working memory or something, so sentence focus does matter, but it inherently involves general sentence complexity as well noun order
+
+
+#just looking at falling object
+q4_model_falling<-lm(data=sentence_long_order_focus%>%filter(label_recoded=="falling object"),answer~sentence_condition)
+summary(q4_model_falling)
+
+#just looking at target object
+q4_model_target<-lm(data=sentence_long_order_focus%>%filter(label_recoded=="target object"),answer~sentence_condition)
+summary(q4_model_target)
 ```
 
 # Plots
 ```{r}
+obj_clean$object <- sub("\\.(jpe?g)$", "", obj_clean$object)
 
-
-
-obj_clean %>%
+obj_clean %>% 
+  mutate(state = factor(state, levels = c("Whole", "Slice", "Smashed"))) %>%
   group_by(state) %>%
   tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
-  ggplot(aes(x = state, y = empirical_stat, group = state, fill = state)) + 
+  ggplot(aes(x = state, y = empirical_stat, fill = state)) + 
   geom_col() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
-  labs(y = NULL, x = "State") +  
-  theme_few() 
+  labs(y = "Average Typicality Rating", x = "State") +  
+  theme_few()
+
+#look at distribution of smashed ratings
+obj_clean %>% 
+  filter(state == "Smashed") %>%
+  group_by(object) %>%
+  tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
+  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
+  ggplot(aes(x = object, y = empirical_stat, label = object)) +
+  geom_point(size = 3) +
+  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
+  labs(
+    x = NULL,
+    y = "Average Typicality Rating",
+    title = 'State = "Smashed"'
+  ) +
+  theme_few() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none")+ylim(0,100)
 
 
-q1<- sentence_clean %>%
+
+# Slice typicality ratings - look at distribution of ratings across items
+highlight_objs <- c("cheesecake", "bread", "cake", "grapefruit", "pizza")
+pat <- str_c(highlight_objs, collapse = "|")   # look at 5 items with highest typicality rating for sliced state & compare to whole
+
+obj_clean %>% 
+  filter(state == "Slice") %>%
+  group_by(object) %>%
+  tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
+  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
+  ggplot(aes(x = object, y = empirical_stat, label = object, color = highlight)) +
+  geom_point(size = 3) +
+  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
+  scale_color_manual(values = c(`FALSE` = "black", `TRUE` = "red")) +
+  labs(
+    x = NULL,
+    y = "Average Typicality Rating",
+    title = 'State = "Sliced"'
+  ) +
+  theme_few() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none")
+
+# Whole typicality ratings - look at distribution of ratings across items
+obj_clean %>% 
+  filter(state == "Whole") %>%
+  group_by(object) %>%
+  tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
+  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
+  ggplot(aes(x = object, y = empirical_stat, label = object, color = highlight)) +
+  geom_point(size = 3) +
+  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
+  scale_color_manual(values = c(`FALSE` = "black", `TRUE` = "red")) +
+  labs(
+    x = NULL,
+    y = "Average Typicality Rating",
+    title = 'State = "Whole"'
+  ) +
+  theme_few() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none")
+
+
+#reorder for plots
+exp_order<- c("E1","E2-Slice","E2-Neut","4a-Focus","4a-NotFocus","4c-Focus","4c-NotFocus","R2-Focus","R2-NotFocus")
+sentence_clean_order<-sentence_clean%>%mutate(sentence_condition = factor(sentence_condition, levels = exp_order))
+
+q1<- sentence_clean_order %>%
   group_by(sentence_condition) %>%
   tidyboot_mean(Q1, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
@@ -140,7 +238,7 @@ q1<- sentence_clean %>%
   labs(y = NULL, x = "Sentence_Type") +  ggtitle("Before the described event...")+
   theme_few() +theme(axis.text.x = element_blank())
 
-q2<- sentence_clean %>%
+q2<- sentence_clean_order %>%
   group_by(sentence_condition) %>%
   tidyboot_mean(Q2, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
@@ -150,7 +248,7 @@ q2<- sentence_clean %>%
   theme_few() +theme(axis.text.x = element_blank())
 
 
-q3<- sentence_clean %>%
+q3<- sentence_clean_order %>%
   group_by(sentence_condition) %>%
   tidyboot_mean(Q3, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
@@ -159,16 +257,17 @@ q3<- sentence_clean %>%
   labs(y = NULL, x = "Sentence Type") +  
   theme_few() +theme(axis.text.x = element_blank())
 
-q4<- sentence_long%>%
-  group_by(label_recoded) %>%
+q4<- sentence_long_order_focus%>%
+  group_by(label_recoded,sentence_condition) %>%
   tidyboot_mean(answer, nboot = 100, na.rm = TRUE) %>%
-  ggplot(aes(x = label_recoded, y = empirical_stat, group = label_recoded, fill = label_recoded)) + 
+  ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + facet_wrap(~label_recoded)+
   geom_col() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("How prominent was each object...")+
-  labs(y = NULL, x = "Object") +  
-  theme_few() +theme(axis.text.x = element_blank())
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("How prominent was each object...")+ 
+  labs(y = "Average Saliency Rating", x = "") +  
+  theme_few() +theme(axis.text.x = element_blank())+scale_fill_paletteer_d("MetBrewer::Cross")
 
 q1+q2+q3+q4
+
 
 ```
 
