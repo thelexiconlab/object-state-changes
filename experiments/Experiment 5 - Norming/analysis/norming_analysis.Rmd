@@ -41,7 +41,8 @@ demos <- data %>% filter(typeoftrial %in% c("demo","english"))%>%
   select(subject,age, gender, education,race, hispanic, dominantHand, alert, english) 
 
 
-data %>% group_by(subject) %>%count()
+#sentence_clean %>% group_by(subject) %>%count()
+# N=67
 ```
 
 
@@ -137,16 +138,19 @@ summary(q4_model)
 #just looking at falling object
 q4_model_falling<-lm(data=sentence_long_order_focus%>%filter(label_recoded=="falling object"),answer~sentence_condition)
 summary(q4_model_falling)
+#marginally higher ratings in 4a-Focus compared to E1,
 
 #just looking at target object
 q4_model_target<-lm(data=sentence_long_order_focus%>%filter(label_recoded=="target object"),answer~sentence_condition)
 summary(q4_model_target)
+# sig higher ratings in 4a-Focus compared to E1, marginal for NotFocus
 ```
 
 # Plots
 ```{r}
-obj_clean$object <- sub("\\.(jpe?g)$", "", obj_clean$object)
+obj_clean$object <- sub("\\.(jpe?g)$", "", obj_clean$object) #remove .jpegs from obj names
 
+#overall object rating differences
 obj_clean %>% 
   mutate(state = factor(state, levels = c("Whole", "Slice", "Smashed"))) %>%
   group_by(state) %>%
@@ -162,7 +166,6 @@ obj_clean %>%
   filter(state == "Smashed") %>%
   group_by(object) %>%
   tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
-  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
   ggplot(aes(x = object, y = empirical_stat, label = object)) +
   geom_point(size = 3) +
   ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
@@ -235,8 +238,8 @@ q1<- sentence_clean_order %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
   geom_col() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
-  labs(y = NULL, x = "Sentence_Type") +  ggtitle("Before the described event...")+
-  theme_few() +theme(axis.text.x = element_blank())
+  labs(y = NULL, x = "Sentence_Type") +  ggtitle("Before Event.")+
+  theme_few() +theme(axis.text.x = element_blank(), legend.position = "none")
 
 q2<- sentence_clean_order %>%
   group_by(sentence_condition) %>%
@@ -244,8 +247,8 @@ q2<- sentence_clean_order %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
   geom_col() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
-  labs(y = NULL, x = "Sentence Type") +  ggtitle("After the described event...")+
-  theme_few() +theme(axis.text.x = element_blank())
+  labs(y = NULL, x = "Sentence Type") +  ggtitle("After Event")+
+  theme_few() +theme(axis.text.x = element_blank(), legend.position = "none")
 
 
 q3<- sentence_clean_order %>%
@@ -253,7 +256,7 @@ q3<- sentence_clean_order %>%
   tidyboot_mean(Q3, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
   geom_col() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("Does the sentence imply...")+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("Imply")+
   labs(y = NULL, x = "Sentence Type") +  
   theme_few() +theme(axis.text.x = element_blank())
 
@@ -266,7 +269,8 @@ q4<- sentence_long_order_focus%>%
   labs(y = "Average Saliency Rating", x = "") +  
   theme_few() +theme(axis.text.x = element_blank())+scale_fill_paletteer_d("MetBrewer::Cross")
 
-q1+q2+q3+q4
+q1+q2+q3
+q4
 
 
 ```
