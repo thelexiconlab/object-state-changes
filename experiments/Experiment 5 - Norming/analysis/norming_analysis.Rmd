@@ -24,6 +24,7 @@ library(patchwork)
 library(data.table)
 library(dplyr)
 library(gt)
+library(ggrepel)
 ```
 
 
@@ -148,11 +149,17 @@ summary(q4_model_target)
 
 # Plots
 ```{r}
-obj_clean$object <- sub("\\.(jpe?g)$", "", obj_clean$object) #remove .jpegs from obj names
+obj_clean$object <- sub(
+  "(_slice|_whole)?\\.(jpe?g|png)$|(_slice|_whole)$",
+  "",
+  obj_clean$object,
+  ignore.case = TRUE
+)
 
 #overall object rating differences
-obj_clean %>% 
-  mutate(state = factor(state, levels = c("Whole", "Slice", "Smashed"))) %>%
+# SUPPLEMENTAL
+obj_clean %>% filter(state!="Smashed") %>%
+  mutate(state = factor(state, levels = c("Whole", "Slice"))) %>%
   group_by(state) %>%
   tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = state, y = empirical_stat, fill = state)) + 
@@ -161,115 +168,170 @@ obj_clean %>%
   labs(y = "Average Typicality Rating", x = "State") +  
   theme_few()
 
-#look at distribution of smashed ratings
-obj_clean %>% 
+# Looking at distribution of smashed ratings
+
+obj_smashed <- obj_clean %>%
   filter(state == "Smashed") %>%
+  mutate(object = str_sub(object, 1, -2))
+
+obj_means <- obj_smashed %>%
   group_by(object) %>%
   tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
-  ggplot(aes(x = object, y = empirical_stat, label = object)) +
-  geom_point(size = 3) +
-  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
-  labs(
-    x = NULL,
-    y = "Average Typicality Rating",
-    title = 'State = "Smashed"'
+  ungroup()
+
+set.seed(1)
+jwidth <- 0.5
+obj_means <- obj_means %>%
+  mutate(xj = 1 + runif(n(), -jwidth, jwidth))
+
+ggplot(obj_means, aes(x = 1, y = empirical_stat)) +
+  geom_violin(trim = TRUE,fill="slateblue",alpha=0.5) +
+  geom_point(
+    aes(x = xj, y = empirical_stat),
+    size = 3
   ) +
+  ggrepel::geom_text_repel(
+    aes(x = xj, y = empirical_stat, label = object),
+    size = 3,
+    max.overlaps = Inf,
+    min.segment.length = 0,
+    box.padding = 0.25,
+    point.padding = 0.2,
+    seed = 1,
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(limits = c(0.4, 1.6)) +
+  coord_cartesian(ylim = c(0, 100), clip = "off") +
   theme_few() +
   theme(
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
-    legend.position = "none")+ylim(0,100)
-
-
-
-# Slice typicality ratings - look at distribution of ratings across items
-highlight_objs <- c("cheesecake", "bread", "cake", "grapefruit", "pizza")
-pat <- str_c(highlight_objs, collapse = "|")   # look at 5 items with highest typicality rating for sliced state & compare to whole
-
-obj_clean %>% 
-  filter(state == "Slice") %>%
-  group_by(object) %>%
-  tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
-  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
-  ggplot(aes(x = object, y = empirical_stat, label = object, color = highlight)) +
-  geom_point(size = 3) +
-  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
-  scale_color_manual(values = c(`FALSE` = "black", `TRUE` = "red")) +
+    legend.position = "none",
+    plot.margin = margin(10, 40, 10, 40)
+  ) +
   labs(
     x = NULL,
-    y = "Average Typicality Rating",
-    title = 'State = "Sliced"'
-  ) +
-  theme_few() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    legend.position = "none")
-
-# Whole typicality ratings - look at distribution of ratings across items
-obj_clean %>% 
-  filter(state == "Whole") %>%
-  group_by(object) %>%
-  tidyboot_mean(response, nboot = 100, na.rm = TRUE) %>%
-  mutate(highlight = str_detect(str_to_lower(object), pat)) %>%
-  ggplot(aes(x = object, y = empirical_stat, label = object, color = highlight)) +
-  geom_point(size = 3) +
-  ggrepel::geom_text_repel(size = 3, max.overlaps = Inf) +
-  scale_color_manual(values = c(`FALSE` = "black", `TRUE` = "red")) +
-  labs(
-    x = NULL,
-    y = "Average Typicality Rating",
-    title = 'State = "Whole"'
-  ) +
-  theme_few() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    legend.position = "none")
+    y = "Match Rating",
+    title = 'To what extent does this image match the outcome you imagined?'
+  )
 
 
 #reorder for plots
-exp_order<- c("E1","E2-Slice","E2-Neut","4a-Focus","4a-NotFocus","4c-Focus","4c-NotFocus","R2-Focus","R2-NotFocus")
-sentence_clean_order<-sentence_clean%>%mutate(sentence_condition = factor(sentence_condition, levels = exp_order))
+exp_order <- c(
+  "E1",
+  "E2-Slice",
+  "E2-Neut",
+  "4a-Focus",
+  "4a-NotFocus",
+  "4c-Focus",
+  "4c-NotFocus",
+  "R2-Focus",
+  "R2-NotFocus"
+)
 
-q1<- sentence_clean_order %>%
-  group_by(sentence_condition) %>%
-  tidyboot_mean(Q1, nboot = 100, na.rm = TRUE) %>%
-  ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
-  geom_col() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
-  labs(y = NULL, x = "Sentence_Type") +  ggtitle("Before Event.")+
-  theme_few() +theme(axis.text.x = element_blank(), legend.position = "none")
+sentence_labels <- c(
+  "You dropped a bowling ball on a tomato.",
+  "Someone slices a tomato in front of you.",
+  "Someone places a tomato in front of you.",
+  "A tomato came in contact with a falling brick.",
+  "A falling brick came in contact with a tomato.",
+  "Onto a tomato you dropped a bowling ball.",
+  "You dropped a bowling ball onto a tomato.",
+  "A tomato is what you dropped a bowling ball on.",
+  "A bowling ball is what you dropped on a tomato.")
+  
+sentence_clean_order <- sentence_clean %>%
+  mutate(
+    sentence_condition = factor(
+      sentence_condition,
+      levels = exp_order,
+      labels = sentence_labels
+    )
+  ) %>%
+  filter(!sentence_condition %in% c(
+    "Someone slices a tomato in front of you.",
+    "Someone places a tomato in front of you."
+  ))
 
-q2<- sentence_clean_order %>%
+
+
+q2 <- sentence_clean_order %>%
   group_by(sentence_condition) %>%
   tidyboot_mean(Q2, nboot = 100, na.rm = TRUE) %>%
-  ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
+  ggplot(aes(
+    x = sentence_condition,
+    y = empirical_stat,
+    fill = sentence_condition
+  )) + 
   geom_col() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
-  labs(y = NULL, x = "Sentence Type") +  ggtitle("After Event")+
-  theme_few() +theme(axis.text.x = element_blank(), legend.position = "none")
+  geom_errorbar(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    width = 0.1
+  ) +
+  geom_text(
+    aes(label = sentence_condition),
+    angle = 90,
+    hjust = 1.2,        # pushes text upward
+    size = 3.5
+  ) +
+  labs(
+    y = "Rating (Intact - Smashed)",
+    x = "Sentence Type"
+  ) +
+  ggtitle("After the event described in the sentence, the object was...") +
+  theme_few() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "none"
+  )+ylim(0,100)
 
 
 q3<- sentence_clean_order %>%
   group_by(sentence_condition) %>%
   tidyboot_mean(Q3, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + 
-  geom_col() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("Imply")+
+  geom_col() +geom_text(
+    aes(label = sentence_condition),
+    angle = 90,
+    hjust = 1.24,        # pushes text upward
+    size = 3.5
+  )+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("Does the sentence imply the object was...")+
   labs(y = NULL, x = "Sentence Type") +  
-  theme_few() +theme(axis.text.x = element_blank())
+  theme_few() +theme(axis.text.x = element_blank(),legend.position = "none")+ylim(0,100)
 
-q4<- sentence_long_order_focus%>%
+
+  
+sentence_long_order <- sentence_long %>%
+  mutate(
+    sentence_condition = factor(
+      sentence_condition,
+      levels = exp_order,
+      labels = sentence_labels
+    )
+  ) %>%
+  filter(!sentence_condition %in% c(
+    "Someone slices a tomato in front of you.",
+    "Someone places a tomato in front of you."
+  ))
+
+
+q4<- sentence_long_order%>%
   group_by(label_recoded,sentence_condition) %>%
   tidyboot_mean(answer, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + facet_wrap(~label_recoded)+
   geom_col() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("How prominent was each object...")+ 
   labs(y = "Average Saliency Rating", x = "") +  
-  theme_few() +theme(axis.text.x = element_blank())+scale_fill_paletteer_d("MetBrewer::Cross")
+  theme_few() +theme(axis.text.x = element_blank(),legend.position = "none",strip.text = element_text(size = 14) )+scale_fill_paletteer_d("MetBrewer::Cross")+geom_text(
+    aes(label = sentence_condition),
+    angle = 90,
+    hjust = 1.22,        # pushes text upward
+    size = 3
+  )+ylim(0,100)
 
-q1+q2+q3
+q2+q3
 q4
 
 
