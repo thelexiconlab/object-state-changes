@@ -350,6 +350,19 @@ data <- read_csv("../data/survey_data.csv") %>% filter(typeoftrial == "survey") 
          condition = fct_relevel(condition,  "unsquashable","filler", "squashable"))
 
 length(data %>% pull(subject) %>% unique())
+
+#get covariate values
+#squash_covariates <- data %>%
+#  mutate(item = as.numeric(item)) %>%
+#  filter(!is.na(item)) %>%
+#  group_by(item,condition) %>%
+#  summarise(
+#    mean_rating = mean(response, na.rm = TRUE),
+#    .groups = "drop"
+#  ) %>%
+#  arrange(item)
+
+#write.csv(squash_covariates, "squash_covariates.csv")
 ```
 
 ## basic plot

@@ -29,7 +29,10 @@ library(patchwork)
 
 comb_data <- read.csv("../data/prolific_data_followup.csv", fileEncoding = "UTF-8")
 
-length(comb_data %>% pull(subject) %>% unique())
+comb_data %>%
+  filter(!is.na(subject)) %>%
+  summarise(N = n_distinct(subject))
+
 ```
 
 # data treatment
@@ -112,7 +115,6 @@ accuracy_plot
 ```
 ## main accuracy model
 ```{r}
-#N for accuracy analysis = 229
 length(exclusions_data %>% pull(subject) %>% unique())
 
 exclusions_data %>% summarise(overall.acc = mean(correct))

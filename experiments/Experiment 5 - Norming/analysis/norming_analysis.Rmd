@@ -49,11 +49,19 @@ demos <- data %>% filter(typeoftrial %in% c("demo","english"))%>%
 
 # Object Norming
 ```{r}
-obj_clean%>%
-  group_by(state)%>%
-  summarise(
-    mean_rating=mean(response),
-    sd_rating = sd(response))
+#smashed_covariates<-obj_clean%>%filter(state=="Smashed")%>%
+#  group_by(state,object)%>%
+#  summarise(
+ #   mean_rating=mean(response))
+
+#write.csv(smashed_covariates, "smashed_covariates.csv")
+
+#sliced_covariates<-obj_clean%>%filter(state=="Slice")%>%
+##  group_by(state,object)%>%
+#  summarise(
+ #   mean_rating=mean(response))
+
+#write.csv(sliced_covariates, "sliced_covariates.csv")
 
 #on average,  is there a difference between how canonical p's considered sliced vs whole objects 
 slice_model<-lmer(data=obj_clean %>%filter(state!="Smashed"),response~state + (1|subject) + (1|object))
@@ -71,14 +79,6 @@ car::Anova(slice_model)
 #Q1: Before...
 #Q2: After...
 #Q3 : Does the sentence imply..
-
-sentence_clean%>%
-  group_by(sentence_condition)%>%
-  summarise(
-    mean_Q1_rating=mean(Q1),
-    mean_Q2_rating=mean(Q2),
-    mean_Q3_rating=mean(Q3))
-
 # reformatting Q4 (prominence q)
 
 sentence_long <- sentence_clean %>%
@@ -98,11 +98,6 @@ sentence_long <- sentence_clean %>%
       label %in% c("blueberry", "muffin", "tomato") ~ "target object",
       label %in% c("bowling ball","falling brick") ~ "falling object", TRUE~label))%>%filter(label!="null")
 
-sentence_long%>%
-  group_by(sentence_condition,label_recoded)%>%
-  summarise(
-    mean_prominence=mean(answer))
-
 
 #Q1 - Do sentences differ in what they imply to be the initial state of the object
 q1_model<-lm(data=sentence_clean,Q1~sentence_condition)
@@ -114,13 +109,23 @@ summary(q1_model)
 q2_model<-lm(data=sentence_clean,Q2~sentence_condition)
 summary(q2_model)
 
+q2_4_comp<-lm(data=sentence_clean %>% filter(sentence_condition %in% c("4a-Focus","4a-NotFocus", "4c-Focus","4c-NotFocus","R2-Focus","R2-NotFocus")),Q2~sentence_condition)
+summary(q2_4_comp)
+
 #Overall, Experiment 1. Experiment 2, & Experiment 4c (both Focus and Not Focus conditions) were judged to have the the greatest degree of state change after the described event occurred. Sentences from Experiment 4a were rated similarly to sentences suggested by Reviewer 2, with both Not Focus conditions indicating more state change than their Not Focus counterparts 
+
+#The 4a-Focus condition was rated significantly lower than 4a-NotFocus, 4c-Focus, 4c-NotFocus, R2-Focus, and R2-NotFocus
 
 #Q3 - Do sentences differ in how much they imply the action
 q3_model<-lm(data=sentence_clean,Q3~sentence_condition)
 summary(q3_model)
 
+q3_4_comp<-lm(data=sentence_clean %>% filter(sentence_condition %in% c("4a-Focus","4a-NotFocus", "4c-Focus","4c-NotFocus","R2-Focus","R2-NotFocus")),Q3~sentence_condition)
+summary(q3_4_comp)
+
 #Overall, Experiment 1, Experiment 2, & Experiment 4c (both Focus and Not Focus conditions) most strongly implied state change. Sentences from Experiment 4a did not differ across Focus conditions, and implication ratings were similar to sentences suggested by Reviewer 2, with the exception that the not focus sentences suggested by Reviewer 2 implied more state change. 
+
+#The 4a-Focus condition did not significantly differ from 4a-NotFocus or R2-Focus, but was rated significantly lower than 4c-Focus, 4c-NotFocus,and R2-NotFocus
 
 #Q4 - Are different target objects rated more or less prominent across different sentence conditions
 
@@ -149,14 +154,14 @@ summary(q4_model_target)
 
 # Plots
 ```{r}
+#clean object names
 obj_clean$object <- sub(
   "(_slice|_whole)?\\.(jpe?g|png)$|(_slice|_whole)$",
   "",
   obj_clean$object,
-  ignore.case = TRUE
-)
+  ignore.case = TRUE)
 
-#overall object rating differences
+#overall object rating differences (whole vs sliced)
 # SUPPLEMENTAL
 obj_clean %>% filter(state!="Smashed") %>%
   mutate(state = factor(state, levels = c("Whole", "Slice"))) %>%
@@ -169,7 +174,6 @@ obj_clean %>% filter(state!="Smashed") %>%
   theme_few()
 
 # Looking at distribution of smashed ratings
-
 obj_smashed <- obj_clean %>%
   filter(state == "Smashed") %>%
   mutate(object = str_sub(object, 1, -2))
@@ -212,11 +216,10 @@ ggplot(obj_means, aes(x = 1, y = empirical_stat)) +
   labs(
     x = NULL,
     y = "Match Rating",
-    title = 'To what extent does this image match the outcome you imagined?'
-  )
+    title = 'To what extent does this image match the outcome you imagined?')
 
 
-#reorder for plots
+#reorder and relabel for question norming plots
 exp_order <- c(
   "E1",
   "E2-Slice",
@@ -226,8 +229,7 @@ exp_order <- c(
   "4c-Focus",
   "4c-NotFocus",
   "R2-Focus",
-  "R2-NotFocus"
-)
+  "R2-NotFocus")
 
 sentence_labels <- c(
   "You dropped a bowling ball on a tomato.",
@@ -250,8 +252,7 @@ sentence_clean_order <- sentence_clean %>%
   ) %>%
   filter(!sentence_condition %in% c(
     "Someone slices a tomato in front of you.",
-    "Someone places a tomato in front of you."
-  ))
+    "Someone places a tomato in front of you."))
 
 
 
@@ -261,13 +262,11 @@ q2 <- sentence_clean_order %>%
   ggplot(aes(
     x = sentence_condition,
     y = empirical_stat,
-    fill = sentence_condition
-  )) + 
+    fill = sentence_condition)) + 
   geom_col() +
   geom_errorbar(
     aes(ymin = ci_lower, ymax = ci_upper),
-    width = 0.1
-  ) +
+    width = 0.1) +
   geom_text(
     aes(label = sentence_condition),
     angle = 90,
@@ -283,8 +282,7 @@ q2 <- sentence_clean_order %>%
   theme(
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
-    legend.position = "none"
-  )+ylim(0,100)
+    legend.position = "none")+ylim(0,100)
 
 
 q3<- sentence_clean_order %>%
@@ -295,26 +293,22 @@ q3<- sentence_clean_order %>%
     aes(label = sentence_condition),
     angle = 90,
     hjust = 1.24,        # pushes text upward
-    size = 3.5
-  )+
+    size = 3.5)+
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("Does the sentence imply the object was...")+
   labs(y = NULL, x = "Sentence Type") +  
   theme_few() +theme(axis.text.x = element_blank(),legend.position = "none")+ylim(0,100)
 
 
-  
+#relabel for Q4
 sentence_long_order <- sentence_long %>%
   mutate(
     sentence_condition = factor(
       sentence_condition,
       levels = exp_order,
-      labels = sentence_labels
-    )
-  ) %>%
+      labels = sentence_labels)) %>%
   filter(!sentence_condition %in% c(
     "Someone slices a tomato in front of you.",
-    "Someone places a tomato in front of you."
-  ))
+    "Someone places a tomato in front of you."))
 
 
 q4<- sentence_long_order%>%
@@ -324,14 +318,14 @@ q4<- sentence_long_order%>%
   geom_col() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +ggtitle("How prominent was each object...")+ 
   labs(y = "Average Saliency Rating", x = "") +  
-  theme_few() +theme(axis.text.x = element_blank(),legend.position = "none",strip.text = element_text(size = 14) )+scale_fill_paletteer_d("MetBrewer::Cross")+geom_text(
+  theme_few() +theme(axis.text.x = element_blank(),legend.position = "none",strip.text = element_text(size = 14))+scale_fill_paletteer_d("MetBrewer::Cross")+geom_text(
     aes(label = sentence_condition),
     angle = 90,
-    hjust = 1.22,        # pushes text upward
-    size = 3
-  )+ylim(0,100)
+    hjust = 1.22,        
+    size = 3)+ylim(0,100)
 
 q2+q3
+
 q4
 
 
