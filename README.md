@@ -5,3 +5,41 @@ This repository contains the data, experiment code, and analysis scripts for the
 ## Navigation
 
 Within the main (experiments) folder, there are separate folders that correspond to each experiment (Experiment 1 - 4b). Within each experiment folder, materials and code used to conduct the experiment (using jspsych) can be found in the /experiment_code subfolder. Data for each experiment can be found in the /data subfolder within each experiment. Analysis scripts (R notebooks) can be found in the /analysis subfolders.
+
+## Data CSV Guide
+
+Experiment 1 (preregistered.csv):
+subject = Subject ID
+rt = Verification Time (in ms)
+correct = Accuracy (True/False)
+typeoftrial = Trial Type, critical trials = picture
+trialcondition= Condition (Sentence Weight x Object State or Filler)
+sentence = Specific sentence stimulus
+object = Specific image stimulus
+
+Experiment 2:
+subject = Subject ID
+rt = Verification Time (in ms)
+correct = Accuracy (True/False)
+typeoftrial = Trial Type, critical trials = picture
+trialcondition= Condition (Sentence Verb x Object State or Filler)
+sentence = Specific sentence stimulus
+object = Specific image stimulus
+
+Experiment 3:
+subject = Subject ID
+rt = Verification Time (in ms)
+correct = Accuracy (True/False)
+typeoftrial = Trial Type, critical trials = picture
+trialcondition= Condition (Squashability x Object State or Filler)
+sentence = Specific sentence stimulus
+object = Specific image stimulus
+
+Experiments 4a and 4c:
+subject = Subject ID
+rt = Verification Time (in ms)
+correct = Accuracy (True/False)
+typeoftrial = Trial Type, critical trials = picture
+trialcondition= Condition (Sentence Weight x Object State x Focus or Filler)
+sentence = Specific sentence stimulus
+object = Specific image stimulus
