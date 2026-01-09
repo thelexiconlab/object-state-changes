@@ -1,7 +1,7 @@
 item,mean_rating
 book,0.814814815
 newspaper,1.018518519
-playingcard,1.37037037
+playingcards,1.37037037
 towel,1.37037037
 pillow,2.203703704
 penny,0.351851852
@@ -14,7 +14,7 @@ eraser,1.148148148
 tomato,2.833333333
 lamp,2.425925926
 mirror,2.240740741
-iPhone,2.796296296
+iphone,2.796296296
 wineglass,3.555555556
 egg,2.648148148
 glasses,3.611111111

@@ -18,6 +18,7 @@ library(dplyr)
 library(paletteer)
 library(lmerTest)
 library(patchwork)
+library(optimx)
 setwd(here::here())
 getwd()
 ```
@@ -217,7 +218,7 @@ rt_model = lmer(data = mad_data,
                     check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 summary(rt_model)
 
-emmeans(rt_model,pairwise~verb*state)
+emmeans(rt_model,pairwise~verb*state, simple = "verb")
 ```
 
 Significant interaction.
@@ -252,27 +253,66 @@ sjPlot::plot_model(rt_model, type='resid')
 
 ```{r}
 # split into picture type (state)
-intact_data = mad_data %>% filter(state == "whole")
-squashed_data = mad_data %>% filter(state == "slice")
+#intact_data = mad_data %>% filter(state == "whole")
+#squashed_data = mad_data %>% filter(state == "slice")
 # run separate models on these data
-intact_model = lmer(data = intact_data, log10_rt ~ verb + (verb | subject) + 
-                      (1 | stimulus), REML = FALSE, 
-                lmerControl(optimizer = "bobyqa",
-                            optCtrl=list(maxfun=200000),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+#intact_model = lmer(data = intact_data, log10_rt ~ verb + (verb | subject) + 
+#                      (1 | stimulus), REML = FALSE, 
+#                lmerControl(optimizer = "bobyqa",
+#                            optCtrl=list(maxfun=200000),
+#                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
                   
-summary(intact_model)
-car::Anova(intact_model)
-
-squashed_model = lmer(data = squashed_data, log10_rt ~ verb + (verb | subject) + 
-                      (1 | stimulus), REML = FALSE, 
-                lmerControl(optimizer = "bobyqa",
-                            optCtrl=list(maxfun=200000),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(squashed_model)
-car::Anova(squashed_model)
+#summary(intact_model)
+#car::Anova(intact_model)
+#
+#squashed_model = lmer(data = squashed_data, log10_rt ~ verb + (verb | subject) + 
+#                      (1 | stimulus), REML = FALSE, 
+ #               lmerControl(optimizer = "bobyqa",
+#                            optCtrl=list(maxfun=200000),
+#                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+#summary(squashed_model)
+#car::Anova(squashed_model)
 ```
 
+## Sliced model w/ norm covariates
+```{r}
+
+sliced_ratings<-read.csv("sliced_covariates.csv")
+sliced_acc_data<-exclusions_data%>%filter(state=="slice") %>%left_join(sliced_ratings, by=c("state","stimulus"))
+
+#accuracy
+acc_model_sliced_1 = glmer(data = sliced_acc_data, 
+                  correct ~ verb+mean_rating + (1|stimulus),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+
+
+acc_model_sliced_2 = glmer(data = sliced_acc_data, 
+                  correct ~ verb+mean_rating + (1|subject),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+
+summary(acc_model_sliced_2)
+anova(acc_model_sliced_1,acc_model_sliced_2)
+#2 better fit
+
+#rts
+sliced_rt_data<-mad_data%>%filter(state=="slice") %>%left_join(sliced_ratings, by=c("state","stimulus"))
+
+sliced_model = lmer(data = sliced_rt_data, 
+                log10_rt ~ verb+mean_rating + (1 + verb|subject) + (1|stimulus),
+                REML = FALSE, 
+                lmerControl(optimizer = "bobyqa",
+                            optCtrl=list(maxfun=200000),
+                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(sliced_model)
+car::Anova(sliced_model)
+
+```
 # Demographics and other Descriptives
 
 ## Experiment Duration (minutes)

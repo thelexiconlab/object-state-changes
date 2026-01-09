@@ -258,6 +258,39 @@ car::Anova(rt_model)
 
 No significant interaction found 
 
+## Smashed model w/ norm covariates
+```{r}
+
+smashed_ratings<-read.csv("smashed_covariates.csv")
+smashed_acc_data<-exclusions_data%>%filter(state=="Smashed") %>%left_join(smashed_ratings, by=c("state","Item"))
+
+#accuracy
+acc_model_smashed = glmer(data = smashed_acc_data, 
+                  correct ~ weight+mean_rating + (1+weight|subject) + (1|Item),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(acc_model_smashed)
+car::Anova(acc_model_smashed)
+
+#rts
+smashed_rt_data<-mad_data%>%filter(state=="Smashed") %>%left_join(smashed_ratings, by=c("state","Item"))
+
+smashed_model = lmer(data = smashed_rt_data, 
+                log10_rt ~ weight+mean_rating + (1 + weight|subject) + (1|Item),
+                REML = FALSE, 
+                lmerControl(optimizer = "bobyqa",
+                            optCtrl=list(maxfun=200000),
+                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(smashed_model)
+car::Anova(smashed_model)
+
+#weight still ns
+
+```
+
+
 ### assumptions
 
 ```{r}

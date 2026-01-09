@@ -283,30 +283,63 @@ sjPlot::plot_model(rt_model, type='resid')
 
 ```{r}
 # split into picture type (state)
-intact_data = mad_data %>% filter(state == "Normal")
-squashed_data = mad_data %>% filter(state == "Smashed")
+#intact_data = mad_data %>% filter(state == "Normal")
+#squashed_data = mad_data %>% filter(state == "Smashed")
 #run separate models on these data
-intact_model = lmer(data = intact_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
-                     (1 | item), REML = FALSE, 
-                lmerControl(optimizer = "bobyqa",
-                            optCtrl=list(maxfun=200000),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+#intact_model = lmer(data = intact_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
+#                     (1 | item), REML = FALSE, 
+#                lmerControl(optimizer = "bobyqa",
+#                            optCtrl=list(maxfun=200000),
+#                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
                   
-summary(intact_model)
-car::Anova(intact_model)
-emmeans(intact_model, pairwise~weight*focus, simple="weight")
+#summary(intact_model)
+#car::Anova(intact_model)
+#emmeans(intact_model, pairwise~weight*focus, simple="weight")
 
 
-squashed_model = lmer(data = squashed_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
-                     (1 | item), REML = FALSE, 
-                lmerControl(optimizer = "bobyqa",
-                            optCtrl=list(maxfun=200000),
-                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
-summary(squashed_model)
-car::Anova(squashed_model)
-emmeans(squashed_model, pairwise~weight*focus, simple="weight")
+#squashed_model = lmer(data = squashed_data, log10_rt ~ weight*focus + (weight+focus | subject) + 
+#                     (1 | item), REML = FALSE, 
+#                lmerControl(optimizer = "bobyqa",
+ #                           optCtrl=list(maxfun=200000),
+ #                   check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+#summary(squashed_model)
+#car::Anova(squashed_model)
+#emmeans(squashed_model, pairwise~weight*focus, simple="weight")
 ```
 
+
+
+
+## Smashed model w/ norm covariates
+```{r}
+
+smashed_ratings<-read.csv("smashed_covariates.csv")
+smashed_acc_data<-exclusions_data%>%filter(state=="Smashed") %>%left_join(smashed_ratings, by=c("state","item"))
+
+#accuracy
+acc_model_smashed = glmer(data = smashed_acc_data, 
+                  correct ~ weight*focus+mean_rating + (1|subject) + (1|stimulus),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(acc_model_smashed)
+car::Anova(acc_model_smashed)
+
+
+#rts
+smashed_rt_data<-mad_data%>%filter(state=="Smashed") %>%left_join(smashed_ratings, by=c("state","item"))
+
+smashed_model = lmer(data = smashed_rt_data, 
+                log10_rt ~ weight*focus+mean_rating + (1 + weight|subject) + (1|stimulus),
+                REML = FALSE, 
+                lmerControl(optimizer = "bobyqa",
+                            optCtrl=list(maxfun=200000),
+                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(smashed_model)
+car::Anova(smashed_model)
+
+```
 # Demographics and other Descriptives
 
 ## Experiment Duration (minutes)
@@ -321,24 +354,20 @@ quantile(duration$time_elapsed, c(.25,.75))
 
 ## Demographic Info
 ```{r}
-demo = final_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
+demo =comb_data %>% filter(typeoftrial %in% c("demo", "english") & response != "0") %>%
   separate(response, into = c("demo1", "demo2", "demo3", "demo4"), sep = ":")%>%filter(subject %in% mad_data$subject)
-age = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo2) %>%
-  mutate(age = as.numeric(gsub("[^[:digit:] ]", "", demo2)))
-age %>% summarise(mean_age = mean(age))
+age = demo %>% select(age)%>%na.omit()
+age %>% summarise(mean_age = mean(age),sd_age=sd(age))
 race = demo %>% filter(demo1 == "{\"Race\"") %>% select(demo2)
 race %>% group_by(demo2) %>% count()
-latino = demo %>% filter(demo1 == "{\"Latino\"") %>% select(demo2)
-latino %>% group_by(demo2) %>% count()
-gender_education = demo %>% filter(demo1 == "{\"Age\"") %>% select(demo3) %>%
-  separate(demo3, into = c("gender", "education"), sep = ",")  %>%
+demo %>% group_by(hispanic) %>% count()
+gender_education = demo %>%
   mutate(gender = tolower(gender),
          gender = gsub("[[:space:]]", "", gender))
 gender_education %>% group_by(gender) %>%
   count()
-gender_education %>% group_by(education) %>%
-  count()
-first_lang = demo %>% filter(demo1 == "{\"English\"") %>% select(demo2)
-first_lang %>% group_by(demo2) %>% count()
-
+#gender_education %>% group_by(education) %>%
+#  count()
+#first_lang = demo %>% filter(demo1 == "{\"English\"") %>% select(demo2)
+#first_lang %>% group_by(demo2) %>% count()
 ```

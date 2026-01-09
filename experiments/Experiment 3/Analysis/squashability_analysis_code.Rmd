@@ -290,6 +290,49 @@ car::Anova(squashed_model)
 
 Marginal interaction: for "intact", unsquashable RT < squashable RT. For "smashed", squashable RT < unsquashable RT.
 
+
+## Model w/ norms as continuous predictor
+```{r}
+
+squash_ratings<-read.csv("squash_covariates.csv")
+squash_acc_data<-exclusions_data %>%left_join(squash_ratings, by="item") %>%mutate(mean_rating=as.numeric(mean_rating))
+
+#accuracy
+acc_model_squash = glmer(data = squash_acc_data, 
+                  correct ~ state*mean_rating + (state*mean_rating|subject)+(1|stimulus),
+                  family = "binomial", 
+                  control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl=list(maxfun=200000), 
+                      check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+
+summary(acc_model_squash)
+
+emmip(
+  acc_model_squash,
+  state ~ mean_rating,
+  at = list(mean_rating = seq(
+    min(squash_acc_data$mean_rating, na.rm = TRUE),
+    max(squash_acc_data$mean_rating, na.rm = TRUE),
+    length.out = 100
+  )),
+  type = "response",
+  CIs = TRUE
+)
+
+#rts
+squash_rt_data<-mad_data%>%left_join(squash_ratings, by="item")
+
+squash_model = lmer(data = squash_rt_data, 
+                log10_rt ~ state*mean_rating + (state*mean_rating|subject) + (1|stimulus),
+                REML = FALSE, 
+                lmerControl(optimizer = "bobyqa",
+                            optCtrl=list(maxfun=200000),
+                    check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+summary(squash_model)
+car::Anova(squash_model)
+
+```
+
 # Demographics and other Descriptives
 
 ## Experiment Duration (minutes)
