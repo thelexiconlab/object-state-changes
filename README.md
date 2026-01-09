@@ -9,37 +9,37 @@ Within the main (experiments) folder, there are separate folders that correspond
 ## Data CSV Guide
 
 Experiment 1 (preregistered.csv):
-subject = Subject ID
-rt = Verification Time (in ms)
-correct = Accuracy (True/False)
-typeoftrial = Trial Type, critical trials = picture
-trialcondition = Condition (Sentence Weight x Object State or Filler)
-sentence = Specific sentence stimulus
+subject = Subject ID,
+rt = Verification Time (in ms),
+correct = Accuracy (True/False),
+typeoftrial = Trial Type, critical trials = picture,
+trialcondition = Condition (Sentence Weight x Object State or Filler),
+sentence = Specific sentence stimulus,
 object = Specific image stimulus
 
 Experiment 2:
-subject = Subject ID
-rt = Verification Time (in ms)
-correct = Accuracy (True/False)
-typeoftrial = Trial Type, critical trials = picture
-trialcondition = Condition (Sentence Verb x Object State or Filler)
-sentence = Specific sentence stimulus
+subject = Subject ID,
+rt = Verification Time (in ms),
+correct = Accuracy (True/False),
+typeoftrial = Trial Type, critical trials = picture,
+trialcondition = Condition (Sentence Verb x Object State or Filler),
+sentence = Specific sentence stimulus,
 object = Specific image stimulus
 
 Experiment 3:
-subject = Subject ID
-rt = Verification Time (in ms)
-correct = Accuracy (True/False)
-typeoftrial = Trial Type, critical trials = picture
-trialcondition = Condition (Squashability x Object State or Filler)
-sentence = Specific sentence stimulus
+subject = Subject ID,
+rt = Verification Time (in ms),
+correct = Accuracy (True/False),
+typeoftrial = Trial Type, critical trials = picture,
+trialcondition = Condition (Squashability x Object State or Filler),
+sentence = Specific sentence stimulus,
 object = Specific image stimulus
 
 Experiments 4a and 4c:
-subject = Subject ID
-rt = Verification Time (in ms)
-correct = Accuracy (True/False)
-typeoftrial = Trial Type, critical trials = picture
-trialcondition = Condition (Sentence Weight x Object State x Focus or Filler)
-sentence = Specific sentence stimulus
+subject = Subject ID,
+rt = Verification Time (in ms),
+correct = Accuracy (True/False),
+typeoftrial = Trial Type, critical trials = picture,
+trialcondition = Condition (Sentence Weight x Object State x Focus or Filler),
+sentence = Specific sentence stimulus,
 object = Specific image stimulus
