@@ -13,7 +13,7 @@ subject = Subject ID
 rt = Verification Time (in ms)
 correct = Accuracy (True/False)
 typeoftrial = Trial Type, critical trials = picture
-trialcondition= Condition (Sentence Weight x Object State or Filler)
+trialcondition = Condition (Sentence Weight x Object State or Filler)
 sentence = Specific sentence stimulus
 object = Specific image stimulus
 
@@ -22,7 +22,7 @@ subject = Subject ID
 rt = Verification Time (in ms)
 correct = Accuracy (True/False)
 typeoftrial = Trial Type, critical trials = picture
-trialcondition= Condition (Sentence Verb x Object State or Filler)
+trialcondition = Condition (Sentence Verb x Object State or Filler)
 sentence = Specific sentence stimulus
 object = Specific image stimulus
 
@@ -31,7 +31,7 @@ subject = Subject ID
 rt = Verification Time (in ms)
 correct = Accuracy (True/False)
 typeoftrial = Trial Type, critical trials = picture
-trialcondition= Condition (Squashability x Object State or Filler)
+trialcondition = Condition (Squashability x Object State or Filler)
 sentence = Specific sentence stimulus
 object = Specific image stimulus
 
@@ -40,6 +40,6 @@ subject = Subject ID
 rt = Verification Time (in ms)
 correct = Accuracy (True/False)
 typeoftrial = Trial Type, critical trials = picture
-trialcondition= Condition (Sentence Weight x Object State x Focus or Filler)
+trialcondition = Condition (Sentence Weight x Object State x Focus or Filler)
 sentence = Specific sentence stimulus
 object = Specific image stimulus
