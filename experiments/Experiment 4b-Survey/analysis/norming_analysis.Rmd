@@ -400,7 +400,7 @@ sentence_long_order <- sentence_long %>%
     "Someone places a tomato in front of you."))
 
 
-q4<- sentence_long_order%>%filter(label_recoded!="you")%>%
+q4<- sentence_long_order%>%filter(label_recoded!="you")%>%filter(!sentence_condition %in% c("A tomato is what you dropped a bowling ball on.","A bowling ball is what you dropped on a tomato."))%>%
   group_by(label_recoded,sentence_condition) %>%
   tidyboot_mean(answer, nboot = 100, na.rm = TRUE) %>%
   ggplot(aes(x = sentence_condition, y = empirical_stat, group = sentence_condition, fill = sentence_condition)) + facet_wrap(~label_recoded)+
