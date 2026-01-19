@@ -34,7 +34,7 @@ trialcondition = Condition (Squashability x Object State or Filler),
 sentence = Specific sentence stimulus,
 object = Specific image stimulus
 
-Experiments 4a and 4c:
+Experiments 4a and 4b:
 subject = Subject ID,
 rt = Verification Time (in ms),
 correct = Accuracy (True/False),
